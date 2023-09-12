@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,10 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const helperName = "testName";
+  const userName = "userName";
   return (
     <html lang="en">
-      <body className={` bg-primary_white`}>
-        <header className="bg-primary_green h-14 flex items-center justify-between p-3 px-16 m-auto">
+      <body className="bg-[var(--background)]">
+        <header className="bg-[hsl(var(--primary))] h-14 flex items-center justify-between p-3 px-16 m-auto">
           <div
             id="logoAndHelperName"
             className="flex items-center gap-4 h-full"
@@ -28,13 +30,33 @@ export default function RootLayout({
               />
             </a>
             <div className="w-[2px] h-full bg-[rgb(0_0_0_/_25%)]"></div>
-            <h2 className={`primary font-black`}>{helperName}</h2>
+            <Button variant="ghost" className="primary font-black  text-white">
+              {helperName}
+            </Button>
           </div>
-          <div id="userSide" className="flex items-center">
+          <div id="userSide" className="flex gap-2 items-center">
             {/* clerk avatar goes here  */}
-            <a href="#" className="h-full max-w-[30px] block">
-              <img src="./history_green.png" className="h-full" alt="" />
-            </a>
+            <Button
+              variant="ghost"
+              className="block h-min hover:bg-[rgb(0_0_0_/_25%)]"
+            >
+              <img
+                src="./history_light.png"
+                className="h-[30px] w-[30px]"
+                alt=""
+              />
+            </Button>
+            <Button
+              variant="ghost"
+              className="primary bg-[rgba(0,0,0,0.09)] flex gap-2 h-full text-white"
+            >
+              <img
+                src="./profilePicture.png"
+                className="h-[30px] w-[30px]"
+                alt=""
+              />
+              {userName}
+            </Button>
           </div>
         </header>
         {children}
