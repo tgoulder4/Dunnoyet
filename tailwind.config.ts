@@ -16,22 +16,28 @@ const config: Config = {
       },
     },
     extend: {
+      spacing: {
+        "1/5": "20%",
+      },
       aspectRatio: {
         "4/3": "4 / 3",
       },
       fontFamily: {
-        'Merriweather': ["Merriweather", "serif"],
+        Merriweather: ["Merriweather", "serif"],
       },
       colors: {
-        primary_green: "#22AA61",
-        darker_green: "#134B37",
-        primary_gray: "#3C3C3C",
-        primary_white: "#F3F2F7",
+        complementary: "hsl(var(--complementary))",
+        complementary_lighter: "hsl(var(--complementary_lighter))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        accentOrange: "hsl(var(--accentOrange))",
+        accentBlue: "hsl(var(--accentBlue))",
+        accentPurple: "hsl(var(--accentPurple))",
+        accentTeal: "hsl(var(--accentTeal))",
+        accentGrey: "hsl(var(--background))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Button } from "./ui/navbarButton";
-import {montserrat} from "../app/layout"
+import { Button } from "./button";
+import {montserrat} from "../../../app/layout"
 interface navItem {
   logoPath?: string;
   alt?: string;
