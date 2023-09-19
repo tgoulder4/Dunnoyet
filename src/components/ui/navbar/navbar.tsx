@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./button";
-import {montserrat} from "../../../app/layout"
+import { montserrat } from "../../../app/layout";
 interface navItem {
   logoPath?: string;
   alt?: string;
@@ -72,7 +72,7 @@ function Navbar({ brandSide, middle, userSide, alignment }: NavbarProps) {
             );
           })}
         </div>
-        <div id="userSide" className="flex gap-2 items-center">
+        <div id="userSide" className="flex gap-2 h-full items-center">
           {userSide.map((item) => {
             return (
               <>

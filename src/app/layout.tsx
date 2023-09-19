@@ -22,8 +22,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const helperName = "testName";
-  const userName = "userName";
+  const helperName = "Ben";
   return (
     <html lang="en">
       <body className={` bg-background flex flex-col`}>
@@ -43,7 +42,7 @@ export default function RootLayout({
           userSide={[
             {
               url: "/",
-              text: userName,
+              logoPath: "./pfp.png",
             },
           ]}
           alignment="between"

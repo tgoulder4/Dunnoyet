@@ -28,6 +28,7 @@ const config: Config = {
       colors: {
         complementary: "hsl(var(--complementary))",
         complementary_lighter: "hsl(var(--complementary_lighter))",
+        complementary_lightest: "hsl(var(--complementary_lightest))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

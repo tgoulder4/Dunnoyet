@@ -15,7 +15,7 @@ const buttonVariants = cva(
         outline:
           "text-background border-2 border-input bg-accent-secondary hover:bg-input hover:text-white",
         secondary:
-          "bg-accent-secondary text-background hover:bg-[rgb(0_0_0_/_25%)] hover:text-accent-forground",
+          "bg-accent-secondary text-background hover:bg-accent-secondary/80 hover:text-accent-forground",
         ghost: "hover:bg-accent hover:text-accent-foreground text-background",
         link: "text-background underline-offset-4 hover:underline",
       },
@@ -37,7 +37,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
-  icon?:string;
+  icon?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -49,7 +49,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {icon? <img src={icon} alt="" /> : props.children}
+        {icon ? <img src={icon} alt="" /> : props.children}
       </Comp>
     );
   }

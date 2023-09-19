@@ -5,6 +5,13 @@ function GPTResponse() {
   return (
     <>
       <div className="w-full min-h-[510px] bg-white p-8 rounded-[30px] flex flex-col justify-between gap-3">
+        <style>
+          {`
+            ::selection {
+              background: #cccccc; 
+            }
+          `}
+        </style>
         <article>
           <h2
             className={`text-[2.125rem] max-w-[1000px] mr-1/5 ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
@@ -14,7 +21,7 @@ function GPTResponse() {
             shifting the power structure in France.
           </h2>
         </article>
-        <div className="flex justify-between items-center h-8">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-center min-h-8 outline-red-700 outline-4 ">
           <Button variant="grey">
             <img src="./speaker_dark.png" alt="Read aloud" />
           </Button>
