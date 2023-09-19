@@ -1,3 +1,0 @@
-gpt provides up until the understanding of a concept. then when 
-understood, say
-'you previously said X, 'Y' - Why?' 
