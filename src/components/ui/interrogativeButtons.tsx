@@ -2,19 +2,21 @@ import { merriweather } from "@/app/layout";
 import { Button } from "./button";
 function InterrogativeButtons() {
   let highlighted = true;
+  const interrogativeButtons = ["What?", "Why?", "How?", "Other..."];
   return (
     <>
       {highlighted ? (
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className={`${merriweather.className} font-[1.525rem] h-full`}
-          >
-            Why?
-          </Button>
-          <Button variant="grey">What?</Button>
-          <Button variant="grey">How?</Button>
-          <Button variant="grey">Other...</Button>
+        <div className="flex gap-2 justify-between">
+          {interrogativeButtons.map((button) => (
+            <Button
+              variant="outline"
+              className={`${merriweather.className} text-xl`}
+              key={button}
+              size={"tighter"}
+            >
+              {button}
+            </Button>
+          ))}
         </div>
       ) : (
         <h3

@@ -4,7 +4,7 @@ import InterrogativeButtons from "../ui/interrogativeButtons";
 function GPTResponse() {
   return (
     <>
-      <div className="w-full min-h-[510px] bg-white p-8 rounded-[30px] flex flex-col justify-between gap-3">
+      <div className="w-full bg-white p-8 rounded-[30px] flex flex-col justify-between gap-3">
         <style>
           {`
             ::selection {
@@ -14,7 +14,7 @@ function GPTResponse() {
         </style>
         <article>
           <h2
-            className={`text-[2.125rem] max-w-[1000px] mr-1/5 ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
+            className={`text-2xl max-w-[1000px] mb-10 mr-1/5 ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
           >
             The French revolution in 1789 to 1799 involved the overthrowing of
             the absolute monarchy, establishing a republic, fundamentally
