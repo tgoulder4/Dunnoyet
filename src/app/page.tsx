@@ -1,6 +1,7 @@
 import { merriweather } from "./layout";
 import Image from "next/image";
 import GPTResponse from "@/components/gpt/response";
+import UserQuestionInput from "@/components/user/inputQuestion";
 export default function Home() {
   const subject = "The French Revolution";
   return (
@@ -11,7 +12,8 @@ export default function Home() {
         {subject}
       </h2>
       <div className="flex flex-col gap-3">
-        <GPTResponse></GPTResponse>
+        <UserQuestionInput open={false} />
+        <GPTResponse />
         <div className="relative h-[300px]">
           <Image
             src="/frenchRevolution.png" // do a fetch of a relavent image

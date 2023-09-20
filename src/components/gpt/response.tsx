@@ -21,7 +21,7 @@ function GPTResponse() {
             shifting the power structure in France.
           </h2>
         </article>
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-center min-h-8 outline-red-700 outline-4 ">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-center min-h-8">
           <Button variant="grey">
             <img src="./speaker_dark.png" alt="Read aloud" />
           </Button>

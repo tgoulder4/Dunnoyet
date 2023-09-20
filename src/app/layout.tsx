@@ -22,7 +22,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const helperName = "Ben";
+  const helperName = "Helper";
   return (
     <html lang="en">
       <body className={` bg-background flex flex-col`}>
