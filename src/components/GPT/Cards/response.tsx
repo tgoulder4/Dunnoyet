@@ -4,19 +4,18 @@ import ResponseCard from "./elaborationCard";
 function Conversation() {
   const [margin, setMargin] = useState(0);
   const cardContainerRef = useRef<HTMLDivElement>(null);
+  const [totalChildren, setTotalChildren] = useState(0);
   useEffect(() => {
-    function findHeight() {
+    function main() {
       const cardContainer = cardContainerRef.current;
       console.log(`CardContainer:` + cardContainerRef.current);
       if (cardContainer) {
-        const childElementCount = cardContainer.childElementCount;
-        console.log(childElementCount);
-        const newMargin = childElementCount * 35;
-        setMargin(newMargin);
+        setTotalChildren(cardContainer.childElementCount);
+        setMargin(cardContainer.childElementCount * 35);
       }
     }
-    findHeight();
-  });
+    main();
+  }, []);
 
   return (
     <>
@@ -26,9 +25,13 @@ function Conversation() {
         ref={cardContainerRef}
         id="cardContainer"
       >
-        <ResponseCard offset="-top-[90px]" />
-        <ResponseCard offset="-top-[45px]" />
-        <ResponseCard offset="-top-0" />
+        {Array.from({ length: totalChildren }).map((_, index) => (
+          <ResponseCard
+            offset={`-top-[${90 - index * 45}px]`}
+            style={{ zIndex: totalChildren - index }}
+            key={index}
+          />
+        ))}
       </div>
     </>
   );

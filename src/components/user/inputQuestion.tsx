@@ -15,7 +15,7 @@ function UserQuestionInput() {
         <div className="w-full bg-primary p-8 rounded-[30px] flex justify-between">
           <article className=" max-w-[80%]">
             <h2
-              className={`text-2xl text-primary-foreground ${merriweather.className} font-[400] tracking-[-0.374px]`}
+              className={`text-2xl p-1 text-primary-foreground ${merriweather.className} font-[400] tracking-[-0.374px]`}
             >
               What was the French Revolution?
             </h2>

@@ -2,12 +2,13 @@ import { Button } from "../../ui/button";
 import { merriweather } from "@/app/layout";
 import InterrogativeButtons from "../../ui/interrogativeButtons";
 import { useState } from "react";
-function ResponseCard({ offset = "-top-0", showControls = true }) {
+function ResponseCard({ offset = "-top-0", showControls = true, ...props }) {
   return (
     <div
       className={`${
         offset != "-top-0" ? `absolute ${offset}` : ""
       } w-full bg-white p-8 rounded-[30px] flex flex-col justify-between gap-3`}
+      {...props}
     >
       {showControls ? (
         <>
