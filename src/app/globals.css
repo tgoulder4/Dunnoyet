@@ -142,3 +142,6 @@ body {
   min-height: 100%;
   width: 100vw;
 }
+::selection {
+  background: #cccccc; 
+}

@@ -12,18 +12,9 @@ export default function Home() {
         {subject}
       </h2>
       <div className="flex flex-col gap-3">
-        <UserQuestionInput open={false} />
+        <UserQuestionInput />
 
         <Conversation />
-        <div className="relative h-[300px]">
-          <Image
-            src="/frenchRevolution.png" // do a fetch of a relavent image
-            className="rounded-[30px]"
-            layout="fill"
-            objectFit="cover"
-            alt=""
-          />
-        </div>
       </div>
     </main>
   );
