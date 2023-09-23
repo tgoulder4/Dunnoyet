@@ -49,7 +49,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {icon ? <img src={icon} alt="" /> : props.children}
+        {icon ? (
+          <img src={icon} className="w-full h-full" alt="" />
+        ) : (
+          props.children
+        )}
       </Comp>
     );
   }

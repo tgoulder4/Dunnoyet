@@ -25,7 +25,7 @@ const buttonVariants = cva(
         grey: "bg-accentGrey text-complementary hover:bg-accentGrey/80",
       },
       size: {
-        default: "h-10 px-8 py-3",
+        default: "h-10 px-7 py-2",
         tighter: "h-10 py-3 px-3",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
