@@ -1,8 +1,8 @@
 import { merriweather } from "@/app/layout";
 import { Button } from "./button";
 import { useState } from "react";
-import { Term } from "@/components/GPT/Cards/responseCard";
-import { interrogativeTerms } from "@/components/GPT/Cards/responseCard";
+import { Term } from "@/components/cards/ResponseCard";
+import { interrogativeTerms } from "@/components/cards/ResponseCard";
 function InterrogativeButtons({
   activeTerm,
   handleTermSelect,
