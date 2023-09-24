@@ -14,7 +14,7 @@
     --complementary_lightest: 0 0% 80% /* #cccccc */
     --foreground: 240 10% 4%; /* #0a0a0b */
     --card: 0 0% 100%; /* #ffffff */
-    --card-foreground: 240 10% 4%; /* #0a0a0b */
+    --card-foreground: 0 0% 24%; /* #3d3d3d */
     --popover: 0 0% 100%; /* #ffffff */
     --popover-foreground: 240 10% 4%; /* #0a0a0b */
     --primary: 146 49% 30%; /* #267e4d */

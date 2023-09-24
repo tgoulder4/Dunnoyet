@@ -1,8 +1,6 @@
 import { merriweather } from "./layout";
 import Image from "next/image";
-import Thread from "@/components/GPT/Cards/response";
-import UserQuestionInput from "@/components/user/inputQuestion";
-import AdditionalInputRequested from "@/components/user/additionalInputRequested";
+import Thread from "@/components/Thread";
 export default function Home() {
   const subject = "The French Revolution";
   return (
@@ -13,8 +11,6 @@ export default function Home() {
         {subject}
       </h2>
       <div className="flex flex-col gap-3">
-        <UserQuestionInput />
-        <AdditionalInputRequested />
         <Thread />
       </div>
     </main>
