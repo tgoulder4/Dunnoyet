@@ -1,5 +1,5 @@
 "use client";
-import { merriweather } from "@/app/layout";
+import { merriweather, montserrat } from "@/app/layout";
 import { Button } from "../ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
@@ -38,13 +38,24 @@ function UserQuestionInput() {
               placeholder="What was the French Revolution?"
             />
           </article>
-          <div className="flex justify-end w-full">
-            <Button
-              variant="grey"
-              icon="./arrow_dark.png"
-              className=""
-              onClick={toggleClosed}
-            ></Button>
+          <div className="flex flex-col gap-3">
+            <h2 className={`${montserrat.className} font-bold`}>
+              How much do you know about...
+            </h2>
+            <div className="flex  flex-col gap-1">
+              <h2>Revolutions?</h2>
+              <div className="flex">
+                <Button variant="ghost">I know it well!</Button>
+              </div>
+            </div>
+            <div className="flex justify-end w-full">
+              <Button
+                variant="grey"
+                icon="./arrow_dark.png"
+                className=""
+                onClick={toggleClosed}
+              ></Button>
+            </div>
           </div>
         </div>
       )}

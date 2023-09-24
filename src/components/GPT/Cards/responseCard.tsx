@@ -6,12 +6,29 @@ import { Input } from "@/components/user/ui/input";
 export type Term = {
   term: string;
   colour: string;
+  followUpQuestion: string;
 };
 export const interrogativeTerms = [
-  { term: "What?", colour: "accentOrange" },
-  { term: "Why?", colour: "accentTeal" },
-  { term: "How?", colour: "accentYellow" },
-  { term: "Other...", colour: "accentPurple" },
+  {
+    term: "What?",
+    colour: "accentOrange",
+    followUpQuestion: "What would you guess this means?",
+  },
+  {
+    term: "Why?",
+    colour: "accentTeal",
+    followUpQuestion: "Why would you guess this might be the case?",
+  },
+  {
+    term: "How?",
+    colour: "accentYellow",
+    followUpQuestion: "How would you guess this happens?",
+  },
+  {
+    term: "Other...",
+    colour: "accentPurple",
+    followUpQuestion: "What are your thoughts?",
+  },
 ];
 function ResponseCard({
   baseCard = false,
@@ -23,12 +40,18 @@ function ResponseCard({
   const [activeTerm, setActiveTerm] = useState<Term>({
     term: "",
     colour: "",
+    followUpQuestion: "",
   });
+  const [highlightedText, setHighlightedText] = useState<string>("");
   function handleTermSelect(interrogativeTerm: Term) {
     console.log(
       `Elaboration called with interrogative term: ${interrogativeTerm}`
     );
     setActiveTerm(interrogativeTerm);
+  }
+  function handleHighlight() {
+    if (window.getSelection() == null) return;
+    // setHighlightedText(window.getSelection().toString());
   }
   return (
     <div
@@ -45,7 +68,7 @@ function ResponseCard({
                 <h1
                   className={`text-sm mb-4 font-[700] ${montserrat.className}`}
                 >
-                  "{prompt}"
+                  {/* onHighlight={handleHighlight} */}"{prompt}"
                 </h1>
               ) : (
                 <></>
@@ -83,8 +106,8 @@ function ResponseCard({
             <>
               <div id="interpretationMenu" className="flex gap-8 py-2">
                 <Input
-                  className="w-full border-2 border-[hsl(0_0_25%)] bg-none p-4 rounded-[6px] flex flex-col justify-between gap-3"
-                  placeholder="Add your interpretation here..."
+                  className="w-full border-2 border-[hsl(0_0_25%)] bg-none p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary"
+                  placeholder={activeTerm.followUpQuestion}
                 />
                 <Button variant="grey">
                   <img src="./tick_dark.png" alt="Understood" />

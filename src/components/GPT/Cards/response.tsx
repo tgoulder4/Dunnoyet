@@ -2,12 +2,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import ResponseCard from "./responseCard";
 import Image from "next/image";
-function Conversation() {
+import $ from "jquery";
+function Thread() {
   const [margin, setMargin] = useState(0);
   const currentCard = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
   //const currentCard setCurrentCard in an effort to make the image 30px below the top card.
-  const responses = [
+  const threadTexts = [
     {
       prompt: "",
       response:
@@ -21,8 +22,8 @@ function Conversation() {
   ];
   useEffect(() => {
     function main() {
-      setMargin((responses.length - 1) * 35);
-      // setHeight(currentCard'sHeight + 30);
+      setMargin((threadTexts.length - 1) * 35);
+      setHeight($("#currentCard")?.height() + 80);
       if (currentCard.current == null) {
         console.log("currentCard is null");
         return;
@@ -41,16 +42,16 @@ function Conversation() {
         }}
         id="cardContainer"
       >
-        {responses.map((elem, index) => (
+        {threadTexts.map((elem, index) => (
           <ResponseCard
             style={{
               zIndex: index,
-              top: (responses.length - 1) * 50 - index * 50 + "px",
+              top: (threadTexts.length - 1) * 50 - index * 50 + "px",
               backgroundColor:
-                `hsl(0,0%,${70 + index * (30 / (responses.length - 1))}%)` ||
+                `hsl(0,0%,${70 + index * (30 / (threadTexts.length - 1))}%)` ||
                 "white",
             }}
-            ref={index == responses.length - 1 ? currentCard : null}
+            id={index == threadTexts.length - 1 ? "currentCard" : ""}
             key={index}
             prompt={elem.prompt}
             response={elem.response}
@@ -70,4 +71,4 @@ function Conversation() {
   );
 }
 
-export default Conversation;
+export default Thread;
