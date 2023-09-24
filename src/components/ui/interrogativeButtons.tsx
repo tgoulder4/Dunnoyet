@@ -6,12 +6,12 @@ import { interrogativeTerms } from "@/components/cards/ResponseCard";
 function InterrogativeButtons({
   activeTerm,
   handleTermSelect,
+  highlightedText,
 }: {
   activeTerm: Term;
   handleTermSelect: Function;
+  highlightedText: boolean;
 }) {
-  let highlighted = true;
-
   // --accentOrange: 0 45% 88%; /* #f0c4c4 */
   // --accentTeal: 165 45% 88%; /* #c4f0eb */
   // --accentYellow: 54 45% 88%; /* #f0e9c4 */
@@ -19,7 +19,7 @@ function InterrogativeButtons({
   // --accentBlue: 215 45% 88%; /* #c4dbf0 */
   return (
     <>
-      {highlighted ? (
+      {highlightedText ? (
         <div className="flex gap-2 justify-between">
           {interrogativeTerms.map((interrogativeTerm) => (
             <Button
