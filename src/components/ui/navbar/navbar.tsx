@@ -76,7 +76,11 @@ function Navbar({ brandSide, middle, userSide, alignment }: NavbarProps) {
           {userSide.map((item) => {
             return (
               <>
-                <Button asChild variant="outline" className="h-full ">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-full p-0 rounded-full"
+                >
                   <Link href={item.url} className="font-[600]">
                     {item.text ? (
                       item.text

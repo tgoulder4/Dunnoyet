@@ -20,25 +20,41 @@ function Thread() {
     },
     {
       type: "Interrogation",
-      content: "What do you know about Revolutions?",
+      content: "What is a monarchy, and how does it differ from a republic?",
     },
     {
       type: "Response",
       content:
-        "The French Revolution was a period of social and political upheaval from 1789 to 1799. ",
+        "The French Revolution was a major historical event that took place in France during the late 18th century.",
     },
-    // {
-    //   type: "Question",
-    //   content: "'Period' - What?",
-    // },
-    // {
-    //   type: "Response",
-    //   content: "A period is a length of time. ",
-    // },
-    // {
-    //   type: "Question",
-    //   content: "social and political upheaval - How?",
-    // },
+    {
+      type: "Question",
+      content: "I understand!",
+    },
+    {
+      type: "Response",
+      content:
+        "It began in 1789 and lasted for about a decade, fundamentally reshaping French society and politics.",
+    },
+    {
+      type: "Question",
+      content: "'fundamentally reshaping French society and politics.' - How?",
+    },
+    {
+      type: "Response",
+      content:
+        "It transformed France by replacing the monarchy with a republic, where leaders were no longer kings or queens but elected by the people.",
+    },
+    {
+      type: "Question",
+      content: "I understand!",
+    },
+
+    {
+      type: "Response",
+      content:
+        "Next, The French Revolution brought about significant social changes, like ending feudal privileges and promoting the idea of equality among citizens.",
+    },
   ];
   useEffect(() => {
     function main() {
@@ -49,7 +65,7 @@ function Thread() {
   return (
     <>
       <div
-        className={`relative flex flex-col gap-4`}
+        className={`relative flex flex-col gap-4 divide-x-4`}
         style={
           {
             // marginBottom: margin,
@@ -57,10 +73,20 @@ function Thread() {
         }
         id="cardContainer"
       >
+        <div className="relative h-[200px] w-full">
+          <Image
+            src="/frenchRevolution.png" // do a fetch of a relavent image
+            className="rounded-[10px]"
+            layout="fill"
+            objectFit="cover"
+            alt=""
+          />
+        </div>
+        <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
         {threadTexts.map((elem, index) => {
           switch (elem.type) {
             case "Question":
-              return <UserQuestionCard />;
+              return <UserQuestionCard content={elem.content} />;
             case "Response":
               return (
                 <ResponseCard
@@ -70,13 +96,14 @@ function Thread() {
                 />
               );
             case "Interrogation":
-              return <InterrogativeCard />;
+              return <InterrogativeCard content={elem.content} />;
           }
         })}
+        <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
         <div className="relative h-[200px] w-full">
           <Image
             src="/frenchRevolution.png" // do a fetch of a relavent image
-            className="rounded-[30px]"
+            className="rounded-[10px]"
             layout="fill"
             objectFit="cover"
             alt=""

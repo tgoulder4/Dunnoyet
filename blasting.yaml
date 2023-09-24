@@ -1,7 +1,12 @@
 OVERVIEW: create greenGlasses then create template repository for other projects.
 
-PROMPT:
- 	- Can you explain it sentence by sentence to me? One sentence in each reply, guide me through it and i'll say ok when you should explain the next part. I may ask additional questions, do the same on these and go back to what you were explaining when I say I understand.
+PROMPTS:
+  Interrogative:
+		P1: A user asked the question 'What was the French revolution?'. They say they have no idea what the topic is - keeping this in mind, generate a concise question testing them on their foundations of related primitive topics. Only say the question in your reply.
+		P2: A user was asked the question "What is a monarchy, and how does it differ from a republic?". They responded "members of a republic are elected by the public"- keeping their knowledge level in mind, generate another concise question based on their answer to check their knowledge level, using terms they mentioned. Only say the question in your reply.
+		P3: "A conversation with a learner: Q: What is a monarchy, and how does it differ from a republic? Their answer: members of a republic are elected by the public Q: What is the key factor that distinguishes a republic from other forms of government, such as a monarchy, in terms of how leaders are chosen? Their answer: I don't know"
+		P4: "[ACTION]. Remember to consider their current knowledge as mentioned and reply in terms of it if applicable, in one point that's easy to understand short sentence which yields the feeling 'ohhh I get it now.'."
+Generate a short summary of their knowledge. This knowledge summary will be used to teach content tailored to them. 
 
 HOW IT GOES: it keeps asking which content it needs to continue. it asks deep until it finds where their interpretation is wrong
 

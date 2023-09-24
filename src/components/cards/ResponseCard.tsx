@@ -13,20 +13,25 @@ export const interrogativeTerms = [
   {
     term: "What?",
     colour: "accentOrange",
-    followUpQuestion: "What would you guess this means?",
+    followUpQuestion: "",
   },
   {
     term: "Why?",
     colour: "accentTeal",
-    followUpQuestion: "Why would you guess this might be the case?",
+    followUpQuestion: "",
   },
   {
     term: "How?",
     colour: "accentYellow",
-    followUpQuestion: "How would you guess this happens?",
+    followUpQuestion: "",
   },
   {
-    term: "Other...",
+    term: "Unexpected",
+    colour: "accentPurple",
+    followUpQuestion: "What were you expecting?",
+  },
+  {
+    term: "+",
     colour: "accentPurple",
     followUpQuestion: "What are your thoughts?",
   },
@@ -63,7 +68,7 @@ function ResponseCard({
           <div className="">
             <article>
               <h2
-                className={`text-2xl max-w-[1000px] mb-10 mr-1/5 ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
+                className={`text-2xl max-w-[1000px] mb-10 mr-[3%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
               >
                 {content}
               </h2>
@@ -93,7 +98,7 @@ function ResponseCard({
               {/* if highlighted, be arrow_right */}
             </div>
           </div>
-          {activeTerm.term ? (
+          {activeTerm.followUpQuestion ? (
             <>
               <Input
                 className={`${montserrat.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
