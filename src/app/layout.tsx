@@ -1,14 +1,14 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "../components/ui/navbar/navbar";
-import { Merriweather, Montserrat } from "next/font/google";
+import { Merriweather, Ruda } from "next/font/google";
 export const merriweather = Merriweather({
   weight: ["400", "700", "900"],
   style: "normal",
   subsets: ["latin"],
   display: "swap",
 });
-export const montserrat = Montserrat({
+export const ruda = Ruda({
   style: "normal",
   subsets: ["latin"],
   display: "swap",

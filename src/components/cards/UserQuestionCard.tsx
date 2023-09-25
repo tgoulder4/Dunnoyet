@@ -1,5 +1,5 @@
 "use client";
-import { merriweather, montserrat } from "@/app/layout";
+import { merriweather, ruda } from "@/app/layout";
 import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
 import { useState } from "react";
@@ -13,7 +13,7 @@ function UserQuestionCard({ content = "" }: { content: string }) {
   }
   return (
     <>
-      <div className="relative left-3 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3">
+      <div className="ml-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3">
         {closed || content ? (
           <>
             <article className="max-w-[80%] w-full">

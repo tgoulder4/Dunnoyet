@@ -12,6 +12,7 @@ type Text = {
 function Thread() {
   const [margin, setMargin] = useState(0);
   const currentCard = useRef<HTMLDivElement>(null);
+  let firstResponseShown = false;
   //const currentCard setCurrentCard in an effort to make the image 30px below the top card.
   const threadTexts: Array<Text> = [
     {
@@ -93,8 +94,10 @@ function Thread() {
                   id={index == threadTexts.length - 1 ? "currentCard" : ""}
                   key={index}
                   content={elem.content}
+                  firstResponseShown={firstResponseShown}
                 />
               );
+              firstResponseShown = true;
             case "Interrogation":
               return <InterrogativeCard content={elem.content} />;
           }

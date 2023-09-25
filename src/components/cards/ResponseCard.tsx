@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { merriweather, montserrat } from "@/app/layout";
+import { merriweather, ruda } from "@/app/layout";
 import InterrogativeButtons from "../ui/interrogativeButtons";
 import { Input } from "@/components/user/ui/input";
 import Image from "next/image";
@@ -40,6 +40,7 @@ function ResponseCard({
   baseCard = false,
   showControls = true,
   content = "",
+  firstResponseShown = true,
   ...props
 }) {
   const [activeTerm, setActiveTerm] = useState<Term>({
@@ -60,13 +61,22 @@ function ResponseCard({
   }
   return (
     <div
-      className={`relative right-3 bg-white w-full p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-3`}
+      className={`mr-4 bg-white w-full p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-3`}
       {...props}
     >
       {showControls ? (
         <div className="flex flex-col gap-4">
           <div className="">
             <article>
+              {!firstResponseShown ? (
+                <div
+                  className={`${ruda.className} w-fit  select-none inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-900 rounded -mb-2`}
+                >
+                  ANSWER
+                </div>
+              ) : (
+                <></>
+              )}
               <h2
                 onClick={() => setHighlightedText(!highlightedText)}
                 className={`text-2xl max-w-[1000px] mb-10 mr-[3%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
@@ -103,7 +113,7 @@ function ResponseCard({
           {activeTerm.followUpQuestion ? (
             <>
               <Input
-                className={`${montserrat.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
+                className={`${ruda.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
                 placeholder={activeTerm.followUpQuestion}
               />
             </>

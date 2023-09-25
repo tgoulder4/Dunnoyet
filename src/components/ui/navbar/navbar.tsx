@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./button";
-import { montserrat } from "../../../app/layout";
+import { ruda } from "../../../app/layout";
 interface navItem {
   logoPath?: string;
   alt?: string;
@@ -18,7 +18,7 @@ function Navbar({ brandSide, middle, userSide, alignment }: NavbarProps) {
   return (
     <>
       <header
-        className={`bg-primary h-14 flex items-center justify-${alignment} p-3 px-16 ${montserrat.className} sticky`}
+        className={`bg-primary h-14 flex items-center justify-${alignment} p-3 px-16 ${ruda.className} sticky`}
       >
         <div id="brandSide" className="flex items-center gap-4 h-full">
           {brandSide.map((item) => {

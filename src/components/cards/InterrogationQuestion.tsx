@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
-import { merriweather, montserrat } from "@/app/layout";
+import { merriweather, ruda } from "@/app/layout";
 
 function InterrogationQuestion({ content = "" }: { content: string }) {
   const [text, setText] = useState<string>();
@@ -15,7 +15,7 @@ function InterrogationQuestion({ content = "" }: { content: string }) {
         </h2>
         <div className="flex">
           <Input
-            className={`max-w-[1000px] mr-[3%] p-2  border-none ${montserrat.className} font-[700] leading-[150%] tracking-[-0.374px]`}
+            className={`max-w-[1000px] mr-[3%] p-2  border-none ${ruda.className} font-[700] leading-[150%] tracking-[-0.374px]`}
             placeholder=""
             onChange={(e) => {
               setText(e.target.value);
