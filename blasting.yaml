@@ -1,5 +1,8 @@
 OVERVIEW: create greenGlasses then create template repository for other projects.
 
+MODEL: 
+	Greenlens plus features:
+		- Read aloud to boost productivity.
 PROMPTS:
   Interrogative:
 		P1: A user asked the question 'What was the French revolution?'. They say they have no idea what the topic is - keeping this in mind, generate a concise question testing them on their foundations of related primitive topics. Only say the question in your reply.

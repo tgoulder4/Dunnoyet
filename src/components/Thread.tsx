@@ -89,15 +89,26 @@ function Thread() {
             case "Question":
               return <UserQuestionCard content={elem.content} />;
             case "Response":
-              return (
-                <ResponseCard
-                  id={index == threadTexts.length - 1 ? "currentCard" : ""}
-                  key={index}
-                  content={elem.content}
-                  firstResponseShown={firstResponseShown}
-                />
-              );
-              firstResponseShown = true;
+              if (firstResponseShown == false) {
+                firstResponseShown = true;
+                return (
+                  <ResponseCard
+                    id={index == threadTexts.length - 1 ? "currentCard" : ""}
+                    key={index}
+                    content={elem.content}
+                    firstResponseShown={false}
+                  />
+                );
+              } else {
+                return (
+                  <ResponseCard
+                    id={index == threadTexts.length - 1 ? "currentCard" : ""}
+                    key={index}
+                    content={elem.content}
+                    firstResponseShown={true}
+                  />
+                );
+              }
             case "Interrogation":
               return <InterrogativeCard content={elem.content} />;
           }

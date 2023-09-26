@@ -48,7 +48,10 @@ function ResponseCard({
     colour: "",
     followUpQuestion: "",
   });
-  const [highlightedText, setHighlightedText] = useState<boolean>(false);
+  const [highlighted, setHighlighted] = useState({
+    hasHighlighted: false,
+    value: "",
+  });
   function handleTermSelect(interrogativeTerm: Term) {
     console.log(
       `Elaboration called with interrogative term: ${interrogativeTerm.term}`
@@ -56,7 +59,19 @@ function ResponseCard({
     setActiveTerm(interrogativeTerm);
   }
   function handleHighlight() {
-    if (window.getSelection() == null) return;
+    if (window.getSelection()?.toString() === "" || !window.getSelection()) {
+      setHighlighted({
+        hasHighlighted: false,
+        value: "",
+      });
+    } else {
+      const highlitedString = String(window.getSelection()).toString();
+      console.log(`Highlighted string: ${highlitedString}`);
+      setHighlighted({
+        hasHighlighted: true,
+        value: highlitedString,
+      });
+    }
     // setHighlightedText(window.getSelection().toString());
   }
   return (
@@ -78,7 +93,7 @@ function ResponseCard({
                 <></>
               )}
               <h2
-                onClick={() => setHighlightedText(!highlightedText)}
+                onMouseUp={() => handleHighlight()}
                 className={`text-2xl max-w-[1000px] mb-10 mr-[3%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
               >
                 {content}
@@ -91,7 +106,7 @@ function ResponseCard({
               <InterrogativeButtons
                 activeTerm={activeTerm}
                 handleTermSelect={handleTermSelect}
-                highlightedText={highlightedText}
+                hasHighlighted={highlighted.hasHighlighted}
               />
               {!activeTerm.term ? (
                 <>
