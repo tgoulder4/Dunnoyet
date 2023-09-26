@@ -2,40 +2,12 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { merriweather, ruda } from "@/app/layout";
 import InterrogativeButtons from "../ui/interrogativeButtons";
-import { Input } from "@/components/user/ui/input";
-import Image from "next/image";
 export type Term = {
   term: string;
   colour: string;
   followUpQuestion: string;
 };
-export const interrogativeTerms = [
-  {
-    term: "What?",
-    colour: "accentOrange",
-    followUpQuestion: "",
-  },
-  {
-    term: "Why?",
-    colour: "accentTeal",
-    followUpQuestion: "",
-  },
-  {
-    term: "How?",
-    colour: "accentYellow",
-    followUpQuestion: "",
-  },
-  {
-    term: "Unexpected",
-    colour: "accentPurple",
-    followUpQuestion: "What were you expecting? Why?",
-  },
-  {
-    term: "+",
-    colour: "accentPurple",
-    followUpQuestion: "What are your thoughts? Why?",
-  },
-];
+
 function ResponseCard({
   baseCard = false,
   showControls = true,
@@ -59,10 +31,16 @@ function ResponseCard({
     setActiveTerm(interrogativeTerm);
   }
   function handleHighlight() {
-    if (window.getSelection()?.toString() === "" || !window.getSelection()) {
+    const selectedText = window.getSelection()?.toString().trim();
+    if (selectedText === "") {
       setHighlighted({
         hasHighlighted: false,
         value: "",
+      });
+      setActiveTerm({
+        term: "",
+        colour: "",
+        followUpQuestion: "",
       });
     } else {
       const highlitedString = String(window.getSelection()).toString();
@@ -78,6 +56,7 @@ function ResponseCard({
     <div
       className={`mr-4 bg-white w-full p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-3`}
       {...props}
+      onMouseUp={() => handleHighlight()}
     >
       {showControls ? (
         <div className="flex flex-col gap-4">
@@ -85,7 +64,7 @@ function ResponseCard({
             <article>
               {!firstResponseShown ? (
                 <div
-                  className={`${ruda.className} w-fit  select-none inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-900 rounded -mb-2`}
+                  className={`${ruda.className} w-fit  select-none inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-900 rounded mb-2`}
                 >
                   ANSWER
                 </div>
@@ -99,7 +78,7 @@ function ResponseCard({
                 {content}
               </h2>
             </article>
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-center min-h-8">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
               <Button variant="grey">
                 <img src="./speaker_dark.png" alt="Read aloud" />
               </Button>
@@ -125,16 +104,6 @@ function ResponseCard({
               {/* if highlighted, be arrow_right */}
             </div>
           </div>
-          {activeTerm.followUpQuestion ? (
-            <>
-              <Input
-                className={`${ruda.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
-                placeholder={activeTerm.followUpQuestion}
-              />
-            </>
-          ) : (
-            <></>
-          )}
         </div>
       ) : (
         <></>

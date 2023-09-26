@@ -2,7 +2,35 @@ import { merriweather } from "@/app/layout";
 import { Button } from "./button";
 import { useState } from "react";
 import { Term } from "@/components/cards/ResponseCard";
-import { interrogativeTerms } from "@/components/cards/ResponseCard";
+import { Input } from "@/components/user/ui/input";
+import { ruda } from "@/app/layout";
+const interrogativeTerms = [
+  {
+    term: "What?",
+    colour: "accentOrange",
+    followUpQuestion: "",
+  },
+  {
+    term: "Why?",
+    colour: "accentTeal",
+    followUpQuestion: "",
+  },
+  {
+    term: "How?",
+    colour: "accentYellow",
+    followUpQuestion: "",
+  },
+  {
+    term: "Unexpected",
+    colour: "accentPurple",
+    followUpQuestion: "What were you expecting? Why?",
+  },
+  {
+    term: "...",
+    colour: "accentPurple",
+    followUpQuestion: "What are your thoughts? Why?",
+  },
+];
 function InterrogativeButtons({
   activeTerm,
   handleTermSelect,
@@ -20,24 +48,37 @@ function InterrogativeButtons({
   return (
     <>
       {hasHighlighted ? (
-        <div className="flex gap-2 justify-between">
-          {interrogativeTerms.map((interrogativeTerm) => (
-            <Button
-              variant="outline"
-              className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
-              key={interrogativeTerm.term}
-              size={"tighter"}
-              onClick={() => handleTermSelect(interrogativeTerm)}
-              style={{
-                backgroundColor:
-                  activeTerm.term === interrogativeTerm.term
-                    ? `hsl(var(--${interrogativeTerm.colour}))`
-                    : "transparent",
-              }}
-            >
-              {interrogativeTerm.term}
-            </Button>
-          ))}
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2 justify-between">
+            {interrogativeTerms.map((interrogativeTerm) => (
+              <Button
+                variant="outline"
+                className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
+                key={interrogativeTerm.term}
+                size={"tighter"}
+                onClick={() => handleTermSelect(interrogativeTerm)}
+                style={{
+                  backgroundColor:
+                    activeTerm.term === interrogativeTerm.term
+                      ? `hsl(var(--${interrogativeTerm.colour}))`
+                      : "transparent",
+                }}
+              >
+                {interrogativeTerm.term}
+              </Button>
+            ))}
+          </div>
+
+          {activeTerm.followUpQuestion ? (
+            <>
+              <Input
+                className={`${ruda.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
+                placeholder={activeTerm.followUpQuestion}
+              />
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       ) : (
         <h3
