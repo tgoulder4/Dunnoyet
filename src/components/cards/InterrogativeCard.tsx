@@ -3,7 +3,13 @@ import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
 import { useState } from "react";
 import InterrogationQuestion from "./InterrogationQuestion";
-function InterrogativeCard({ content }: { content: string }) {
+function InterrogativeCard({
+  addMessage,
+  content = "",
+}: {
+  addMessage: Function;
+  content: string;
+}) {
   //do a fetch for general repsonse to content via gpt api
   return (
     <>

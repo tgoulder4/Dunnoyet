@@ -4,17 +4,15 @@ import ResponseCard from "./cards/ResponseCard";
 import InterrogativeCard from "./cards/InterrogativeCard";
 import UserQuestionCard from "./cards/UserQuestionCard";
 import Image from "next/image";
-import $ from "jquery";
 type Text = {
   content: string;
   type: "Question" | "Response" | "Interrogation";
 };
 function Thread() {
-  const [margin, setMargin] = useState(0);
   const currentCard = useRef<HTMLDivElement>(null);
   let firstResponseShown = false;
   //const currentCard setCurrentCard in an effort to make the image 30px below the top card.
-  const threadTexts: Array<Text> = [
+  const [messages, setMessages] = useState<Array<Text>>([
     {
       type: "Question",
       content: "What was The French Revolution?",
@@ -56,13 +54,10 @@ function Thread() {
       content:
         "Next, The French Revolution brought about significant social changes, like ending feudal privileges and promoting the idea of equality among citizens.",
     },
-  ];
-  useEffect(() => {
-    function main() {
-      setMargin((threadTexts.length - 1) * 35);
-    }
-    main();
-  }, []);
+  ]);
+  function addMessage(message: Text) {
+    setMessages([...messages, message]);
+  }
   return (
     <>
       <div
@@ -84,33 +79,43 @@ function Thread() {
           />
         </div>
         <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-        {threadTexts.map((elem, index) => {
+        {messages.map((elem, index) => {
           switch (elem.type) {
             case "Question":
-              return <UserQuestionCard content={elem.content} />;
+              return (
+                <UserQuestionCard
+                  addMessage={addMessage}
+                  content={elem.content}
+                />
+              );
             case "Response":
               if (firstResponseShown == false) {
                 firstResponseShown = true;
                 return (
                   <ResponseCard
-                    id={index == threadTexts.length - 1 ? "currentCard" : ""}
                     key={index}
                     content={elem.content}
                     firstResponseShown={false}
+                    addMessage={addMessage}
                   />
                 );
               } else {
                 return (
                   <ResponseCard
-                    id={index == threadTexts.length - 1 ? "currentCard" : ""}
                     key={index}
                     content={elem.content}
                     firstResponseShown={true}
+                    addMessage={addMessage}
                   />
                 );
               }
             case "Interrogation":
-              return <InterrogativeCard content={elem.content} />;
+              return (
+                <InterrogativeCard
+                  content={elem.content}
+                  addMessage={addMessage}
+                />
+              );
           }
         })}
         <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
