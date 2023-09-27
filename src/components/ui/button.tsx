@@ -51,7 +51,7 @@ export interface ButtonProps
   icon?: string;
   loading?: boolean;
   alt?: string;
-  tooltip?: string;
+  tooltip?: string | React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -99,7 +99,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               <Tooltip>
                 <TooltipTrigger>{commonContent()}</TooltipTrigger>
                 <TooltipContent>
-                  <p>{tooltip}</p>
+                  {typeof tooltip === "string" ? <p>{tooltip}</p> : tooltip}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

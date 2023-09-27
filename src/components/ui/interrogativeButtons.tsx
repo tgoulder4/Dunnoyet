@@ -20,7 +20,7 @@ const interrogativeTerms = [
     followUpQuestion: "",
   },
   {
-    term: "Confused",
+    term: "When?",
     colour: "accentPurple",
     followUpQuestion: "What don't you understand? Why?",
   },
@@ -28,6 +28,18 @@ const interrogativeTerms = [
     term: "...",
     colour: "accentPurple",
     followUpQuestion: "What are your thoughts? Why?",
+  },
+];
+const additionalTerms = [
+  {
+    term: "Unexpected",
+    colour: "accentBlue",
+    followUpQuestion: "",
+  },
+  {
+    term: "Confused",
+    colour: "accentPurple",
+    followUpQuestion: "What don't you understand? Why?",
   },
 ];
 function InterrogativeButtons({
@@ -51,12 +63,25 @@ function InterrogativeButtons({
       {hasHighlighted ? (
         <div className="flex flex-col gap-2">
           <div className="flex gap-2 justify-between">
-            {interrogativeTerms.map((interrogativeTerm) => (
+            {interrogativeTerms.map((interrogativeTerm, index) => (
               <Button
-                variant="outline"
+                variant={
+                  index == interrogativeTerms.length - 1 ? "ghost" : "outline"
+                }
                 className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
                 key={interrogativeTerm.term}
-                tooltip="false"
+                tooltip={
+                  index == interrogativeTerms.length - 1
+                    ? additionalTerms.map((additionalTerm) => (
+                        <Button
+                          variant="outline"
+                          className={`w-full text-xl ${merriweather.className}`}
+                        >
+                          {additionalTerm.term}
+                        </Button>
+                      ))
+                    : "false"
+                }
                 size={"tighter"}
                 onClick={() => handleTermSelect(interrogativeTerm)}
                 style={{

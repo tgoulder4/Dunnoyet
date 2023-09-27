@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { merriweather, ruda } from "@/app/layout";
-import ResponseMenuButton from "../ui/responseMenuButton";
 import InterrogativeButtons from "../ui/interrogativeButtons";
 export type Term = {
   term: string;
   colour: string;
   followUpQuestion: string;
 };
-
 function ResponseCard({
   content = "",
   firstResponseShown = true,
@@ -102,8 +100,11 @@ function ResponseCard({
               >
                 {content}
               </h2>
-              <Button variant="ghost" tooltip="More options">
-                <ResponseMenuButton />
+              <Button
+                variant="ghost"
+                tooltip={<div className="flex flex-col gap-2"></div>}
+              >
+                <MoreHorizontal />
               </Button>
             </div>
           </article>
@@ -121,7 +122,9 @@ function ResponseCard({
               <Button
                 variant="grey"
                 tooltip={
-                  activeTerm.term ? "Submit question" : "I understand this!"
+                  activeTerm.term
+                    ? "Submit question"
+                    : "I fully understand this!"
                 }
                 onClick={activeTerm.term ? submitElaboration : handleUnderstood}
                 icon={

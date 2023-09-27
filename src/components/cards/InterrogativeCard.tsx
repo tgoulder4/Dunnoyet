@@ -12,7 +12,7 @@ function InterrogativeCard({
 }) {
   const [interrogationQuestions, setInterrogationQuestions] = useState<
     string[]
-  >(["What is a republic?"]);
+  >([content]);
   const [loading, setLoading] = useState(false);
   //do a fetch for general repsonse to content via gpt api
   return (

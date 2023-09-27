@@ -19,7 +19,7 @@ function Thread() {
     },
     {
       type: "Interrogation",
-      content: "What is a monarchy, and how does it differ from a republic?",
+      content: "What is a monarch?",
     },
   ]);
   function addMessage(message: Text) {
