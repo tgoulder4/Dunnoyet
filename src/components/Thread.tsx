@@ -21,11 +21,6 @@ function Thread() {
       type: "Interrogation",
       content: "What is a monarchy, and how does it differ from a republic?",
     },
-    {
-      type: "Response",
-      content:
-        "The French Revolution was a major historical event that took place in France during the late 18th century.",
-    },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);

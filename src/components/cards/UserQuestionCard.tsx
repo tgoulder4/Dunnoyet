@@ -24,7 +24,8 @@ function UserQuestionCard({
     setTimeout(() => {
       addMessage({
         type: "Response",
-        content: "Test response!",
+        content:
+          "The French Revolution was a major historical event that took place in France during the late 18th century.",
       });
     }, 2000);
   }, []);
@@ -52,6 +53,7 @@ function UserQuestionCard({
                   variant="outline"
                   icon="./pencil_dark.png"
                   onClick={handleEdit}
+                  tooltip="Edit text"
                 />
               </div>
             ) : (
@@ -74,6 +76,7 @@ function UserQuestionCard({
                 <Button
                   variant="grey"
                   icon="./arrow_dark.png"
+                  tooltip="Submit change"
                   className=""
                   onClick={() => handleAmendment()}
                 />

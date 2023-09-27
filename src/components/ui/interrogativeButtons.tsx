@@ -1,6 +1,5 @@
 import { merriweather } from "@/app/layout";
 import { Button } from "./button";
-import { useState } from "react";
 import { Term } from "@/components/cards/ResponseCard";
 import { Input } from "@/components/user/ui/input";
 import { ruda } from "@/app/layout";
@@ -21,9 +20,9 @@ const interrogativeTerms = [
     followUpQuestion: "",
   },
   {
-    term: "Unexpected",
+    term: "Confused",
     colour: "accentPurple",
-    followUpQuestion: "What were you expecting? Why?",
+    followUpQuestion: "What don't you understand? Why?",
   },
   {
     term: "...",
@@ -35,10 +34,12 @@ function InterrogativeButtons({
   activeTerm,
   handleTermSelect,
   hasHighlighted,
+  setElaborationQuery,
 }: {
   activeTerm: Term;
   handleTermSelect: Function;
   hasHighlighted: boolean;
+  setElaborationQuery: Function;
 }) {
   // --accentOrange: 0 45% 88%; /* #f0c4c4 */
   // --accentTeal: 165 45% 88%; /* #c4f0eb */
@@ -55,6 +56,7 @@ function InterrogativeButtons({
                 variant="outline"
                 className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
                 key={interrogativeTerm.term}
+                tooltip="false"
                 size={"tighter"}
                 onClick={() => handleTermSelect(interrogativeTerm)}
                 style={{
@@ -74,6 +76,7 @@ function InterrogativeButtons({
               <Input
                 className={`${ruda.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
                 placeholder={activeTerm.followUpQuestion}
+                onChange={(e) => setElaborationQuery(e.target.value)}
               />
             </>
           ) : (

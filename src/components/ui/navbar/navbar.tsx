@@ -18,7 +18,7 @@ function Navbar({ brandSide, middle, userSide, alignment }: NavbarProps) {
   return (
     <>
       <header
-        className={`bg-primary h-14 flex items-center justify-${alignment} p-3 px-16 ${ruda.className} sticky top-0 z-50`}
+        className={`drop-shadow-md bg-primary-header h-14 flex items-center justify-${alignment} p-3 px-16 ${ruda.className} sticky top-0 z-50`}
       >
         <div id="brandSide" className="flex items-center gap-4 h-full">
           {brandSide.map((item) => {

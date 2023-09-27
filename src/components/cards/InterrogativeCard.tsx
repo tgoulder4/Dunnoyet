@@ -12,10 +12,8 @@ function InterrogativeCard({
 }) {
   const [interrogationQuestions, setInterrogationQuestions] = useState<
     string[]
-  >([
-    "What is a republic?",
-    "Can you explain the process of how members are elected in a republic and who has the authority to vote in such elections?",
-  ]);
+  >(["What is a republic?"]);
+  const [loading, setLoading] = useState(false);
   //do a fetch for general repsonse to content via gpt api
   return (
     <>
@@ -26,12 +24,14 @@ function InterrogativeCard({
           LEARNING WHAT YOU KNOW
         </div>
         {interrogationQuestions.map((elem, index) => {
-          return index == interrogationQuestions.length - 1 ? (
-            <InterrogationQuestion content={elem} />
-          ) : (
+          return (
             <>
               <InterrogationQuestion content={elem} />
-              <hr className="h-[2px] bg-[hsla(0,0%,75%,0)]" />
+              {index == interrogationQuestions.length - 1 ? (
+                <></>
+              ) : (
+                <hr className="h-[2px] bg-[hsla(0,0%,75%,0)]" />
+              )}
             </>
           );
         })}
