@@ -20,7 +20,7 @@ function InterrogativeCard({
           >
             LEARNING WHAT YOU KNOW
           </div>
-          <InterrogationQuestion content="What is a monarchy, and how does it differ from a republic?" />
+          <InterrogationQuestion content="What is a republic?" />
         </div>
         <hr className="h-[2px] bg-[hsla(0,0%,75%,0)]" />
         <InterrogationQuestion content="Can you explain the process of how members are elected in a republic and who has the authority to vote in such elections?" />

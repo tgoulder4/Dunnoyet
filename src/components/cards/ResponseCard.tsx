@@ -64,9 +64,18 @@ function ResponseCard({
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      const cleanedContent = highlighted.value
+        .trim()
+        .replace(/^[^\w]+|[^\w]+$/g, "");
       addMessage({
         type: "Question",
-        content: `'${highlighted.value}' - ${activeTerm.term} ${activeTerm.followUpQuestion}`,
+        content: `'${cleanedContent}' - ${
+          activeTerm.term == "Unexpected" ? "Unexpected." : activeTerm.term
+        } ${
+          activeTerm.term == "Unexpected"
+            ? "I expected " + activeTerm.followUpQuestion
+            : activeTerm.followUpQuestion
+        }`,
       });
       // setShowControls(false);
     }, 2000);
