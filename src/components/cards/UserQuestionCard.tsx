@@ -20,17 +20,21 @@ function UserQuestionCard({
     setClosed(false);
   }
   useEffect(() => {
-    if (!closed) {
-      questionRef.current?.focus();
-    }
-  }, [closed]);
+    //submit msg to api
+    setTimeout(() => {
+      addMessage({
+        type: "Response",
+        content: "Test response!",
+      });
+    }, 2000);
+  }, []);
   function handleAmendment() {
     setClosed(true);
   }
   return (
     <>
       <div
-        className="w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3"
+        className="animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3"
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >

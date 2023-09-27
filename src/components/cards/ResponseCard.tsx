@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { merriweather, ruda } from "@/app/layout";
@@ -10,13 +10,11 @@ export type Term = {
 };
 
 function ResponseCard({
-  baseCard = false,
   content = "",
   firstResponseShown = true,
   addMessage,
   ...props
 }: {
-  baseCard?: boolean;
   content: string;
   firstResponseShown: boolean;
   addMessage: Function;
@@ -30,6 +28,7 @@ function ResponseCard({
     hasHighlighted: false,
     value: "",
   });
+  const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showControls, setShowControls] = useState(true);
   function handleTermSelect(interrogativeTerm: Term) {
@@ -61,9 +60,9 @@ function ResponseCard({
     // setHighlightedText(window.getSelection().toString());
   }
   async function submitElaboration() {
-    setLoading(true);
+    setSubmitting(true);
     setTimeout(() => {
-      setLoading(false);
+      setSubmitting(false);
       const cleanedContent = highlighted.value
         .trim()
         .replace(/^[^\w]+|[^\w]+$/g, "");
@@ -83,15 +82,25 @@ function ResponseCard({
   function handleUnderstood() {
     // send to backend
   }
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
   return (
     <div
-      className={`mr-4 bg-white w-full p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-3`}
+      className={`animate-in ${
+        loading ? `slide-in-from-top-4 w-fit` : `slide-in-from-bottom-4 w-full`
+      } mr-4 bg-white p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-4`}
       {...props}
       onMouseUp={() => handleHighlight()}
       onClick={() => handleHighlight()}
     >
-      <div className="flex flex-col gap-4">
-        <div className="">
+      {loading ? (
+        <Loader2 className="animate-spin" color="#000000" />
+      ) : (
+        <>
           <article>
             {!firstResponseShown ? (
               <div
@@ -121,23 +130,19 @@ function ResponseCard({
               <Button
                 variant="grey"
                 onClick={activeTerm.term ? submitElaboration : handleUnderstood}
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin" color="#000000" />
-                ) : activeTerm.term ? (
-                  <img src="./send_dark.png" alt="Send" />
-                ) : (
-                  <img src="./tick_dark.png" alt="Understood" />
-                )}
-              </Button>
+                isLoading={submitting}
+                icon={
+                  activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
+                }
+              ></Button>
 
               {/* if highlighted, be arrow_right */}
             </div>
           ) : (
             <></>
           )}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }

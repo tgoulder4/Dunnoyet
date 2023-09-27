@@ -26,34 +26,6 @@ function Thread() {
       content:
         "The French Revolution was a major historical event that took place in France during the late 18th century.",
     },
-    {
-      type: "Question",
-      content: "I understand!",
-    },
-    {
-      type: "Response",
-      content:
-        "It began in 1789 and lasted for about a decade, fundamentally reshaping French society and politics.",
-    },
-    {
-      type: "Question",
-      content: "'fundamentally reshaping French society and politics.' - How?",
-    },
-    {
-      type: "Response",
-      content:
-        "It transformed France by replacing the monarchy with a republic, where leaders were no longer kings or queens but elected by the people.",
-    },
-    {
-      type: "Question",
-      content: "I understand!",
-    },
-
-    {
-      type: "Response",
-      content:
-        "Next, The French Revolution brought about significant social changes, like ending feudal privileges and promoting the idea of equality among citizens.",
-    },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
