@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./button";
-import { ruda } from "../../../app/layout";
+import { ruda } from "../../../app/fonts";
 interface navItem {
   logoPath?: string;
   alt?: string;

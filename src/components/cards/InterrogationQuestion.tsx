@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
-import { merriweather, ruda } from "@/app/layout";
+import { merriweather, ruda } from "@/app/fonts";
 
 function InterrogationQuestion({ content = "" }: { content: string }) {
   const [text, setText] = useState<string>();

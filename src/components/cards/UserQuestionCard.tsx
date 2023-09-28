@@ -1,7 +1,6 @@
 "use client";
-import { merriweather, ruda } from "@/app/layout";
+import { merriweather, ruda } from "@/app/fonts";
 import { Button } from "../ui/button";
-import { Input } from "../user/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
 
@@ -77,7 +76,6 @@ function UserQuestionCard({
                   variant="grey"
                   icon="./arrow_dark.png"
                   tooltip="Submit change"
-                  className=""
                   onClick={() => handleAmendment()}
                 />
               </div>

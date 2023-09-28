@@ -1,18 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "../components/ui/navbar/navbar";
-import { Merriweather, Ruda } from "next/font/google";
-export const merriweather = Merriweather({
-  weight: ["400", "700", "900"],
-  style: "normal",
-  subsets: ["latin"],
-  display: "swap",
-});
-export const ruda = Ruda({
-  style: "normal",
-  subsets: ["latin"],
-  display: "swap",
-});
+
 export const metadata: Metadata = {
   title: "GreenGlasses",
   description: "Serious in depth learning.",

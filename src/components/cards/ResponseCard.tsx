@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Loader2, MoreHorizontal } from "lucide-react";
-import { merriweather, ruda } from "@/app/layout";
+import { Loader2, Quote } from "lucide-react";
+import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../ui/interrogativeButtons";
+
 export type Term = {
   term: string;
   colour: string;
@@ -100,11 +101,8 @@ function ResponseCard({
               >
                 {content}
               </h2>
-              <Button
-                variant="ghost"
-                tooltip={<div className="flex flex-col gap-2"></div>}
-              >
-                <MoreHorizontal />
+              <Button variant="ghost" tooltip="View source">
+                <Quote className="bg-text-complementary_lighter" />
               </Button>
             </div>
           </article>

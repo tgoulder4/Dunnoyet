@@ -1,8 +1,8 @@
-import { merriweather } from "@/app/layout";
+import { merriweather } from "@/app/fonts";
 import { Button } from "./button";
 import { Term } from "@/components/cards/ResponseCard";
 import { Input } from "@/components/user/ui/input";
-import { ruda } from "@/app/layout";
+import { ruda } from "@/app/fonts";
 const interrogativeTerms = [
   {
     term: "What?",

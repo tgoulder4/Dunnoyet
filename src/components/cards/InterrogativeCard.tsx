@@ -1,4 +1,4 @@
-import { merriweather, ruda } from "@/app/layout";
+import { merriweather, ruda } from "@/app/fonts";
 import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
 import { useState } from "react";

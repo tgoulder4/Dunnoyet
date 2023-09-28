@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import ResponseCard from "./cards/ResponseCard";
 import InterrogativeCard from "./cards/InterrogativeCard";
 import UserQuestionCard from "./cards/UserQuestionCard";
@@ -9,7 +9,6 @@ type Text = {
   type: "Question" | "Response" | "Interrogation";
 };
 function Thread() {
-  const currentCard = useRef<HTMLDivElement>(null);
   let firstResponseShown = false;
   //const currentCard setCurrentCard in an effort to make the image 30px below the top card.
   const [messages, setMessages] = useState<Array<Text>>([
