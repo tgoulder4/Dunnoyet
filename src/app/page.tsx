@@ -1,5 +1,4 @@
-import { merriweather } from "./layout";
-import Image from "next/image";
+import { merriweather } from "./fonts";
 import Thread from "@/components/Thread";
 export default function Home() {
   const subject = "The French Revolution";

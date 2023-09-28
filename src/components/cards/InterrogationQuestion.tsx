@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../user/ui/input";
-import { merriweather, ruda } from "@/app/layout";
+import { merriweather, ruda } from "@/app/fonts";
 
 function InterrogationQuestion({ content = "" }: { content: string }) {
   const [text, setText] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
       <section className="flex flex-col gap-4">
@@ -13,21 +14,30 @@ function InterrogationQuestion({ content = "" }: { content: string }) {
         >
           {content}
         </h2>
-        <div className="flex">
+        <div className="flex min-h-8 gap-4">
           <Input
-            className={`max-w-[1000px] mr-[3%] p-2  border-none ${ruda.className} font-[700] leading-[150%] tracking-[-0.374px]`}
+            className={`w-full max-w-[1000px] p-2  border-none ${ruda.className} font-[700] leading-[150%] tracking-[-0.374px]`}
             placeholder=""
             onChange={(e) => {
               setText(e.target.value);
             }}
             value={text}
           />
-          <Button
-            variant="outline"
-            icon="./shrug_dark.png"
-            alt="I don't know"
-          />
-          <Button variant="grey" icon="./arrow_dark.png" />
+          <div className="flex">
+            <Button
+              variant="outline"
+              icon="./shrug_dark.png"
+              alt="I don't know"
+            />
+            <Button
+              variant="grey"
+              icon="./arrow_dark.png"
+              loading={loading}
+              onClick={() => {
+                setLoading(true);
+              }}
+            />
+          </div>
         </div>
       </section>
     </>

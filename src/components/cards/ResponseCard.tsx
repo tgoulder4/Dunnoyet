@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
-import { merriweather, ruda } from "@/app/layout";
+import { Loader2, Quote, ShieldCheck } from "lucide-react";
+import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../ui/interrogativeButtons";
+
 export type Term = {
   term: string;
   colour: string;
   followUpQuestion: string;
 };
-
 function ResponseCard({
   content = "",
   firstResponseShown = true,
@@ -28,56 +28,41 @@ function ResponseCard({
     hasHighlighted: false,
     value: "",
   });
-  const [submitting, setSubmitting] = useState(false);
+  const [elaborationQuery, setElaborationQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showControls, setShowControls] = useState(true);
+
   function handleTermSelect(interrogativeTerm: Term) {
-    console.log(
-      `Elaboration called with interrogative term: ${interrogativeTerm.term}`
-    );
     setActiveTerm(interrogativeTerm);
   }
   function handleHighlight() {
-    const selectedText = window.getSelection()?.toString().trim();
-    if (selectedText === "") {
+    const highlightedText = window.getSelection()?.toString().trim();
+    if (!highlightedText) {
       setHighlighted({
         hasHighlighted: false,
         value: "",
       });
-      setActiveTerm({
-        term: "",
-        colour: "",
-        followUpQuestion: "",
-      });
-    } else {
-      const highlitedString = String(window.getSelection()).toString();
-      console.log(`Highlighted string: ${highlitedString}`);
-      setHighlighted({
-        hasHighlighted: true,
-        value: highlitedString,
-      });
+      return;
     }
+    setHighlighted({
+      hasHighlighted: true,
+      value: highlightedText,
+    });
+
     // setHighlightedText(window.getSelection().toString());
   }
   async function submitElaboration() {
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      const cleanedContent = highlighted.value
-        .trim()
-        .replace(/^[^\w]+|[^\w]+$/g, "");
-      addMessage({
-        type: "Question",
-        content: `'${cleanedContent}' - ${
-          activeTerm.term == "Unexpected" ? "Unexpected." : activeTerm.term
-        } ${
-          activeTerm.term == "Unexpected"
-            ? "I expected " + activeTerm.followUpQuestion
-            : activeTerm.followUpQuestion
-        }`,
-      });
-      // setShowControls(false);
-    }, 2000);
+    const cleanedContent = highlighted.value
+      .trim()
+      .replace(/^[^\w]+|[^\w]+$/g, "");
+    addMessage({
+      type: "Question",
+      content: `'${cleanedContent}' - ${
+        activeTerm.term == "Confused"
+          ? "Confused: " + elaborationQuery
+          : activeTerm.term
+      }`,
+    });
+    // setShowControls(false);
   }
   function handleUnderstood() {
     // send to backend
@@ -95,10 +80,15 @@ function ResponseCard({
       } mr-4 bg-white p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-4`}
       {...props}
       onMouseUp={() => handleHighlight()}
-      onClick={() => handleHighlight()}
+      onClick={(e) => {
+        e.preventDefault();
+      }}
     >
       {loading ? (
-        <Loader2 className="animate-spin" color="#000000" />
+        <div className={`flex gap-4 ${ruda.className}`}>
+          Thinking...
+          <Loader2 className="animate-spin" color="#000000" />
+        </div>
       ) : (
         <>
           <article>
@@ -111,36 +101,43 @@ function ResponseCard({
             ) : (
               <></>
             )}
-            <h2
-              className={`text-2xl max-w-[1000px] mb-20 w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
-            >
-              {content}
-            </h2>
-          </article>
-          {showControls ? (
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
-              <Button variant="grey">
-                <img src="./speaker_dark.png" alt="Read aloud" />
-              </Button>
-              <InterrogativeButtons
-                activeTerm={activeTerm}
-                handleTermSelect={handleTermSelect}
-                hasHighlighted={highlighted.hasHighlighted}
-              />
+            <div className="flex items-start w-full justify-between">
+              <h2
+                className={`text-2xl max-w-[1000px] mb-20 w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
+              >
+                {content}
+              </h2>
               <Button
-                variant="grey"
-                onClick={activeTerm.term ? submitElaboration : handleUnderstood}
-                isLoading={submitting}
-                icon={
-                  activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
-                }
-              ></Button>
-
-              {/* if highlighted, be arrow_right */}
+                variant="ghost"
+                tooltip="This content is 100% correct based on the sources you provided."
+              >
+                <ShieldCheck className="bg-text-complementary_lighter" />
+              </Button>
             </div>
-          ) : (
-            <></>
-          )}
+          </article>
+          <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
+            <Button variant="grey" tooltip="Read aloud">
+              <img src="./speaker_dark.png" alt="Read aloud" />
+            </Button>
+            <InterrogativeButtons
+              activeTerm={activeTerm}
+              handleTermSelect={handleTermSelect}
+              hasHighlighted={highlighted.hasHighlighted}
+              setElaborationQuery={setElaborationQuery}
+            />
+            <Button
+              variant="grey"
+              tooltip={
+                activeTerm.term ? "Submit question" : "I fully understand this!"
+              }
+              onClick={activeTerm.term ? submitElaboration : handleUnderstood}
+              icon={
+                activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
+              }
+            ></Button>
+
+            {/* if highlighted, be arrow_right */}
+          </div>
         </>
       )}
     </div>

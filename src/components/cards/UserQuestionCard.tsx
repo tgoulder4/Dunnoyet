@@ -1,7 +1,6 @@
 "use client";
-import { merriweather, ruda } from "@/app/layout";
+import { merriweather, ruda } from "@/app/fonts";
 import { Button } from "../ui/button";
-import { Input } from "../user/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
 
@@ -24,7 +23,8 @@ function UserQuestionCard({
     setTimeout(() => {
       addMessage({
         type: "Response",
-        content: "Test response!",
+        content:
+          "The French Revolution was a major historical event that took place in France during the late 18th century.",
       });
     }, 2000);
   }, []);
@@ -52,6 +52,7 @@ function UserQuestionCard({
                   variant="outline"
                   icon="./pencil_dark.png"
                   onClick={handleEdit}
+                  tooltip="Edit text"
                 />
               </div>
             ) : (
@@ -74,7 +75,7 @@ function UserQuestionCard({
                 <Button
                   variant="grey"
                   icon="./arrow_dark.png"
-                  className=""
+                  tooltip="Submit change"
                   onClick={() => handleAmendment()}
                 />
               </div>
