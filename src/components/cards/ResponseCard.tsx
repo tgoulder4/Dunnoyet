@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Loader2, Quote } from "lucide-react";
+import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../ui/interrogativeButtons";
 
@@ -30,16 +30,22 @@ function ResponseCard({
   });
   const [elaborationQuery, setElaborationQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showControls, setShowControls] = useState(true);
+
   function handleTermSelect(interrogativeTerm: Term) {
     setActiveTerm(interrogativeTerm);
   }
   function handleHighlight() {
-    const selectedText = window.getSelection()?.toString().trim();
-    const highlitedString = String(window.getSelection()).toString();
+    const highlightedText = window.getSelection()?.toString().trim();
+    if (!highlightedText) {
+      setHighlighted({
+        hasHighlighted: false,
+        value: "",
+      });
+      return;
+    }
     setHighlighted({
       hasHighlighted: true,
-      value: highlitedString,
+      value: highlightedText,
     });
 
     // setHighlightedText(window.getSelection().toString());
@@ -101,40 +107,37 @@ function ResponseCard({
               >
                 {content}
               </h2>
-              <Button variant="ghost" tooltip="View source">
-                <Quote className="bg-text-complementary_lighter" />
+              <Button
+                variant="ghost"
+                tooltip="This content is 100% correct based on the sources you provided."
+              >
+                <ShieldCheck className="bg-text-complementary_lighter" />
               </Button>
             </div>
           </article>
-          {showControls ? (
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
-              <Button variant="grey" tooltip="Read aloud">
-                <img src="./speaker_dark.png" alt="Read aloud" />
-              </Button>
-              <InterrogativeButtons
-                activeTerm={activeTerm}
-                handleTermSelect={handleTermSelect}
-                hasHighlighted={highlighted.hasHighlighted}
-                setElaborationQuery={setElaborationQuery}
-              />
-              <Button
-                variant="grey"
-                tooltip={
-                  activeTerm.term
-                    ? "Submit question"
-                    : "I fully understand this!"
-                }
-                onClick={activeTerm.term ? submitElaboration : handleUnderstood}
-                icon={
-                  activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
-                }
-              ></Button>
+          <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
+            <Button variant="grey" tooltip="Read aloud">
+              <img src="./speaker_dark.png" alt="Read aloud" />
+            </Button>
+            <InterrogativeButtons
+              activeTerm={activeTerm}
+              handleTermSelect={handleTermSelect}
+              hasHighlighted={highlighted.hasHighlighted}
+              setElaborationQuery={setElaborationQuery}
+            />
+            <Button
+              variant="grey"
+              tooltip={
+                activeTerm.term ? "Submit question" : "I fully understand this!"
+              }
+              onClick={activeTerm.term ? submitElaboration : handleUnderstood}
+              icon={
+                activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
+              }
+            ></Button>
 
-              {/* if highlighted, be arrow_right */}
-            </div>
-          ) : (
-            <></>
-          )}
+            {/* if highlighted, be arrow_right */}
+          </div>
         </>
       )}
     </div>

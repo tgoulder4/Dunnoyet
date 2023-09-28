@@ -70,20 +70,25 @@ function InterrogativeButtons({
                 }
                 className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
                 key={interrogativeTerm.term}
-                tooltip={
-                  index == interrogativeTerms.length - 1
-                    ? additionalTerms.map((additionalTerm) => (
+                tooltip="false"
+                size={"tighter"}
+                onClick={() => {
+                  index == interrogativeTerms.length - 1 ? (
+                    <div className="flex flex-col gap-2">
+                      {additionalTerms.map((additionalTerm) => (
                         <Button
                           variant="outline"
                           className={`w-full text-xl ${merriweather.className}`}
+                          onClick={() => handleTermSelect(additionalTerm)}
                         >
                           {additionalTerm.term}
                         </Button>
-                      ))
-                    : "false"
-                }
-                size={"tighter"}
-                onClick={() => handleTermSelect(interrogativeTerm)}
+                      ))}
+                    </div>
+                  ) : (
+                    handleTermSelect(interrogativeTerm)
+                  );
+                }}
                 style={{
                   backgroundColor:
                     activeTerm.term === interrogativeTerm.term
@@ -110,7 +115,7 @@ function InterrogativeButtons({
         </div>
       ) : (
         <h3
-          className={`${merriweather.className} text-complementary_lighter text-xl`}
+          className={`${merriweather.className} select-none text-complementary_lighter text-xl`}
         >
           Highlight content to ask further questions.
         </h3>
