@@ -1,4 +1,4 @@
-import { merriweather } from "./fonts";
+import { merriweather } from "../../fonts";
 import Thread from "@/components/Thread";
 export default function Home() {
   const subject = "The French Revolution";
@@ -9,7 +9,7 @@ export default function Home() {
       <h2 className={`font-black text-[2rem] ${merriweather.className}`}>
         {subject}
       </h2>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pb-16">
         <Thread />
       </div>
     </main>

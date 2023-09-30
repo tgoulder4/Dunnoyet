@@ -60,7 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant,
       loading,
-      tooltip = "",
+      tooltip = "false",
       icon,
       alt,
       asChild = false,

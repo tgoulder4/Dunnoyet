@@ -23,8 +23,7 @@ function UserQuestionCard({
     setTimeout(() => {
       addMessage({
         type: "Response",
-        content:
-          "The French Revolution was a major historical event that took place in France during the late 18th century.",
+        content: "Test content.",
       });
     }, 2000);
   }, []);
@@ -35,8 +34,8 @@ function UserQuestionCard({
     <>
       <div
         className="animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3"
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
+        // onMouseEnter={() => setHovering(true)}
+        // onMouseLeave={() => setHovering(false)}
       >
         {closed ? (
           <>

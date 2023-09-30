@@ -14,11 +14,7 @@ function Thread() {
   const [messages, setMessages] = useState<Array<Text>>([
     {
       type: "Question",
-      content: "What was The French Revolution?",
-    },
-    {
-      type: "Interrogation",
-      content: "What is a monarch?",
+      content: "'The normal force balances the car's weight' - How?",
     },
   ]);
   function addMessage(message: Text) {
@@ -84,16 +80,22 @@ function Thread() {
               );
           }
         })}
-        <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-        <div className="relative h-[200px] w-full">
-          <Image
-            src="/frenchRevolution.png" // do a fetch of a relavent image
-            className="rounded-[10px]"
-            layout="fill"
-            objectFit="cover"
-            alt=""
-          />
-        </div>
+        {messages.length > 5 ? (
+          <>
+            <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
+            <div className="relative h-[200px] w-full">
+              <Image
+                src="/frenchRevolution.png" // do a fetch of a relavent image
+                className="rounded-[10px]"
+                layout="fill"
+                objectFit="cover"
+                alt=""
+              />
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
