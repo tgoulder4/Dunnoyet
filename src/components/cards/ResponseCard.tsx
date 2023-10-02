@@ -66,6 +66,8 @@ function ResponseCard({
       content: `'${cleanedContent}' - ${
         activeTerm.term == "Confused"
           ? "Confused: " + elaborationQuery
+          : activeTerm.term == "Unexpected"
+          ? "Unexpected: " + elaborationQuery
           : activeTerm.term
       }`,
     });
@@ -73,6 +75,10 @@ function ResponseCard({
   }
   function handleUnderstood() {
     // send to backend
+    addMessage({
+      type: "Question",
+      content: "I understand!",
+    });
   }
   useEffect(() => {
     setLoading(true);

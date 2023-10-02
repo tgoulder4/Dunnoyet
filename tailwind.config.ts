@@ -20,6 +20,7 @@ const config: Config = {
     extend: {
       spacing: {
         "1/5": "20%",
+        "2/3": "66.666667%",
       },
       aspectRatio: {
         "4/3": "4 / 3",

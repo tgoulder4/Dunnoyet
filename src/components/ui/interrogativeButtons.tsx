@@ -6,12 +6,12 @@ import { ruda } from "@/app/fonts";
 import { useEffect } from "react";
 const interrogativeTerms = [
   {
-    term: "Confused",
-    followUpQuestion: "What doesn't make sense about this? Why?",
-  },
-  {
     term: "Unexpected",
     followUpQuestion: "What did you expect? Why?",
+  },
+  {
+    term: "How?",
+    followUpQuestion: "",
   },
   {
     term: "What?",

@@ -11,43 +11,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
+import { merriweather, ruda } from "@/app/fonts";
 function SeeSourcesDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <ShieldCheck className="bg-text-complementary_lighter" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] p-8">
         <DialogHeader>
-          <DialogTitle>Inspect Source</DialogTitle>
-          <DialogDescription>
+          <DialogTitle
+            className={`${merriweather.className} text-2xl text-center`}
+          >
+            Inspect Source
+          </DialogTitle>
+          <DialogDescription
+            className={`${ruda.className} px-20 text-sm text-complementary_lighter text-center`}
+          >
             See the sources of the information mentioned in this message below.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
-          </div>
-        </div>
+        <div className="grid gap-4 py-4 h-96"></div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit">Okay!</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

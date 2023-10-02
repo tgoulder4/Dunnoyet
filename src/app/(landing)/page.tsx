@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { merriweather, ruda } from "../fonts";
+import { merriweather, ruda } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
@@ -67,13 +67,12 @@ export default function Home() {
               id="mainTitle"
               className={`${merriweather.className} text-center relative font-black text-5xl leading-[1.4] z-20`}
             >
-              Learn anything. Fast.
+              One size doesn't fit all.
             </h1>
           </div>
           <h2 className={`${ruda.className} text-center max-w-md mb-2`}>
-            dunnoyet transforms content into bite-sized knowledge tailored to
-            how you think. replacing the standard one-size-fits-all method of
-            teaching.
+            dunnoyet transforms content into bite-sized information that
+            connects to your pre-existing knowledge.
           </h2>
           <div className="flex gap-2 items-end max-w-md">
             <div

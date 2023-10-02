@@ -55,14 +55,6 @@ export default function RootLayout({
             >
               <Link href="/">How It Works</Link>
             </Button>
-            <div className="w-[2px] h-full bg-[rgba(0,0,0,0.1)]"></div>
-            <Button
-              asChild
-              variant="link"
-              className="text-complementary font-bold"
-            >
-              <Link href="/">Success Stories</Link>
-            </Button>
           </div>
           <div id="userSide" className="flex gap-2 h-full items-center">
             {/* after learning about authentication, put the login component here */}
