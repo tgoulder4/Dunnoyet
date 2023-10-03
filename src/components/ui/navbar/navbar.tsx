@@ -16,6 +16,7 @@ interface navItem {
       text: string;
       color: string;
     };
+    padding?: string;
     alt: string;
     logoPath?: string;
     url: string;
@@ -39,7 +40,11 @@ function Navbar({
   function getNavItems(items: Array<navItem>) {
     return items.map((item) => (
       <>
-        <Button asChild variant={item.content.variant} className="h-full">
+        <Button
+          asChild
+          variant={item.content.variant}
+          className={`h-full ${item.content.padding}`}
+        >
           <Link
             href={item.content.url}
             className={`${

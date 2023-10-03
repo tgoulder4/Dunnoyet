@@ -9,45 +9,32 @@ type Text = {
   type: "New_Question" | "Question" | "Response" | "Interrogation";
   placeHolderText?: string;
 };
-function Thread({ initialise }: { initialise: Function }) {
-  let firstResponseShown = false;
-  //const currentCard setCurrentCard in an effort to make the image 30px below the top card.
+function Thread({ setTitle }: { setTitle: Function }) {
   const [messages, setMessages] = useState<Array<Text>>([
     {
       type: "New_Question",
-      content: "",
-      placeHolderText: "Who were the Bourbon Monarch?",
+      // content: "",
+      content: "Who were the Bourbon Monarch?",
+      placeHolderText: "Type your question here...",
+    },
+    {
+      type: "Response",
+      content:
+        "The Bourbon Monarch were the rulers of France before the French Revolution.",
     },
   ]);
   function addMessage(message: Text) {
-    if (message.type == "New_Question") {
-      initialise(message.content);
-    }
     setMessages([...messages, message]);
   }
+  useEffect(() => {
+    setTitle("The French Revolution");
+  });
   return (
     <>
       <div
         className={`relative flex flex-col gap-4 divide-x-4`}
         id="cardContainer"
       >
-        {messages.length > 1 ? (
-          <>
-            <div className="relative h-[200px] w-full animate-in slide-in-from-bottom-4">
-              <Image
-                src="/frenchRevolution.png" // do a fetch of a relavent image
-                className="rounded-[10px]"
-                layout="fill"
-                objectFit="cover"
-                alt=""
-              />
-            </div>
-            <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-          </>
-        ) : (
-          <></>
-        )}
-
         {messages.map((elem, index) => {
           switch (elem.type) {
             case "Question":
@@ -55,45 +42,56 @@ function Thread({ initialise }: { initialise: Function }) {
                 <UserQuestionCard
                   addMessage={addMessage}
                   content={elem.content}
+                  key={index}
                 />
               );
             case "New_Question":
               return (
-                <UserQuestionCard
-                  addMessage={addMessage}
-                  placeHolderText={elem.placeHolderText}
-                  initialQuestion={true}
-                  initialise={initialise}
-                  _closed={false}
-                  className="h-96"
-                />
+                <>
+                  <UserQuestionCard
+                    addMessage={addMessage}
+                    placeHolderText={elem.placeHolderText}
+                    content={elem.content}
+                    initialQuestion={true}
+                    _closed={elem.content ? true : false}
+                    className="h-72"
+                    setMessages={setMessages}
+                    key={index}
+                  />
+                </>
               );
             case "Response":
-              if (firstResponseShown == false) {
-                firstResponseShown = true;
-                return (
+              return (
+                <>
+                  {messages.length == 2 ? (
+                    <>
+                      <div className="relative h-[200px] w-full">
+                        <Image
+                          src="/frenchRevolution.png" // do a fetch of a relavent image
+                          className="rounded-[10px]"
+                          layout="fill"
+                          objectFit="cover"
+                          alt=""
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                   <ResponseCard
                     key={index}
                     content={elem.content}
-                    firstResponseShown={false}
+                    firstAnswer={messages.length == 2 ? true : false}
                     addMessage={addMessage}
                   />
-                );
-              } else {
-                return (
-                  <ResponseCard
-                    key={index}
-                    content={elem.content}
-                    firstResponseShown={true}
-                    addMessage={addMessage}
-                  />
-                );
-              }
+                </>
+              );
             case "Interrogation":
               return (
                 <InterrogativeCard
                   content={elem.content}
                   addMessage={addMessage}
+                  key={index}
                 />
               );
           }

@@ -46,6 +46,7 @@ export default function RootLayout({
                 alt: "Profile Picture",
                 variant: "ghost",
                 url: "/",
+                padding: "p-0",
               },
             },
           ]}

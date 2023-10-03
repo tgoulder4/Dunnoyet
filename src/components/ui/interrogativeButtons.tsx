@@ -6,20 +6,20 @@ import { ruda } from "@/app/fonts";
 import { useEffect } from "react";
 const interrogativeTerms = [
   {
-    term: "Unexpected",
+    term: "Elaborate!",
     followUpQuestion: "What did you expect? Why?",
   },
   {
     term: "How?",
-    followUpQuestion: "",
+    followUpQuestion: "How would you expect? Why?",
   },
   {
     term: "What?",
-    followUpQuestion: "",
+    followUpQuestion: "What would you expect? Why?",
   },
   {
     term: "Why?",
-    followUpQuestion: "",
+    followUpQuestion: "Why would you expect?",
   },
   {
     term: "...",

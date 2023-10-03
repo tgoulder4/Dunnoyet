@@ -3,7 +3,9 @@ import { Button } from "../ui/button";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../ui/interrogativeButtons";
+//future feature?
 import Animation from "./AnimationFrame";
+
 import SeeSourcesDialog from "../ui/seeSourcesDialog";
 
 export type Term = {
@@ -13,12 +15,12 @@ export type Term = {
 };
 function ResponseCard({
   content = "",
-  firstResponseShown = true,
+  firstAnswer = false,
   addMessage,
   ...props
 }: {
   content: string;
-  firstResponseShown: boolean;
+  firstAnswer: boolean;
   addMessage: Function;
 }) {
   const [activeTerm, setActiveTerm] = useState<Term>({
@@ -105,7 +107,7 @@ function ResponseCard({
       ) : (
         <>
           <article>
-            {!firstResponseShown ? (
+            {firstAnswer ? (
               <div
                 className={`${ruda.className} w-fit  select-none inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-900 rounded mb-2`}
               >
@@ -123,7 +125,7 @@ function ResponseCard({
 
               <Button
                 variant="ghost"
-                tooltip="This content is correct based on the sources you provided."
+                tooltip="This content is 100% correct based on the sources you provided."
               >
                 <SeeSourcesDialog />
               </Button>

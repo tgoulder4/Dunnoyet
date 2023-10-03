@@ -81,6 +81,12 @@
 *::after {
   box-sizing: border-box;
 }
+.word {
+  transition: background-color 0.3s, color 0.3s;
+}
+.dim {
+  color: var(--complementary_lighter);
+}
 /*
   2. Remove default margin
 */
