@@ -82,6 +82,7 @@ function ResponseCard({
       content: "I understand!",
     });
   }
+
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
