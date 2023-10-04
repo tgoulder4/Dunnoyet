@@ -14,21 +14,21 @@ function Thread({ setTitle }: { setTitle: Function }) {
     {
       type: "New_Question",
       // content: "",
-      content: "Who were the Bourbon Monarch?",
-      placeHolderText: "Type your question here...",
+      content: "",
+      placeHolderText: "Who were the Bourbon Monarchs?",
     },
-    {
-      type: "Response",
-      content:
-        "The Bourbon Monarch were the rulers of France before the French Revolution.",
-    },
+    // {
+    //   type: "Response",
+    //   content:
+    //     "The Bourbon Monarch were the rulers of France before the French Revolution.",
+    // },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
   }
   useEffect(() => {
     setTitle("The French Revolution");
-  });
+  }, []);
   return (
     <>
       <div
@@ -63,7 +63,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
             case "Response":
               return (
                 <>
-                  {messages.length == 2 ? (
+                  {index == 1 ? (
                     <>
                       <div className="relative h-[200px] w-full">
                         <Image
@@ -81,7 +81,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
                   <ResponseCard
                     key={index}
                     content={elem.content}
-                    firstAnswer={messages.length == 2 ? true : false}
+                    firstAnswer={index == 1 ? true : false}
                     addMessage={addMessage}
                   />
                 </>
