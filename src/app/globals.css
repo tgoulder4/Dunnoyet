@@ -1,17 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.primary {
-  font-family: "Merriweather", serif;
-  font-weight: 900;
-}
+/*import ruda from ./fonts. ts to use here */
+
 @layer base {
   :root {
     --background: 252 24% 96%; /* #f4f3fa */
     --light: 0 0% 92%; /* #ebebeb */
     --complementary: 0 0% 24%; /* #3d3d3d */
     --complementary_lighter: 0 0% 59%; /* #969696 */
-    --complementary_lightest: 0 0% 80% /* #cccccc */
+    --complementary_lightest: 0 0% 89%; /* #e3e3e3 */
     --foreground: 240 10% 4%; /* #0a0a0b */
     --card: 0 0% 100%; /* #ffffff */
     --card-foreground: 0 0% 24%; /* #3d3d3d */
@@ -20,7 +18,7 @@
     --primary: 146 49% 30%; /* #267e4d */
     --primary-header: 146 49% 25%; /* #22613c */
     --primary-foreground: 355 100% 97%; /* #fdf4f7 */
-    --secondary: 252 24% 96%; /* #f3f2fa */
+    --secondary: 210 40% 80%; /* #C7D6E6 */
     --secondary-foreground: 240 47% 15%; /* #1a1a29 */
     --muted: 252 24% 96%; /* #f3f2fa */
     --muted-foreground: 240 15% 48%; /* #77788b */
@@ -62,7 +60,11 @@
     --ring: 142.4 71.8% 29.2%;
   }
 }
-
+#dunnoyetReasonsToChoose {
+  li:last-of-type {
+    margin-bottom: 5rem;
+  }
+}
 @layer base {
   * {
     @apply border-border;
@@ -78,6 +80,12 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+.word {
+  transition: background-color 0.3s, color 0.3s;
+}
+.dim {
+  color: var(--complementary_lighter);
 }
 /*
   2. Remove default margin
@@ -141,8 +149,8 @@ h6 {
 html,
 body {
   min-height: 100%;
-  width: 100vw;
+  /* width: 100vw; */
 }
 ::selection {
-  background: #dfdfdf; 
+  background: #dfdfdf;
 }

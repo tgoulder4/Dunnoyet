@@ -3,6 +3,10 @@ import { Button } from "../ui/button";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../ui/interrogativeButtons";
+//future feature?
+import Animation from "./AnimationFrame";
+
+import SeeSourcesDialog from "../ui/seeSourcesDialog";
 
 export type Term = {
   term: string;
@@ -11,12 +15,12 @@ export type Term = {
 };
 function ResponseCard({
   content = "",
-  firstResponseShown = true,
+  firstAnswer = false,
   addMessage,
   ...props
 }: {
   content: string;
-  firstResponseShown: boolean;
+  firstAnswer: boolean;
   addMessage: Function;
 }) {
   const [activeTerm, setActiveTerm] = useState<Term>({
@@ -41,6 +45,11 @@ function ResponseCard({
         hasHighlighted: false,
         value: "",
       });
+      setActiveTerm({
+        term: "",
+        colour: "",
+        followUpQuestion: "",
+      });
       return;
     }
     setHighlighted({
@@ -59,6 +68,8 @@ function ResponseCard({
       content: `'${cleanedContent}' - ${
         activeTerm.term == "Confused"
           ? "Confused: " + elaborationQuery
+          : activeTerm.term == "Unexpected"
+          ? "Unexpected: " + elaborationQuery
           : activeTerm.term
       }`,
     });
@@ -66,7 +77,12 @@ function ResponseCard({
   }
   function handleUnderstood() {
     // send to backend
+    addMessage({
+      type: "Question",
+      content: "I understand!",
+    });
   }
+
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -79,9 +95,9 @@ function ResponseCard({
         loading ? `slide-in-from-top-4 w-fit` : `slide-in-from-bottom-4 w-full`
       } mr-4 bg-white p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-4`}
       {...props}
-      onMouseUp={() => handleHighlight()}
       onClick={(e) => {
         e.preventDefault();
+        handleHighlight();
       }}
     >
       {loading ? (
@@ -92,7 +108,7 @@ function ResponseCard({
       ) : (
         <>
           <article>
-            {!firstResponseShown ? (
+            {firstAnswer ? (
               <div
                 className={`${ruda.className} w-fit  select-none inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-900 rounded mb-2`}
               >
@@ -101,19 +117,21 @@ function ResponseCard({
             ) : (
               <></>
             )}
-            <div className="flex items-start w-full justify-between">
+            <div className="flex items-start w-full mb-40 justify-between">
               <h2
-                className={`text-2xl max-w-[1000px] mb-20 w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
+                className={`text-2xl max-w-[1000px] w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
               >
                 {content}
               </h2>
+
               <Button
                 variant="ghost"
                 tooltip="This content is 100% correct based on the sources you provided."
               >
-                <ShieldCheck className="bg-text-complementary_lighter" />
+                <SeeSourcesDialog />
               </Button>
             </div>
+            {/* <Animation /> */}
           </article>
           <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
             <Button variant="grey" tooltip="Read aloud">

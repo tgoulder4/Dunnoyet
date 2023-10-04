@@ -3,45 +3,42 @@ import { Button } from "./button";
 import { Term } from "@/components/cards/ResponseCard";
 import { Input } from "@/components/user/ui/input";
 import { ruda } from "@/app/fonts";
+import { useEffect } from "react";
 const interrogativeTerms = [
   {
-    term: "What?",
-    colour: "accentOrange",
-    followUpQuestion: "",
-  },
-  {
-    term: "Why?",
-    colour: "accentTeal",
-    followUpQuestion: "",
+    term: "Elaborate!",
+    followUpQuestion: "What did you expect? Why?",
   },
   {
     term: "How?",
-    colour: "accentYellow",
-    followUpQuestion: "",
+    followUpQuestion: "How would you expect? Why?",
   },
   {
-    term: "When?",
-    colour: "accentPurple",
-    followUpQuestion: "What don't you understand? Why?",
+    term: "What?",
+    followUpQuestion: "What would you expect? Why?",
+  },
+  {
+    term: "Why?",
+    followUpQuestion: "Why would you expect?",
   },
   {
     term: "...",
-    colour: "accentPurple",
-    followUpQuestion: "What are your thoughts? Why?",
+    followUpQuestion: "",
   },
 ];
 const additionalTerms = [
   {
     term: "Unexpected",
-    colour: "accentBlue",
     followUpQuestion: "",
   },
   {
     term: "Confused",
-    colour: "accentPurple",
     followUpQuestion: "What don't you understand? Why?",
   },
 ];
+const hueStart = 145; // teal
+const hueEnd = 245; // blue
+const hueDiff = hueEnd - hueStart;
 function InterrogativeButtons({
   activeTerm,
   handleTermSelect,
@@ -58,54 +55,68 @@ function InterrogativeButtons({
   // --accentYellow: 54 45% 88%; /* #f0e9c4 */
   // --accentPurple: 255 45% 88%; /* #d5c4f0 */
   // --accentBlue: 215 45% 88%; /* #c4dbf0 */
+  useEffect(() => {
+    function focusInput() {
+      const input = document.getElementById("followUpQuestion");
+      input?.focus();
+    }
+    if (activeTerm.followUpQuestion) {
+      focusInput();
+    }
+  });
   return (
     <>
       {hasHighlighted ? (
         <div className="flex flex-col gap-2">
           <div className="flex gap-2 justify-between">
-            {interrogativeTerms.map((interrogativeTerm, index) => (
-              <Button
-                variant={
-                  index == interrogativeTerms.length - 1 ? "ghost" : "outline"
-                }
-                className={`${merriweather.className} focus:bg-${interrogativeTerm.colour} text-xl`}
-                key={interrogativeTerm.term}
-                tooltip="false"
-                size={"tighter"}
-                onClick={() => {
-                  index == interrogativeTerms.length - 1 ? (
-                    <div className="flex flex-col gap-2">
-                      {additionalTerms.map((additionalTerm) => (
-                        <Button
-                          variant="outline"
-                          className={`w-full text-xl ${merriweather.className}`}
-                          onClick={() => handleTermSelect(additionalTerm)}
-                        >
-                          {additionalTerm.term}
-                        </Button>
-                      ))}
-                    </div>
-                  ) : (
-                    handleTermSelect(interrogativeTerm)
-                  );
-                }}
-                style={{
-                  backgroundColor:
-                    activeTerm.term === interrogativeTerm.term
-                      ? `hsl(var(--${interrogativeTerm.colour}))`
-                      : "transparent",
-                }}
-              >
-                {interrogativeTerm.term}
-              </Button>
-            ))}
+            {interrogativeTerms.map((interrogativeTerm, index) => {
+              const hueForButton =
+                hueStart + hueDiff * (index / (interrogativeTerms.length - 1));
+              return (
+                <Button
+                  variant={
+                    index == interrogativeTerms.length - 1 ? "ghost" : "outline"
+                  }
+                  className={`${merriweather.className}  text-xl`}
+                  key={interrogativeTerm.term}
+                  tooltip="false"
+                  size={"tighter"}
+                  onClick={() => {
+                    index == interrogativeTerms.length - 1 ? (
+                      <div className="flex flex-col gap-2">
+                        {additionalTerms.map((additionalTerm) => (
+                          <Button
+                            variant="outline"
+                            className={`w-full text-xl ${merriweather.className}`}
+                            onClick={() => handleTermSelect(additionalTerm)}
+                          >
+                            {additionalTerm.term}
+                          </Button>
+                        ))}
+                      </div>
+                    ) : (
+                      handleTermSelect(interrogativeTerm)
+                    );
+                  }}
+                  style={{
+                    backgroundColor:
+                      activeTerm.term === interrogativeTerm.term
+                        ? `hsl(${hueForButton}, 45%, 88%)`
+                        : "transparent",
+                  }}
+                >
+                  {interrogativeTerm.term}
+                </Button>
+              );
+            })}
           </div>
 
           {activeTerm.followUpQuestion ? (
             <>
               <Input
-                className={`${ruda.className} font-bold w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
+                className={`${ruda.className} text-xl  w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
                 placeholder={activeTerm.followUpQuestion}
+                id="followUpQuestion"
                 onChange={(e) => setElaborationQuery(e.target.value)}
               />
             </>
