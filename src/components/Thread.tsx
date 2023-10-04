@@ -14,14 +14,14 @@ function Thread({ setTitle }: { setTitle: Function }) {
     {
       type: "New_Question",
       // content: "",
-      content: "",
-      placeHolderText: "Who were the Bourbon Monarchs?",
+      content: "What was the french revolution?",
+      // placeHolderText: "Who were the Bourbon Monarchs?",
     },
-    // {
-    //   type: "Response",
-    //   content:
-    //     "The Bourbon Monarch were the rulers of France before the French Revolution.",
-    // },
+    {
+      type: "Response",
+      content:
+        "The Bourbon Monarch were the rulers of France before the French Revolution.",
+    },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);

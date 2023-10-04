@@ -28,8 +28,7 @@ function ResponseCard({
     colour: "",
     followUpQuestion: "",
   });
-  const [highlighted, setHighlighted] = useState({
-    hasHighlighted: false,
+  const [selected, setSelected] = useState({
     value: "",
   });
   const [elaborationQuery, setElaborationQuery] = useState("");
@@ -41,8 +40,7 @@ function ResponseCard({
   function handleHighlight() {
     const highlightedText = window.getSelection()?.toString().trim();
     if (!highlightedText) {
-      setHighlighted({
-        hasHighlighted: false,
+      setSelected({
         value: "",
       });
       setActiveTerm({
@@ -52,15 +50,14 @@ function ResponseCard({
       });
       return;
     }
-    setHighlighted({
-      hasHighlighted: true,
+    setSelected({
       value: highlightedText,
     });
 
     // setHighlightedText(window.getSelection().toString());
   }
   async function submitElaboration() {
-    const cleanedContent = highlighted.value
+    const cleanedContent = selected.value
       .trim()
       .replace(/^[^\w]+|[^\w]+$/g, "");
     addMessage({
@@ -82,7 +79,45 @@ function ResponseCard({
       content: "I understand!",
     });
   }
+  function handleWordClick(selectedWord: string) {
+    // Get all word spans
+    const wordSpans = document.querySelectorAll("span");
+    const currentlyHighlightedWords = document
+      .getSelection()
+      ?.toString()
+      .trim()
+      .split(" ");
+    wordSpans.forEach((span) => {
+      const word = String(span.textContent).trim();
 
+      if (word === selectedWord || currentlyHighlightedWords?.includes(word)) {
+        // Select the selected word
+        span.style.backgroundColor = "yellow"; // or any other highlight color
+      } else {
+        // Change color of other words
+        span.style.color = "var(--complementary_lighter)";
+      }
+    });
+  }
+  /**
+   * Splits the content into spans so that we can highlight the words
+   * @returns an array of spans
+   */
+  function splitContentIntoSpans(content: string) {
+    return content.split(" ").map((word, index) => {
+      return (
+        <span
+          key={index}
+          onMouseEnter={(e) => {
+            if (e.buttons) handleWordClick(word);
+          }}
+          onMouseDown={() => handleWordClick(word)}
+        >
+          {word}{" "}
+        </span>
+      );
+    });
+  }
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -121,7 +156,7 @@ function ResponseCard({
               <h2
                 className={`text-2xl max-w-[1000px] w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
               >
-                {content}
+                {splitContentIntoSpans(content)}
               </h2>
 
               <Button
@@ -140,7 +175,7 @@ function ResponseCard({
             <InterrogativeButtons
               activeTerm={activeTerm}
               handleTermSelect={handleTermSelect}
-              hasHighlighted={highlighted.hasHighlighted}
+              hasHighlighted={selected.value?.length > 0}
               setElaborationQuery={setElaborationQuery}
             />
             <Button
