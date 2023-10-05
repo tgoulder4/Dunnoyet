@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../user/ui/input";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input2";
 import { merriweather, ruda } from "@/app/fonts";
 
 function InterrogationQuestion({ content = "" }: { content: string }) {

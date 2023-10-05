@@ -1,11 +1,11 @@
 "use client";
 import { merriweather } from "@/app/fonts";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
 function UserQuestionCard({
-  setTitle,
+  setTitle = () => {},
   setMessages,
   addMessage = () => {},
   content = "",
@@ -49,9 +49,9 @@ function UserQuestionCard({
   }, []);
 
   function handleAmendment() {
-    // if (initialQuestion && setTitle) {
-    //   setTitle(`The French Revolution`);
-    // }
+    if (initialQuestion && setTitle) {
+      setTitle(`The Bourbon Monarchs`);
+    }
     setClosed(true);
     if (setMessages) {
       //slice messages from 0 to the key of the current question

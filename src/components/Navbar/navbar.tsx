@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./button";
-import { ruda, merriweather } from "../../../app/fonts";
+import { ruda, merriweather } from "../../app/fonts";
 interface navItem {
   content: {
     variant:

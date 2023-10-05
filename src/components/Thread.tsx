@@ -1,8 +1,7 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import ResponseCard from "./cards/ResponseCard";
-import InterrogativeCard from "./cards/InterrogativeCard";
-import UserQuestionCard from "./cards/UserQuestionCard";
+import React, { useState } from "react";
+import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
+import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
+import UserQuestionCard from "./Message/UserMsg/UserQ";
 import Image from "next/image";
 type Text = {
   content: string;
@@ -14,21 +13,18 @@ function Thread({ setTitle }: { setTitle: Function }) {
     {
       type: "New_Question",
       // content: "",
-      content: "What was the french revolution?",
-      // placeHolderText: "Who were the Bourbon Monarchs?",
+      content: "",
+      placeHolderText: "a",
     },
-    {
-      type: "Response",
-      content:
-        "The Bourbon Monarch were the rulers of France before the French Revolution.",
-    },
+    // {
+    //   type: "Response",
+    //   content:
+    //     "The Bourbon Monarch were the rulers of France before the French Revolution.",
+    // },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
   }
-  useEffect(() => {
-    setTitle("The French Revolution");
-  }, []);
   return (
     <>
       <div
@@ -49,12 +45,13 @@ function Thread({ setTitle }: { setTitle: Function }) {
               return (
                 <>
                   <UserQuestionCard
+                    setTitle={setTitle}
                     addMessage={addMessage}
                     placeHolderText={elem.placeHolderText}
                     content={elem.content}
                     initialQuestion={true}
                     _closed={elem.content ? true : false}
-                    className="h-72"
+                    className="min-h-[18rem]"
                     setMessages={setMessages}
                     key={index}
                   />

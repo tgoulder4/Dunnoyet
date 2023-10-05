@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../../ui/button";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
-import InterrogativeButtons from "../ui/interrogativeButtons";
+import InterrogativeButtons from "../Interrogative/Primitives/interrogativeButtons";
 //future feature?
 import Animation from "./AnimationFrame";
 
-import SeeSourcesDialog from "../ui/seeSourcesDialog";
+import SeeSourcesDialog from "./InspectSource/seeSourcesDialog";
 
 export type Term = {
   term: string;
@@ -63,10 +63,10 @@ function ResponseCard({
     addMessage({
       type: "Question",
       content: `'${cleanedContent}' - ${
-        activeTerm.term == "Confused"
-          ? "Confused: " + elaborationQuery
-          : activeTerm.term == "Unexpected"
-          ? "Unexpected: " + elaborationQuery
+        elaborationQuery
+          ? activeTerm.term.split("").slice(0, -1).join("") +
+            ": " +
+            elaborationQuery
           : activeTerm.term
       }`,
     });
@@ -79,6 +79,8 @@ function ResponseCard({
       content: "I understand!",
     });
   }
+
+  //HIGHLIGHT-TEXT FEATURE
   function handleWordClick(selectedWord: string) {
     // Get all word spans
     const wordSpans = document.querySelectorAll("span");
@@ -92,7 +94,10 @@ function ResponseCard({
 
       if (word === selectedWord || currentlyHighlightedWords?.includes(word)) {
         // Select the selected word
-        span.style.backgroundColor = "yellow"; // or any other highlight color
+        // span.style.backgroundColor = "yellow"; // or any other highlight color
+        // setSelected({
+        //   value: value + {" "} + {selectedWord}
+        // })
       } else {
         // Change color of other words
         span.style.color = "var(--complementary_lighter)";
@@ -118,6 +123,7 @@ function ResponseCard({
       );
     });
   }
+  //END HIGHLIGHT TEXT FEATURE
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -174,9 +180,13 @@ function ResponseCard({
             </Button>
             <InterrogativeButtons
               activeTerm={activeTerm}
-              handleTermSelect={handleTermSelect}
               hasHighlighted={selected.value?.length > 0}
-              setElaborationQuery={setElaborationQuery}
+              passDownFunctions={{
+                handleTermSelect,
+                setElaborationQuery,
+                submitElaboration,
+                handleUnderstood,
+              }}
             />
             <Button
               variant="grey"

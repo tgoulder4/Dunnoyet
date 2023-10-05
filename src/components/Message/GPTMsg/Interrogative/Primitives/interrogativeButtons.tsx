@@ -1,7 +1,7 @@
 import { merriweather } from "@/app/fonts";
-import { Button } from "./button";
-import { Term } from "@/components/cards/ResponseCard";
-import { Input } from "@/components/user/ui/input";
+import { Button } from "../../../../ui/button";
+import { Term } from "@/components/Message/GPTMsg/Answer/AnswerMsg";
+import { Input } from "@/components/ui/input2";
 import { ruda } from "@/app/fonts";
 import { useEffect } from "react";
 const interrogativeTerms = [
@@ -41,14 +41,18 @@ const hueEnd = 245; // blue
 const hueDiff = hueEnd - hueStart;
 function InterrogativeButtons({
   activeTerm,
-  handleTermSelect,
   hasHighlighted,
-  setElaborationQuery,
+  passDownFunctions,
 }: {
   activeTerm: Term;
-  handleTermSelect: Function;
   hasHighlighted: boolean;
-  setElaborationQuery: Function;
+  //passDownFunctions is of type object which contains functions.
+  passDownFunctions: {
+    handleTermSelect: Function;
+    setElaborationQuery: Function;
+    submitElaboration: Function;
+    handleUnderstood: Function;
+  };
 }) {
   // --accentOrange: 0 45% 88%; /* #f0c4c4 */
   // --accentTeal: 165 45% 88%; /* #c4f0eb */
@@ -88,14 +92,16 @@ function InterrogativeButtons({
                           <Button
                             variant="outline"
                             className={`w-full text-xl ${merriweather.className}`}
-                            onClick={() => handleTermSelect(additionalTerm)}
+                            onClick={() =>
+                              passDownFunctions.handleTermSelect(additionalTerm)
+                            }
                           >
                             {additionalTerm.term}
                           </Button>
                         ))}
                       </div>
                     ) : (
-                      handleTermSelect(interrogativeTerm)
+                      passDownFunctions.handleTermSelect(interrogativeTerm)
                     );
                   }}
                   style={{
@@ -117,7 +123,9 @@ function InterrogativeButtons({
                 className={`${ruda.className} text-xl  w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
                 placeholder={activeTerm.followUpQuestion}
                 id="followUpQuestion"
-                onChange={(e) => setElaborationQuery(e.target.value)}
+                onChange={(e) =>
+                  passDownFunctions.setElaborationQuery(e.target.value)
+                }
               />
             </>
           ) : (
