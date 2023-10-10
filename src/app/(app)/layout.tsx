@@ -42,7 +42,7 @@ export default function RootLayout({
           userSide={[
             {
               content: {
-                logoPath: "./pfp.png",
+                logoPath: "/pfp.png",
                 alt: "Profile Picture",
                 variant: "ghost",
                 url: "/",

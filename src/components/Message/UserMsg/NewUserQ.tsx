@@ -4,26 +4,27 @@ import { Button } from "../../ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
-function UserQuestionCard({
+function NewUserQ({
+  setTitle = () => {},
+  setMessages,
   addMessage = () => {},
   content = "",
-  _closed = true,
+  _closed = false,
   className,
   ...props
 }: {
-  addMessage: Function;
+  addMessage?: Function;
+  setMessages?: Function;
+  setTitle?: Function;
   content?: string;
   className?: string;
+  initialQuestion?: boolean;
   _closed?: boolean;
 }) {
   const [newContent, setNewContent] = useState(content);
   const [closed, setClosed] = useState<boolean>(_closed);
-  const [hovering, setHovering] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const questionRef = useRef<HTMLTextAreaElement>(null);
-  function handleEdit() {
-    setClosed(false);
-  }
   function reply() {
     addMessage({
       type: "Response",
@@ -32,20 +33,19 @@ function UserQuestionCard({
   }
   useEffect(() => {
     setLoading(false);
-    reply();
-  }, []);
+    questionRef.current?.focus();
+  }, [loading]);
 
-  function handleAmendment() {
+  function submitQuestion() {
+    setTitle(`The Bourbon Monarchs`);
     setClosed(true);
     reply();
   }
   return (
     <>
       <div
-        className={`${className} animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3`}
+        className={`${className} animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3 h-72`}
         {...props}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
       >
         {!loading ? (
           <>
@@ -57,24 +57,13 @@ function UserQuestionCard({
                   {/* suggested Question goes here */}
                   {newContent}
                 </h2>
-                {hovering ? (
-                  <div className="flex items-end h-full">
-                    <Button
-                      variant="outline"
-                      icon="/pencil_dark.png"
-                      onClick={handleEdit}
-                      tooltip="Edit text"
-                    />
-                  </div>
-                ) : (
-                  <></>
-                )}
               </>
             ) : (
               <>
                 <Textarea
                   id={`questionInput`}
                   ref={questionRef}
+                  placeholder={content}
                   className={`h-fit p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
                   onChange={(e) => {
                     setNewContent(e.target.value);
@@ -87,7 +76,7 @@ function UserQuestionCard({
                       variant="grey"
                       icon="/arrow_dark.png"
                       tooltip="Submit answer"
-                      onClick={() => handleAmendment()}
+                      onClick={submitQuestion}
                     />
                   </div>
                 </div>
@@ -104,4 +93,4 @@ function UserQuestionCard({
   );
 }
 
-export default UserQuestionCard;
+export default NewUserQ;

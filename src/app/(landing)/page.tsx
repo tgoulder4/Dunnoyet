@@ -25,7 +25,7 @@ export default function Home() {
             understanding.
           </h2>
           <div className="flex gap-2">
-            <Link href="/learn">
+            <Link href="/learn/a/b">
               <Button variant={"primary"}>Try One Question Free</Button>
             </Link>
             <Button variant={"secondary"}>How It Works</Button>
@@ -100,7 +100,7 @@ export default function Home() {
                 <li>• Clear answers</li>
                 <li>• New information is tailored to your current knowledge</li>
               </ul>
-              <Link href="/learn">
+              <Link href="/learn/a/b">
                 <Button variant="grey" className="text-white">
                   Learn Something New
                 </Button>

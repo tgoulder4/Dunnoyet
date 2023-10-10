@@ -26,12 +26,12 @@ function InterrogationQuestion({ content = "" }: { content: string }) {
           <div className="flex">
             <Button
               variant="outline"
-              icon="./shrug_dark.png"
+              icon="/shrug_dark.png"
               alt="I don't know"
             />
             <Button
               variant="grey"
-              icon="./arrow_dark.png"
+              icon="/arrow_dark.png"
               loading={loading}
               onClick={() => {
                 setLoading(true);

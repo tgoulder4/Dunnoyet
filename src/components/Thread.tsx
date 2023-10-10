@@ -3,6 +3,7 @@ import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
 import UserQuestionCard from "./Message/UserMsg/UserQ";
 import Image from "next/image";
+import NewUserQ from "./Message/UserMsg/NewUserQ";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
@@ -12,15 +13,13 @@ function Thread({ setTitle }: { setTitle: Function }) {
   const [messages, setMessages] = useState<Array<Text>>([
     {
       type: "New_Question",
-      // content: "",
-      content: "",
-      placeHolderText: "a",
+      content: "a",
     },
-    // {
-    //   type: "Response",
-    //   content:
-    //     "The Bourbon Monarch were the rulers of France before the French Revolution.",
-    // },
+    {
+      type: "Response",
+      content:
+        "The Bourbon Monarch were the rulers of France before the French Revolution.",
+    },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
@@ -44,15 +43,11 @@ function Thread({ setTitle }: { setTitle: Function }) {
             case "New_Question":
               return (
                 <>
-                  <UserQuestionCard
-                    setTitle={setTitle}
+                  <NewUserQ
                     addMessage={addMessage}
-                    placeHolderText={elem.placeHolderText}
+                    setTitle={setTitle}
                     content={elem.content}
                     initialQuestion={true}
-                    _closed={elem.content ? true : false}
-                    className="min-h-[18rem]"
-                    setMessages={setMessages}
                     key={index}
                   />
                 </>

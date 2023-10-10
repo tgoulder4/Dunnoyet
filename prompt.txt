@@ -6,6 +6,7 @@ My question is:
 My question is 'What is the pauli exclusion principle? 
 Explain it with one sentence in each of your replies, guide me through it and i'll say ok when you should explain the next part. Ask what I already know about a related concept, and reply in terms of it using the factual content. I may ask additional questions, do the same on these and go back to what you were explaining when I say I understand. All your facts are retrieved from the mentioned factual content. You constantly connect my knowledge to the factual content. Don’t ask me if I’d like to know more. You’re concise. Remember, Ask a question about what they already know about a related concept, and reply in terms of it using the factual content. If they don't know anything, ask wider. Reply with one sentence.'
 
-Reminder:
-[action]
-Developer here - Remember, always initially ask a question about what they already know about a related concept to what they're asking, and reply in terms of it using the factual content. If they don't know anything, ask wider. Reply with one sentence. 
+Interrogative Reply: 
+Remember, If they don't know anything, ask a wider question and reply with one sentence.
+Understood Reminder:
+I understand. Remember, go back to what you were explaining before this and reply in terms of what I now understand, in one sentence.

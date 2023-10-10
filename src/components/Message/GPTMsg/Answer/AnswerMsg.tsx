@@ -176,7 +176,7 @@ function ResponseCard({
           </article>
           <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
             <Button variant="grey" tooltip="Read aloud">
-              <img src="./speaker_dark.png" alt="Read aloud" />
+              <img src="/speaker_dark.png" alt="Read aloud" />
             </Button>
             <InterrogativeButtons
               activeTerm={activeTerm}
@@ -195,7 +195,7 @@ function ResponseCard({
               }
               onClick={activeTerm.term ? submitElaboration : handleUnderstood}
               icon={
-                activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
+                activeTerm.term == "" ? "/tick_dark.png" : "/arrow_dark.png"
               }
             ></Button>
 
