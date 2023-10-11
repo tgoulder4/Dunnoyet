@@ -1,34 +1,31 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import ResponseCard from "./cards/ResponseCard";
-import InterrogativeCard from "./cards/InterrogativeCard";
-import UserQuestionCard from "./cards/UserQuestionCard";
+import React, { useState } from "react";
+import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
+import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
+import UserQuestionCard from "./Message/UserMsg/UserQ";
 import Image from "next/image";
+import NewUserQ from "./Message/UserMsg/NewUserQ";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
   placeHolderText?: string;
 };
-function Thread({ setTitle }: { setTitle: Function }) {
+function Thread() {
   const [messages, setMessages] = useState<Array<Text>>([
+    //it won't ever be only new_question, but this is just for testing
     {
       type: "New_Question",
-      // content: "",
-      content: "",
-      placeHolderText: "Who were the Bourbon Monarchs?",
+      content: "Who were the Bourbon Monarch?",
     },
-    // {
-    //   type: "Response",
-    //   content:
-    //     "The Bourbon Monarch were the rulers of France before the French Revolution.",
-    // },
+    {
+      type: "Response",
+      content:
+        "The Bourbon Monarch were the rulers of France before the French Revolution. They were overthrown by the French Revolution.",
+    },
   ]);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
   }
-  useEffect(() => {
-    setTitle("The French Revolution");
-  }, []);
   return (
     <>
       <div
@@ -48,36 +45,12 @@ function Thread({ setTitle }: { setTitle: Function }) {
             case "New_Question":
               return (
                 <>
-                  <UserQuestionCard
-                    addMessage={addMessage}
-                    placeHolderText={elem.placeHolderText}
-                    content={elem.content}
-                    initialQuestion={true}
-                    _closed={elem.content ? true : false}
-                    className="h-72"
-                    setMessages={setMessages}
-                    key={index}
-                  />
+                  <NewUserQ content={elem.content} key={index} _closed={true} />
                 </>
               );
             case "Response":
               return (
                 <>
-                  {index == 1 ? (
-                    <>
-                      <div className="relative h-[200px] w-full">
-                        <Image
-                          src="/frenchRevolution.png" // do a fetch of a relavent image
-                          className="rounded-[10px]"
-                          layout="fill"
-                          objectFit="cover"
-                          alt=""
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
                   <ResponseCard
                     key={index}
                     content={elem.content}
@@ -96,22 +69,19 @@ function Thread({ setTitle }: { setTitle: Function }) {
               );
           }
         })}
-        {messages.length > 5 ? (
-          <>
-            <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-            <div className="relative h-[200px] w-full">
-              <Image
-                src="/frenchRevolution.png" // do a fetch of a relavent image
-                className="rounded-[10px]"
-                layout="fill"
-                objectFit="cover"
-                alt=""
-              />
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
+
+        <>
+          <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
+          <div className="relative h-[200px] w-full">
+            <Image
+              src="/frenchRevolution.png" // do a fetch of a relavent image
+              className="rounded-[10px]"
+              layout="fill"
+              objectFit="cover"
+              alt=""
+            />
+          </div>
+        </>
       </div>
     </>
   );

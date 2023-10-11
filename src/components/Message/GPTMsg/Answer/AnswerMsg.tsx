@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/ButtonWithoutLoadingState";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
-import InterrogativeButtons from "../ui/interrogativeButtons";
+import InterrogativeButtons from "../Interrogative/Primitives/interrogativeButtons";
 //future feature?
 import Animation from "./AnimationFrame";
 
-import SeeSourcesDialog from "../ui/seeSourcesDialog";
+import SeeSourcesDialog from "./InspectSource/seeSourcesDialog";
 
 export type Term = {
   term: string;
@@ -28,8 +28,7 @@ function ResponseCard({
     colour: "",
     followUpQuestion: "",
   });
-  const [highlighted, setHighlighted] = useState({
-    hasHighlighted: false,
+  const [selected, setSelected] = useState({
     value: "",
   });
   const [elaborationQuery, setElaborationQuery] = useState("");
@@ -41,8 +40,7 @@ function ResponseCard({
   function handleHighlight() {
     const highlightedText = window.getSelection()?.toString().trim();
     if (!highlightedText) {
-      setHighlighted({
-        hasHighlighted: false,
+      setSelected({
         value: "",
       });
       setActiveTerm({
@@ -52,24 +50,23 @@ function ResponseCard({
       });
       return;
     }
-    setHighlighted({
-      hasHighlighted: true,
+    setSelected({
       value: highlightedText,
     });
 
     // setHighlightedText(window.getSelection().toString());
   }
   async function submitElaboration() {
-    const cleanedContent = highlighted.value
+    const cleanedContent = selected.value
       .trim()
       .replace(/^[^\w]+|[^\w]+$/g, "");
     addMessage({
       type: "Question",
       content: `'${cleanedContent}' - ${
-        activeTerm.term == "Confused"
-          ? "Confused: " + elaborationQuery
-          : activeTerm.term == "Unexpected"
-          ? "Unexpected: " + elaborationQuery
+        elaborationQuery
+          ? activeTerm.term.split("").slice(0, -1).join("") +
+            ": " +
+            elaborationQuery
           : activeTerm.term
       }`,
     });
@@ -83,6 +80,50 @@ function ResponseCard({
     });
   }
 
+  //HIGHLIGHT-TEXT FEATURE
+  function handleWordClick(selectedWord: string) {
+    // Get all word spans
+    const wordSpans = document.querySelectorAll("span");
+    const currentlyHighlightedWords = document
+      .getSelection()
+      ?.toString()
+      .trim()
+      .split(" ");
+    wordSpans.forEach((span) => {
+      const word = String(span.textContent).trim();
+
+      if (word === selectedWord || currentlyHighlightedWords?.includes(word)) {
+        // Select the selected word
+        // span.style.backgroundColor = "yellow"; // or any other highlight color
+        // setSelected({
+        //   value: value + {" "} + {selectedWord}
+        // })
+      } else {
+        // Change color of other words
+        span.style.color = "var(--complementary_lighter)";
+      }
+    });
+  }
+  /**
+   * Splits the content into spans so that we can highlight the words
+   * @returns an array of spans
+   */
+  function splitContentIntoSpans(content: string) {
+    return content.split(" ").map((word, index) => {
+      return (
+        <span
+          key={index}
+          onMouseEnter={(e) => {
+            if (e.buttons) handleWordClick(word);
+          }}
+          onMouseDown={() => handleWordClick(word)}
+        >
+          {word}{" "}
+        </span>
+      );
+    });
+  }
+  //END HIGHLIGHT TEXT FEATURE
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -121,7 +162,7 @@ function ResponseCard({
               <h2
                 className={`text-2xl max-w-[1000px] w-[80%] ${merriweather.className} font-[400] leading-[150%] tracking-[-0.374px]`}
               >
-                {content}
+                {splitContentIntoSpans(content)}
               </h2>
 
               <Button
@@ -135,13 +176,17 @@ function ResponseCard({
           </article>
           <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between items-start min-h-8">
             <Button variant="grey" tooltip="Read aloud">
-              <img src="./speaker_dark.png" alt="Read aloud" />
+              <img src="/speaker_dark.png" alt="Read aloud" />
             </Button>
             <InterrogativeButtons
               activeTerm={activeTerm}
-              handleTermSelect={handleTermSelect}
-              hasHighlighted={highlighted.hasHighlighted}
-              setElaborationQuery={setElaborationQuery}
+              hasHighlighted={selected.value?.length > 0}
+              passDownFunctions={{
+                handleTermSelect,
+                setElaborationQuery,
+                submitElaboration,
+                handleUnderstood,
+              }}
             />
             <Button
               variant="grey"
@@ -150,7 +195,7 @@ function ResponseCard({
               }
               onClick={activeTerm.term ? submitElaboration : handleUnderstood}
               icon={
-                activeTerm.term == "" ? "./tick_dark.png" : "./arrow_dark.png"
+                activeTerm.term == "" ? "/tick_dark.png" : "/arrow_dark.png"
               }
             ></Button>
 

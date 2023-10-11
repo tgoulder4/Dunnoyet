@@ -1,9 +1,10 @@
 import "./../globals.css";
 import type { Metadata } from "next";
-import Navbar from "../../components/ui/navbar/navbar";
+import Navbar from "../../components/Navbar/navbar";
+import { Plus } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "GreenGlasses",
+  title: "New Source | dunnoyet",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({
@@ -21,20 +22,21 @@ export default function RootLayout({
               content: {
                 logoPath: "/logo_light.png",
                 alt: "dunnoyet",
-                variant: "ghost",
+                variant: "link",
                 url: "/",
               },
               rightDivider: true,
             },
             {
               content: {
-                url: "/",
+                url: "/home",
                 text: {
                   text: helperName,
                   color: "primary-header",
                 },
                 alt: "Helper",
                 variant: "link",
+                tooltip: "My Helper",
               },
             },
           ]}
@@ -42,11 +44,22 @@ export default function RootLayout({
           userSide={[
             {
               content: {
-                logoPath: "./pfp.png",
+                alt: "New Question",
+                variant: "default",
+                url: "/learn/new",
+                padding: "p-2",
+                jsx: <Plus className="h-full" color="#FFFFFF" />,
+                tooltip: "New Question",
+              },
+            },
+            {
+              content: {
+                logoPath: "/pfp.png",
                 alt: "Profile Picture",
                 variant: "ghost",
                 url: "/",
                 padding: "p-0",
+                tooltip: "My Profile",
               },
             },
           ]}

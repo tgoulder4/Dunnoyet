@@ -1,27 +1,19 @@
 "use client";
 import { merriweather } from "@/app/fonts";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
 function UserQuestionCard({
-  setTitle,
-  setMessages,
   addMessage = () => {},
   content = "",
-  initialQuestion = false,
   _closed = true,
   className,
-  placeHolderText = "",
   ...props
 }: {
-  addMessage?: Function;
-  setMessages?: Function;
-  setTitle?: Function;
+  addMessage: Function;
   content?: string;
   className?: string;
-  initialQuestion?: boolean;
-  placeHolderText?: string;
   _closed?: boolean;
 }) {
   const [newContent, setNewContent] = useState(content);
@@ -40,24 +32,11 @@ function UserQuestionCard({
   }
   useEffect(() => {
     setLoading(false);
-    questionRef.current?.focus();
-  });
-  useEffect(() => {
-    if (!initialQuestion) {
-      reply();
-    }
+    reply();
   }, []);
 
   function handleAmendment() {
-    // if (initialQuestion && setTitle) {
-    //   setTitle(`The French Revolution`);
-    // }
     setClosed(true);
-    if (setMessages) {
-      //slice messages from 0 to the key of the current question
-    } else {
-      console.log("setMessages not defined");
-    }
     reply();
   }
   return (
@@ -82,7 +61,7 @@ function UserQuestionCard({
                   <div className="flex items-end h-full">
                     <Button
                       variant="outline"
-                      icon="./pencil_dark.png"
+                      icon="/pencil_dark.png"
                       onClick={handleEdit}
                       tooltip="Edit text"
                     />
@@ -96,7 +75,6 @@ function UserQuestionCard({
                 <Textarea
                   id={`questionInput`}
                   ref={questionRef}
-                  placeholder={placeHolderText}
                   className={`h-fit p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
                   onChange={(e) => {
                     setNewContent(e.target.value);
@@ -107,7 +85,7 @@ function UserQuestionCard({
                   <div className="flex justify-end w-full">
                     <Button
                       variant="grey"
-                      icon="./arrow_dark.png"
+                      icon="/arrow_dark.png"
                       tooltip="Submit answer"
                       onClick={() => handleAmendment()}
                     />

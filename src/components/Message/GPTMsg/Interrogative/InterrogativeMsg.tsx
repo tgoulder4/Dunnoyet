@@ -1,8 +1,8 @@
 import { merriweather, ruda } from "@/app/fonts";
-import { Button } from "../ui/button";
-import { Input } from "../user/ui/input";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input2";
 import { useState } from "react";
-import InterrogationQuestion from "./InterrogationQuestion";
+import InterrogationQuestion from "./InterrogativeQ";
 function InterrogativeCard({
   addMessage,
   content = "",

@@ -16,3 +16,5 @@ GreenGlasses API:
 	.conversation(fileID:string[])
 	.newPrompt(prompt:string)
 	
+Make your account now to save your sources to ask more questions later.
+Questions and sources are deleted after 24 hours. Upgrade to save them forever.

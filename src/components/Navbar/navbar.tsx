@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./button";
-import { ruda, merriweather } from "../../../app/fonts";
+import { ruda, merriweather } from "../../app/fonts";
 interface navItem {
   content: {
     variant:
@@ -17,9 +17,11 @@ interface navItem {
       color: string;
     };
     padding?: string;
+    tooltip?: string;
     alt: string;
     logoPath?: string;
     url: string;
+    jsx?: React.ReactNode;
   };
   rightDivider?: boolean;
 }
@@ -44,6 +46,7 @@ function Navbar({
           asChild
           variant={item.content.variant}
           className={`h-full ${item.content.padding}`}
+          tooltip={item.content.tooltip ? item.content.tooltip : "false"}
         >
           <Link
             href={item.content.url}
@@ -51,7 +54,9 @@ function Navbar({
               item.content.text ? "text-" + item.content.text.color : ""
             } font-[600] `}
           >
-            {item.content.text ? (
+            {item.content.jsx ? (
+              <>{item.content.jsx}</>
+            ) : item.content.text ? (
               item.content.text.text
             ) : (
               <img
@@ -84,7 +89,7 @@ function Navbar({
         <div id="middle" className="flex items-center gap-4 h-full">
           {getNavItems(middle)}
         </div>
-        <div id="userSide" className="flex gap-2 h-full items-center">
+        <div id="userSide" className="flex gap-4 h-full items-center">
           {getNavItems(userSide)}
           {/* after learning about authentication, put the login component here */}
         </div>
