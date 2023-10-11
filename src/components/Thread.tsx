@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
@@ -9,16 +10,17 @@ type Text = {
   type: "New_Question" | "Question" | "Response" | "Interrogation";
   placeHolderText?: string;
 };
-function Thread({ setTitle }: { setTitle: Function }) {
+function Thread() {
   const [messages, setMessages] = useState<Array<Text>>([
+    //it won't ever be only new_question, but this is just for testing
     {
       type: "New_Question",
-      content: "a",
+      content: "Who were the Bourbon Monarch?",
     },
     {
       type: "Response",
       content:
-        "The Bourbon Monarch were the rulers of France before the French Revolution.",
+        "The Bourbon Monarch were the rulers of France before the French Revolution. They were overthrown by the French Revolution.",
     },
   ]);
   function addMessage(message: Text) {
@@ -45,10 +47,10 @@ function Thread({ setTitle }: { setTitle: Function }) {
                 <>
                   <NewUserQ
                     addMessage={addMessage}
-                    setTitle={setTitle}
                     content={elem.content}
                     initialQuestion={true}
                     key={index}
+                    _closed={true}
                   />
                 </>
               );
