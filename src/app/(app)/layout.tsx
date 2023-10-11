@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar/navbar";
 import { Plus } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "GreenGlasses",
+  title: "New Source | dunnoyet",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
             },
             {
               content: {
-                url: "/",
+                url: "/learn/test",
                 text: {
                   text: helperName,
                   color: "primary-header",
@@ -46,7 +46,7 @@ export default function RootLayout({
               content: {
                 alt: "New Question",
                 variant: "default",
-                url: "/sources/new",
+                url: "/learn/new",
                 padding: "p-2",
                 jsx: <Plus className="h-full" color="#FFFFFF" />,
                 tooltip: "New Question",

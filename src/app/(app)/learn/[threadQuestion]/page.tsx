@@ -1,5 +1,5 @@
 "use client";
-import { merriweather } from "../../../../fonts";
+import { merriweather } from "../../../fonts";
 import Thread from "@/components/Thread";
 import { useState } from "react";
 export default function Home() {

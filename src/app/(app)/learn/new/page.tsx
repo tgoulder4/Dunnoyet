@@ -1,4 +1,3 @@
-"use client";
 import { merriweather, ruda } from "@/app/fonts";
 import {
   Accordion,
@@ -6,19 +5,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState } from "react";
 export default function Home() {
-  const [title, setTitle] = useState("New Question");
   return (
     <main
       className={`text-complementary max-w-3xl mx-auto flex flex-col gap-4 h-full w-full px-4 pt-6 pb-14`}
     >
       <h2 className={`font-black text-[2rem] ${merriweather.className}`}>
-        New Source
+        New Question
       </h2>
       <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-[10px]">
         <h2 className={`font-black text-[1.5rem] ${merriweather.className}`}>
-          Sources
+          Choose an information source
         </h2>
         <div id="primaryInteractionArea">
           <div id="fileUploadSection" className={`my-2`}>
