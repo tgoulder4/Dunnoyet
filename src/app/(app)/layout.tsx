@@ -29,7 +29,7 @@ export default function RootLayout({
             },
             {
               content: {
-                url: "/learn/test",
+                url: "/home",
                 text: {
                   text: helperName,
                   color: "primary-header",

@@ -1,5 +1,5 @@
 import { merriweather } from "@/app/fonts";
-import { Button } from "../../../../ui/button";
+import { Button } from "../../../../ui/ButtonWithoutLoadingState";
 import { Term } from "@/components/Message/GPTMsg/Answer/AnswerMsg";
 import { Input } from "@/components/ui/input2";
 import { ruda } from "@/app/fonts";

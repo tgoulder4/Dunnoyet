@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "../../../ui/button";
+import { Button } from "@/components/ui/ButtonWithoutLoadingState";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../Interrogative/Primitives/interrogativeButtons";

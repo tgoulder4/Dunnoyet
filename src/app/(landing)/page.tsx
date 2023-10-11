@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { merriweather, ruda } from "@/app/fonts";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Navbar/button";
 export default function Home() {
   return (
     <main className="flex flex-col gap-6 items-center w-5/6 mx-auto py-8 max-w-4xl">
@@ -25,10 +25,20 @@ export default function Home() {
             understanding.
           </h2>
           <div className="flex gap-2">
-            <Link href="/learn/a/b">
-              <Button variant={"primary"}>Try One Question Free</Button>
+            <Link href="/home">
+              <Button
+                variant={"default"}
+                className={`${merriweather.className}`}
+              >
+                Try One Question Free
+              </Button>
             </Link>
-            <Button variant={"secondary"}>How It Works</Button>
+            <Button
+              variant={"secondary"}
+              className={`${merriweather.className}`}
+            >
+              How It Works
+            </Button>
           </div>
         </article>
         <div className="">
@@ -100,7 +110,7 @@ export default function Home() {
                 <li>• Clear answers</li>
                 <li>• New information is tailored to your current knowledge</li>
               </ul>
-              <Link href="/learn/a/b">
+              <Link href="/home">
                 <Button variant="grey" className="text-white">
                   Learn Something New
                 </Button>

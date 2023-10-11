@@ -45,33 +45,12 @@ function Thread() {
             case "New_Question":
               return (
                 <>
-                  <NewUserQ
-                    addMessage={addMessage}
-                    content={elem.content}
-                    initialQuestion={true}
-                    key={index}
-                    _closed={true}
-                  />
+                  <NewUserQ content={elem.content} key={index} _closed={true} />
                 </>
               );
             case "Response":
               return (
                 <>
-                  {index == 1 ? (
-                    <>
-                      <div className="relative h-[200px] w-full">
-                        <Image
-                          src="/frenchRevolution.png" // do a fetch of a relavent image
-                          className="rounded-[10px]"
-                          layout="fill"
-                          objectFit="cover"
-                          alt=""
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
                   <ResponseCard
                     key={index}
                     content={elem.content}
@@ -90,22 +69,19 @@ function Thread() {
               );
           }
         })}
-        {messages.length > 5 ? (
-          <>
-            <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-            <div className="relative h-[200px] w-full">
-              <Image
-                src="/frenchRevolution.png" // do a fetch of a relavent image
-                className="rounded-[10px]"
-                layout="fill"
-                objectFit="cover"
-                alt=""
-              />
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
+
+        <>
+          <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
+          <div className="relative h-[200px] w-full">
+            <Image
+              src="/frenchRevolution.png" // do a fetch of a relavent image
+              className="rounded-[10px]"
+              layout="fill"
+              objectFit="cover"
+              alt=""
+            />
+          </div>
+        </>
       </div>
     </>
   );

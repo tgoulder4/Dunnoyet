@@ -1,8 +1,6 @@
-"use client";
-import React, { useState } from "react";
+import React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -67,7 +65,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const [loading, setLoading] = useState(false);
     function commonContent() {
       return (
         <Comp
@@ -76,15 +73,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           )}
           ref={ref}
           {...props}
-          onClick={() => setLoading(true)}
         >
-          {loading ? (
-            <Loader2 className="animate-spin" color="#000000" />
-          ) : icon ? (
-            <img src={icon} alt={alt} />
-          ) : (
-            props.children
-          )}
+          {icon ? <img src={icon} alt={alt} /> : props.children}
         </Comp>
       );
     }

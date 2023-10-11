@@ -5,14 +5,7 @@ import Link from "next/link";
 type Props = {};
 
 const FileUpload = (props: Props) => {
-  return (
-    <div>
-      FileUploadaaa
-      <Link href="/learn/test">
-        <Button>Upload</Button>
-      </Link>
-    </div>
-  );
+  return <div>FileUploadaaa</div>;
 };
 
 export default FileUpload;

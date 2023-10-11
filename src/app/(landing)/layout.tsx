@@ -1,7 +1,7 @@
 import "./../globals.css";
 import type { Metadata } from "next";
 import { Button } from "../../components/ui/button";
-import { merriweather, ruda } from "../fonts";
+import { merriweather, ruda } from "@/app/fonts";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -53,7 +53,9 @@ export default function RootLayout({
               variant="link"
               className="text-complementary font-bold"
             >
-              <Link href="/">How It Works</Link>
+              <Link href="/" className={`${ruda.className}`}>
+                How It Works
+              </Link>
             </Button>
           </div>
           <div id="userSide" className="flex gap-2 h-full items-center">

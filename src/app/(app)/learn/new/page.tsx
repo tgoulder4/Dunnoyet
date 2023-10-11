@@ -35,11 +35,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
             className={`relative flex flex-col gap-4 divide-x-4`}
             id="cardContainer"
           >
-            <NewUserQ
-              setTitle={setTitle}
-              content={messages[0].content}
-              initialQuestion={true}
-            />
+            <NewUserQ content={messages[0].content} />
 
             <>
               <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-[10px]">
@@ -65,23 +61,6 @@ function Thread({ setTitle }: { setTitle: Function }) {
                 <Faq />
               </div>
             </>
-
-            {messages.length > 5 ? (
-              <>
-                <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />
-                <div className="relative h-[200px] w-full">
-                  <Image
-                    src="/frenchRevolution.png" // do a fetch of a relavent image
-                    className="rounded-[10px]"
-                    layout="fill"
-                    objectFit="cover"
-                    alt=""
-                  />
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
           </div>
         </div>
       </main>
