@@ -1,7 +1,13 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
+import { Loader2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -38,24 +44,75 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   icon?: string;
+  alt?: string;
+  tooltip?: string | React.ReactNode;
+  loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, icon, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      icon,
+      size,
+      loading,
+      alt,
+      tooltip = "false",
+      asChild = false,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
+    function commonContent() {
+      return (
+        <Comp
+          className={cn(buttonVariants({ variant, className }))}
+          ref={ref}
+          {...props}
+        >
+          {loading ? (
+            <Loader2 className="animate-spin" color="#000000" />
+          ) : icon ? (
+            <img src={icon} alt={alt} />
+          ) : (
+            props.children
+          )}
+        </Comp>
+      );
+    }
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      >
-        {icon ? (
-          <img src={icon} className="w-full h-full" alt="" />
+      <>
+        {tooltip == "false" ? (
+          commonContent()
         ) : (
-          props.children
+          <>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>{commonContent()}</TooltipTrigger>
+                <TooltipContent>
+                  {typeof tooltip === "string" ? <p>{tooltip}</p> : tooltip}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </>
         )}
-      </Comp>
+      </>
     );
+    // return (
+    //   <Comp
+    //     className={cn(buttonVariants({ variant, size, className }))}
+    //     ref={ref}
+    //     {...props}
+    //   >
+    //     {icon ? (
+    //       <img src={icon} className="w-full h-full" alt="" />
+    //     ) : (
+    //       props.children
+    //     )}
+    //   </Comp>
+    // );
   }
 );
 Button.displayName = "Button";

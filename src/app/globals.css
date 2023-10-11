@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/*import ruda from ./fonts. ts to use here */
 
 @layer base {
   :root {
