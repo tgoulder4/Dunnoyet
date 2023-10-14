@@ -19,7 +19,7 @@ const UploadedFile = ({ key, subject, date, noOfDocuments }: Props) => {
   return (
     <div
       onClick={toggleSelected}
-      className={` hover:bg-[#EEEEFE] ${
+      className={` hover:bg-[#f3f3f3] ${
         selected ? "outline outline-2" : ""
       } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
     >
@@ -34,13 +34,12 @@ const UploadedFile = ({ key, subject, date, noOfDocuments }: Props) => {
           </p>
         </summary>
       </div>
+
       <Checkbox
         id={`select-${key}`}
         className="w-8 h-8"
         checked={selected}
         onChange={toggleSelected}
-
-        //I want selected to invoke the checkbox being checked
       />
     </div>
   );
