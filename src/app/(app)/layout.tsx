@@ -1,10 +1,10 @@
-import "./../globals.css";
+import "../globals.css";
 import type { Metadata } from "next";
 import Navbar from "../../components/Navbar/navbar";
 import { Plus } from "lucide-react";
-
+import { Toaster } from "sonner";
 export const metadata: Metadata = {
-  title: "New Source | dunnoyet",
+  title: "New Question | dunnoyet",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   const helperName = "Helper";
   return (
     <html lang="en">
-      <body className={` bg-background flex flex-col`}>
+      <body className={` flex flex-col`}>
         <Navbar
           brandSide={[
             {
@@ -66,6 +66,7 @@ export default function RootLayout({
           alignment="between"
         />
         {children}
+        <Toaster />
       </body>
     </html>
   );

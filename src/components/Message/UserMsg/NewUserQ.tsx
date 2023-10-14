@@ -15,7 +15,7 @@ function NewUserQ({
   className?: string;
   _closed?: boolean;
 }) {
-  const [newContent, setNewContent] = useState(content);
+  const [newContent, setNewContent] = useState(_closed ? content : "");
   const [closed, setClosed] = useState<boolean>(_closed);
   const [loading, setLoading] = useState<boolean>(true);
   const questionRef = useRef<HTMLTextAreaElement>(null);
@@ -58,7 +58,7 @@ function NewUserQ({
                 />
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-end w-full">
-                    <Link href="/learn/test">
+                    <Link href="/learn/The+Bourbon+Monarch">
                       <Button
                         variant="grey"
                         icon="/arrow_dark.png"

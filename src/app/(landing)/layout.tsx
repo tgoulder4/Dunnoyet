@@ -1,6 +1,6 @@
 import "./../globals.css";
 import type { Metadata } from "next";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/Navbar/button";
 import { merriweather, ruda } from "@/app/fonts";
 import Link from "next/link";
 
@@ -62,10 +62,10 @@ export default function RootLayout({
             {/* after learning about authentication, put the login component here */}
             <Button
               asChild
-              variant="primary"
+              variant="default"
               className={`${merriweather.className} font-bold text-white`}
             >
-              <Link href="/learn">Try a Question Free</Link>
+              <Link href="/learn/new">Try a Question Free</Link>
             </Button>
             <Button
               asChild

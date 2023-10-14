@@ -12,6 +12,7 @@ type Props = {};
 const Faq = (props: Props) => {
   return (
     <>
+      <hr className="divide-y-2 divide-gray-400"></hr>
       <h2 className={`font-black text-[1.5rem] ${merriweather.className}`}>
         FAQ
       </h2>

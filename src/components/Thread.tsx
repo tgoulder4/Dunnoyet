@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
 import UserQuestionCard from "./Message/UserMsg/UserQ";
 import Image from "next/image";
 import NewUserQ from "./Message/UserMsg/NewUserQ";
+import { toast } from "sonner";
+import { ruda } from "@/app/fonts";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
@@ -23,6 +25,11 @@ function Thread() {
         "The Bourbon Monarch were the rulers of France before the French Revolution. They were overthrown by the French Revolution.",
     },
   ]);
+  useEffect(() => {
+    toast.success("Lesson entered: The Bourbon Monarch", {
+      className: `${ruda.className} p-8`,
+    });
+  }, []);
   function addMessage(message: Text) {
     setMessages([...messages, message]);
   }
