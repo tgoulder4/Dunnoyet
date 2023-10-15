@@ -40,7 +40,6 @@ function NewUserQ({
                 <h2
                   className={`max-w-[75%] w-full text-2xl p-1 text-primary-foreground ${merriweather.className} font-[400] tracking-[-0.374px]`}
                 >
-                  {/* suggested Question goes here */}
                   {newContent}
                 </h2>
               </>

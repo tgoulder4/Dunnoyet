@@ -22,10 +22,8 @@ function Thread({ setTitle }: { setTitle: Function }) {
         <h2 className={`font-black text-[2rem] ${merriweather.className}`}>
           New Question
         </h2>
-        <div className="flex flex-col gap-3 pb-16 outline-2 outline-gray-400">
+        <div className="flex flex-col gap-3 pb-24 outline-2 outline-gray-400">
           <div className={`relative flex flex-col gap-4 `} id="cardContainer">
-            <NewUserQ content={messages[0].content} />
-
             <>
               <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-3xl">
                 <h2
@@ -41,6 +39,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
                 </div>
               </div>
             </>
+            <NewUserQ content={messages[0].content} />
           </div>
         </div>
       </main>
