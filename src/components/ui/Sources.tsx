@@ -27,7 +27,6 @@ const Sources = (props: Props) => {
           key={index}
           subject={file.subject}
           date={file.date}
-          _expanded={true}
         />
       ))}
       <hr className="h-[2px]" />

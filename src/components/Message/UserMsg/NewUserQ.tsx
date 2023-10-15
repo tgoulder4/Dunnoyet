@@ -50,7 +50,7 @@ function NewUserQ({
                   id={`questionInput`}
                   ref={questionRef}
                   placeholder={content}
-                  className={`h-fit p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
+                  className={`h-full resize-none p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
                   onChange={(e) => {
                     setNewContent(e.target.value);
                   }}
