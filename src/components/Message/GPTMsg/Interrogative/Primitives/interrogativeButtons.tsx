@@ -1,6 +1,6 @@
 import { merriweather } from "@/app/fonts";
-import { Button } from "../../../../ui/ButtonWithoutLoadingState";
-import { Term } from "@/components/Message/GPTMsg/Answer/AnswerMsg";
+import { ButtonWithoutLoadingState } from "../../../../ui/ButtonWithoutLoadingState";
+import { Term } from "@/components/Message/GPTMsg/Answer/ResponseCard";
 import { Input } from "@/components/ui/input2";
 import { ruda } from "@/app/fonts";
 import { useEffect } from "react";
@@ -77,7 +77,7 @@ function InterrogativeButtons({
               const hueForButton =
                 hueStart + hueDiff * (index / (interrogativeTerms.length - 1));
               return (
-                <Button
+                <ButtonWithoutLoadingState
                   variant={
                     index == interrogativeTerms.length - 1 ? "ghost" : "outline"
                   }
@@ -89,7 +89,7 @@ function InterrogativeButtons({
                     index == interrogativeTerms.length - 1 ? (
                       <div className="flex flex-col gap-2">
                         {additionalTerms.map((additionalTerm) => (
-                          <Button
+                          <ButtonWithoutLoadingState
                             variant="outline"
                             className={`w-full text-xl ${merriweather.className}`}
                             onClick={() =>
@@ -97,7 +97,7 @@ function InterrogativeButtons({
                             }
                           >
                             {additionalTerm.term}
-                          </Button>
+                          </ButtonWithoutLoadingState>
                         ))}
                       </div>
                     ) : (
@@ -112,7 +112,7 @@ function InterrogativeButtons({
                   }}
                 >
                   {interrogativeTerm.term}
-                </Button>
+                </ButtonWithoutLoadingState>
               );
             })}
           </div>
@@ -120,7 +120,7 @@ function InterrogativeButtons({
           {activeTerm.followUpQuestion ? (
             <>
               <Input
-                className={`${ruda.className} text-xl  w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
+                className={`${ruda.className} text-xl placeholder:text-gray-300 w-full border-2 border-[hsl(0_0_25%)] bg-background p-4 rounded-[6px] flex flex-col justify-between gap-3 active:border-complementary`}
                 placeholder={activeTerm.followUpQuestion}
                 id="followUpQuestion"
                 onChange={(e) =>

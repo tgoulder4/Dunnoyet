@@ -1,6 +1,7 @@
 "use client";
 import { merriweather } from "@/app/fonts";
 import { Button } from "../../ui/button";
+import { ButtonWithoutLoadingState } from "../../ui/ButtonWithoutLoadingState";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
@@ -59,7 +60,7 @@ function UserQuestionCard({
                 </h2>
                 {hovering ? (
                   <div className="flex items-end h-full">
-                    <Button
+                    <ButtonWithoutLoadingState
                       variant="outline"
                       icon="/pencil_dark.png"
                       onClick={handleEdit}
@@ -79,11 +80,17 @@ function UserQuestionCard({
                   onChange={(e) => {
                     setNewContent(e.target.value);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAmendment();
+                    }
+                  }}
                   value={newContent}
                 />
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-end w-full">
-                    <Button
+                    <ButtonWithoutLoadingState
                       variant="grey"
                       icon="/arrow_dark.png"
                       tooltip="Submit answer"
