@@ -12,27 +12,13 @@ const Sources = (props: Props) => {
       subject: "The French Revolution",
       date: "Just now",
       noOfDocuments: 5,
-      expanded: false,
     },
     {
       subject: "The Normal Distribution",
       date: "Just now",
       noOfDocuments: 1,
-      expanded: false,
     },
   ]);
-
-  const handleSourceExpand = (index: number) => {
-    const newSourceGroups = sourceGroups.map((source, i) => {
-      if (i === index) {
-        return { ...source, expanded: true };
-      } else {
-        return { ...source, expanded: false };
-      }
-    });
-    setSourceGroups(newSourceGroups);
-  };
-
   return (
     <div className="flex flex-col gap-3">
       {sourceGroups.map((file, index) => (
@@ -41,8 +27,7 @@ const Sources = (props: Props) => {
           key={index}
           subject={file.subject}
           date={file.date}
-          _expanded={file.expanded}
-          handleSourceExpand={handleSourceExpand}
+          _expanded={true}
         />
       ))}
       <hr className="h-[2px]" />

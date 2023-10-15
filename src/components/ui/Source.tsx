@@ -17,8 +17,7 @@ type Props = {
   subject: string;
   date: string;
   noOfDocuments: number;
-  _expanded: boolean;
-  handleSourceExpand: Function;
+  // _expanded: boolean;
 };
 
 const Source = ({
@@ -26,10 +25,9 @@ const Source = ({
   subject,
   date,
   noOfDocuments,
-  _expanded,
-  handleSourceExpand,
-}: Props) => {
-  const [expanded, setExpanded] = useState(_expanded);
+}: // _expanded = false,
+Props) => {
+  const [expanded, setExpanded] = useState(false);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [selected, setSelected] = useState(false);
   function toggleSelected() {
@@ -39,14 +37,12 @@ const Source = ({
   function toggleExpanded() {
     if (expanded) {
       setExpanded(false);
-      handleSourceExpand(key);
       setLoadingFiles(false);
       return;
     }
     setLoadingFiles(!loadingFiles);
     setTimeout(() => {
       setLoadingFiles(false);
-      handleSourceExpand(key);
       setExpanded(!expanded);
     }, 2000);
   }
