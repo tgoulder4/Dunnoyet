@@ -1,27 +1,29 @@
 import React from "react";
-import { FileText } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { ruda } from "@/app/fonts";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { Button } from "./button";
 
 type Props = {
   key: number;
   subject: string;
   date: string;
-  noOfDocuments: number;
 };
 
-const UploadedFile = ({ key, subject, date, noOfDocuments }: Props) => {
+const UploadedFile = ({ key, subject, date }: Props) => {
   const [selected, setSelected] = useState(false);
+  const [hovering, setHovering] = useState(false);
   function toggleSelected() {
     setSelected(!selected);
   }
   return (
     <div
       onClick={toggleSelected}
-      className={` hover:bg-[#f3f3f3] ${
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      className={` hover:bg-[#f3f3f3] outline outline-1 ${
         selected ? "outline outline-2" : ""
-      } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
+      } outline-[#e2e2e2]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
     >
       <div className="flex justify-between gap-4">
         <FileText className="h-12 w-12 stroke-1" />
@@ -29,18 +31,22 @@ const UploadedFile = ({ key, subject, date, noOfDocuments }: Props) => {
           <h3 className={`${selected ? "font-extrabold" : "font-bold"}`}>
             {subject}
           </h3>
-          <p>
-            {noOfDocuments} Documents - {date}
-          </p>
+          <p>{date}</p>
         </summary>
       </div>
-
-      <Checkbox
-        id={`select-${key}`}
-        className="w-8 h-8"
-        checked={selected}
-        onChange={toggleSelected}
-      />
+      {hovering ? (
+        <>
+          <Button variant="ghost" tooltip="Delete file">
+            <Trash2
+              id={`select-${key}`}
+              className="w-6 h-6"
+              onChange={toggleSelected}
+            />
+          </Button>
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

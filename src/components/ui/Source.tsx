@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { ruda } from "@/app/fonts";
 import { useState } from "react";
-import UploadedFiles from "./UploadedFile";
+import UploadedFiles from "./UploadedFiles";
 
 type Props = {
   key: number;
@@ -39,7 +39,7 @@ const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
       <div
         onClick={toggleExpanded}
         className={`bg-[#ECEEFF] hover:bg-[#EEEEFE] ${
-          expanded ? "outline outline-2" : ""
+          expanded || loadingFiles ? "outline outline-2" : ""
         } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
       >
         <div className="flex justify-between gap-4">
@@ -81,12 +81,7 @@ const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
         <div className="bg-accentGrey rounded-lg h-24"></div>
       ) : expanded ? (
         <>
-          <UploadedFiles
-            subject={subject}
-            date={date}
-            noOfDocuments={noOfDocuments}
-            key={key}
-          />
+          <UploadedFiles />
         </>
       ) : (
         <></>

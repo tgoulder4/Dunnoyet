@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from "react";
 import UploadedFile from "./UploadedFile";
 import AddMoreSources from "./AddMoreSources";
+import AddMoreFiles from "./AddMoreFiles";
 type Props = {};
 
 const UploadedFiles = (props: Props) => {
@@ -21,14 +22,9 @@ const UploadedFiles = (props: Props) => {
   return (
     <div className="flex flex-col gap-3">
       {thisGroupsFiles.map((file, index) => (
-        <UploadedFile
-          noOfDocuments={file.noOfDocuments}
-          key={index}
-          subject={file.subject}
-          date={file.date}
-        />
+        <UploadedFile key={index} subject={file.subject} date={file.date} />
       ))}
-      <AddMoreSources type="File" />
+      <AddMoreFiles />
     </div>
   );
 };
