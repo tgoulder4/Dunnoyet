@@ -1,13 +1,13 @@
+"use client";
 import React from "react";
 import { Plus } from "lucide-react";
-import { useState, useCallback } from "react";
 import Dropzone from "react-dropzone";
 import { ruda, merriweather } from "@/app/fonts";
 import Faq from "./Faq";
 
 type Props = {};
 
-const AddMoreFiles = (props: Props) => {
+const UploadAFile = (props: Props) => {
   return (
     <>
       <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
@@ -24,7 +24,7 @@ const AddMoreFiles = (props: Props) => {
               <div className="flex flex-col items-center gap-2">
                 <Plus className="h-8 w-8 stroke-1" />
                 <h2 className={` text-[1rem] ${merriweather.className}`}>
-                  Add a file
+                  Upload a file
                 </h2>
               </div>
             </div>
@@ -35,4 +35,4 @@ const AddMoreFiles = (props: Props) => {
   );
 };
 
-export default AddMoreFiles;
+export default UploadAFile;

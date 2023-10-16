@@ -50,7 +50,9 @@ Props) => {
   return (
     <>
       <div
-        className={`${!selected ? "hover:bg-[#f4f4ff]" : ""} ${
+        className={`${
+          !selected ? "hover:bg-[#f4f4ff] outline outline-[#efefef]" : ""
+        } ${
           expanded || loadingFiles || selected
             ? "outline outline-2 bg-[#ECEEFF]"
             : "bg-[#FFFFFF]"

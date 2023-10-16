@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 function NewUserQ({
   content = "",
   _closed = false,
@@ -16,7 +17,7 @@ function NewUserQ({
   _closed?: boolean;
 }) {
   const [newContent, setNewContent] = useState(_closed ? content : "");
-  const [closed, setClosed] = useState<boolean>(_closed);
+  let closed = _closed;
   const [loading, setLoading] = useState<boolean>(true);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -24,9 +25,6 @@ function NewUserQ({
     questionRef.current?.focus();
   }, [loading]);
 
-  function submitQuestion() {
-    setClosed(true);
-  }
   return (
     <>
       <div
@@ -53,6 +51,12 @@ function NewUserQ({
                   onChange={(e) => {
                     setNewContent(e.target.value);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      // e.preventDefault();
+                      redirect("/learn/The+Bourbon+Monarch");
+                    }
+                  }}
                   value={newContent}
                 />
                 <div className="flex flex-col gap-3">
@@ -62,7 +66,6 @@ function NewUserQ({
                         variant="grey"
                         icon="/arrow_dark.png"
                         tooltip="Submit answer"
-                        onClick={submitQuestion}
                       />
                     </Link>
                   </div>

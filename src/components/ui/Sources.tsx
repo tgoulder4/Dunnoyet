@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import AddMoreSources from "./AddMoreSources";
+import AddMoreSources from "./DropzoneAndFAQ";
 import Source from "./Source";
 import { merriweather } from "@/app/fonts";
 type Props = {};
@@ -29,11 +29,6 @@ const Sources = (props: Props) => {
           date={file.date}
         />
       ))}
-      <hr className="h-[2px]" />
-      <h2 className={`font-black text-[1.5rem] ${merriweather.className}`}>
-        ...or add a new source
-      </h2>
-      <AddMoreSources />
     </div>
   );
 };
