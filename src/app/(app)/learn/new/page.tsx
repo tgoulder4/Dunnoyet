@@ -44,25 +44,29 @@ function Thread({ setTitle }: { setTitle: Function }) {
                       New Source
                     </h2>
                     <AddMoreSources />
-                    <hr className="h-[2px]" />
                   </>
                 ) : (
                   <></>
                 )}
-                <div className="flex justify-between" id="title">
-                  <h2
-                    className={`font-black text-[1.5rem] ${merriweather.className}`}
-                  >
-                    My Sources
-                  </h2>
-                  <ButtonWithoutLoadingState
-                    tooltip="Add a source"
-                    variant="grey"
-                    onClick={() => setUploadClicked(!uploadClicked)}
-                  >
-                    <Plus className="h-8 w-8 " />
-                  </ButtonWithoutLoadingState>
-                </div>
+                {!uploadClicked ? (
+                  <div className="flex justify-between" id="title">
+                    <h2
+                      className={`font-black text-[1.5rem] ${merriweather.className}`}
+                    >
+                      My Sources
+                    </h2>
+                    <ButtonWithoutLoadingState
+                      tooltip="Add a source"
+                      variant="grey"
+                      onClick={() => setUploadClicked(!uploadClicked)}
+                    >
+                      <Plus className="h-8 w-8 " />
+                    </ButtonWithoutLoadingState>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
                 <div
                   id="primaryInteractionArea"
                   className="flex flex-col gap-4"

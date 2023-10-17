@@ -51,11 +51,9 @@ Props) => {
     <>
       <div
         className={`${
-          !selected ? "hover:bg-[#f4f4ff] outline outline-[#efefef]" : ""
-        } ${
-          expanded || loadingFiles || selected
-            ? "outline outline-2 bg-[#ECEEFF]"
-            : "bg-[#FFFFFF]"
+          !selected
+            ? "hover:bg-[#f4f4ff] outline bg-[#FFFFFF] outline-[#efefef]"
+            : "outline outline-2 bg-[#ECEEFF]"
         } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
       >
         <div className="flex justify-between gap-4" onClick={toggleSelected}>
