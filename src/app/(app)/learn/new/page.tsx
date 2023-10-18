@@ -5,7 +5,9 @@ import { merriweather, ruda } from "@/app/fonts";
 import AddMoreSources from "@/components/ui/DropzoneAndFAQ";
 import Sources from "@/components/ui/Sources";
 import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
 type Text = {
   content: string;
@@ -43,7 +45,26 @@ function Thread({ setTitle }: { setTitle: Function }) {
                     >
                       New Source
                     </h2>
-                    <AddMoreSources />
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Enter a title for this source (leave blank to auto-generate)"
+                          className={`${ruda.className}`}
+                        />
+                        <Button
+                          variant="primary"
+                          tooltip="Done"
+                          className={`bg-indigo-600 hover:bg-indigo-500 ${ruda.className}`}
+                        >
+                          <ArrowRight
+                            className="h-8 w-8 stroke-2"
+                            color="#FFFFFF"
+                          />
+                        </Button>
+                      </div>
+
+                      <AddMoreSources />
+                    </div>
                   </>
                 ) : (
                   <></>
