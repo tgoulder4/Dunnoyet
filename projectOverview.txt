@@ -1,6 +1,6 @@
 All our helpers undergo extensive training to teach you content 100% true.*
 See How: By utilizing our platform, users acknowledge and agree to the following: While we endeavor to ensure that the content disseminated through our platform accurately reflects the content provided to us, the accuracy and veracity of the content rests solely with the content provider. If the uploaded content is fully factual and accurate, the content you learn from our platform will reflect the same level of accuracy. However, we do not assume responsibility or liability for any misinformation, inaccuracies, or errors resulting from incorrect content uploaded by users. It is the user's responsibility to verify and ensure the authenticity and accuracy of the content they contribute.
-Use Retrieval augmented generation to limit scope of gpt's knowledge.
+
 Knowledge gained with ChatGPT: 48% correct
 Knowledge gained via tutors: 90% correct
 VS dunnoyet: 100% correct

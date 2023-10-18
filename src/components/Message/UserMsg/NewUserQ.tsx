@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 function NewUserQ({
   content = "",
   _closed = false,
@@ -16,7 +17,7 @@ function NewUserQ({
   _closed?: boolean;
 }) {
   const [newContent, setNewContent] = useState(_closed ? content : "");
-  const [closed, setClosed] = useState<boolean>(_closed);
+  let closed = _closed;
   const [loading, setLoading] = useState<boolean>(true);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -24,9 +25,6 @@ function NewUserQ({
     questionRef.current?.focus();
   }, [loading]);
 
-  function submitQuestion() {
-    setClosed(true);
-  }
   return (
     <>
       <div
@@ -40,7 +38,6 @@ function NewUserQ({
                 <h2
                   className={`max-w-[75%] w-full text-2xl p-1 text-primary-foreground ${merriweather.className} font-[400] tracking-[-0.374px]`}
                 >
-                  {/* suggested Question goes here */}
                   {newContent}
                 </h2>
               </>
@@ -50,9 +47,15 @@ function NewUserQ({
                   id={`questionInput`}
                   ref={questionRef}
                   placeholder={content}
-                  className={`h-fit p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
+                  className={`h-full resize-none p-1 bg-primary border-primary/80 ring-0 text-white w-full max-w-[75%] text-2xl placeholder:text-[#135632] placeholder:font-bold ${merriweather.className} font-[400]  tracking-[-0.374px]`}
                   onChange={(e) => {
                     setNewContent(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      // e.preventDefault();
+                      redirect("/learn/The+Bourbon+Monarch");
+                    }
                   }}
                   value={newContent}
                 />
@@ -63,7 +66,6 @@ function NewUserQ({
                         variant="grey"
                         icon="/arrow_dark.png"
                         tooltip="Submit answer"
-                        onClick={submitQuestion}
                       />
                     </Link>
                   </div>

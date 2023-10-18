@@ -10,17 +10,30 @@ import {
 import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import UploadedFiles from "./UploadedFiles";
+import { Checkbox } from "./checkbox";
 
 type Props = {
   key: number;
   subject: string;
   date: string;
   noOfDocuments: number;
+  // _expanded: boolean;
 };
 
-const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
+const Source = ({
+  key,
+  subject,
+  date,
+  noOfDocuments,
+}: // _expanded = false,
+Props) => {
   const [expanded, setExpanded] = useState(false);
   const [loadingFiles, setLoadingFiles] = useState(false);
+  const [selected, setSelected] = useState(false);
+  function toggleSelected() {
+    setSelected(!selected);
+  }
+
   function toggleExpanded() {
     if (expanded) {
       setExpanded(false);
@@ -37,14 +50,15 @@ const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
   return (
     <>
       <div
-        onClick={toggleExpanded}
-        className={`bg-[#ECEEFF] hover:bg-[#EEEEFE] ${
-          expanded || loadingFiles ? "outline outline-2" : ""
+        className={`${
+          !selected
+            ? "hover:bg-[#f4f4ff] outline bg-[#FFFFFF] outline-[#efefef]"
+            : "outline outline-2 bg-[#ECEEFF]"
         } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
       >
-        <div className="flex justify-between gap-4">
+        <div className="flex justify-between gap-4" onClick={toggleSelected}>
           <Files className="h-12 w-12 stroke-1" />
-          <summary className={`${ruda.className} flex flex-col gap-0.5`}>
+          <summary className={`${ruda.className} flex flex-col gap-0.5 pr-20`}>
             <h3 className={`${expanded ? "font-extrabold" : "font-bold"}`}>
               {subject}
             </h3>
@@ -53,36 +67,43 @@ const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
             </p>
           </summary>
         </div>
-        {!expanded ? (
-          loadingFiles ? (
-            <>
-              <Loader2 className="animate-spin" color="#3c3c3c" />
-            </>
+        <div className="controls flex gap-4 items-center">
+          <Checkbox
+            className={`h-8 w-8 stroke-1 `}
+            checked={selected}
+            onClick={toggleSelected}
+          />
+          {!expanded ? (
+            loadingFiles ? (
+              <>
+                <Loader2 className="animate-spin" color="#3c3c3c" />
+              </>
+            ) : (
+              <>
+                <ChevronRight
+                  id={`select-${key}`}
+                  className="w-8 h-8"
+                  onClick={toggleExpanded}
+                />
+              </>
+            )
           ) : (
             <>
-              <ChevronRight
+              <ChevronDown
                 id={`select-${key}`}
                 className="w-8 h-8"
                 onClick={toggleExpanded}
               />
             </>
-          )
-        ) : (
-          <>
-            <ChevronDown
-              id={`select-${key}`}
-              className="w-8 h-8"
-              onClick={toggleExpanded}
-            />
-          </>
-        )}
+          )}
+        </div>
       </div>
       {loadingFiles ? (
         <div className="bg-accentGrey rounded-lg h-24"></div>
       ) : expanded ? (
-        <>
+        <div className="pl-4">
           <UploadedFiles />
-        </>
+        </div>
       ) : (
         <></>
       )}
@@ -90,4 +111,4 @@ const UploadedSourceGroup = ({ key, subject, date, noOfDocuments }: Props) => {
   );
 };
 
-export default UploadedSourceGroup;
+export default Source;

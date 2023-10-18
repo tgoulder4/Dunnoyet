@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import AddMoreSources from "./AddMoreSources";
-import UploadedSourceGroup from "./Source";
+import AddMoreSources from "./DropzoneAndFAQ";
+import Source from "./Source";
+import { merriweather } from "@/app/fonts";
 type Props = {};
 
 const Sources = (props: Props) => {
@@ -21,14 +22,13 @@ const Sources = (props: Props) => {
   return (
     <div className="flex flex-col gap-3">
       {sourceGroups.map((file, index) => (
-        <UploadedSourceGroup
+        <Source
           noOfDocuments={file.noOfDocuments}
           key={index}
           subject={file.subject}
           date={file.date}
         />
       ))}
-      <AddMoreSources type="Source" />
     </div>
   );
 };

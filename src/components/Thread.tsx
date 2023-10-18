@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ResponseCard from "./Message/GPTMsg/Answer/AnswerMsg";
+import ResponseCard from "./Message/GPTMsg/Answer/ResponseCard";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
 import UserQuestionCard from "./Message/UserMsg/UserQ";
 import Image from "next/image";

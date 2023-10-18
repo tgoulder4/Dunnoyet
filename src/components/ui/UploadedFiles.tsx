@@ -2,8 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import UploadedFile from "./UploadedFile";
-import AddMoreSources from "./AddMoreSources";
-import AddMoreFiles from "./AddMoreFiles";
+import UploadAFile from "./UploadAFile";
 type Props = {};
 
 const UploadedFiles = (props: Props) => {
@@ -24,7 +23,7 @@ const UploadedFiles = (props: Props) => {
       {thisGroupsFiles.map((file, index) => (
         <UploadedFile key={index} subject={file.subject} date={file.date} />
       ))}
-      <AddMoreFiles />
+      <UploadAFile />
     </div>
   );
 };

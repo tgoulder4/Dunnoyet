@@ -52,7 +52,10 @@ export interface ButtonProps
   tooltip?: string | React.ReactNode;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const ButtonWithoutLoadingState = React.forwardRef<
+  HTMLButtonElement,
+  ButtonProps
+>(
   (
     {
       className,
@@ -99,6 +102,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-Button.displayName = "Button";
+ButtonWithoutLoadingState.displayName = "Button";
 
-export { Button, buttonVariants };
+export { ButtonWithoutLoadingState, buttonVariants };

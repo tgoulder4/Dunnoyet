@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/ButtonWithoutLoadingState";
+import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
+import { Button } from "@/components/ui/button";
 import { Loader2, Quote, ShieldCheck } from "lucide-react";
 import { merriweather, ruda } from "@/app/fonts";
 import InterrogativeButtons from "../Interrogative/Primitives/interrogativeButtons";
@@ -165,12 +166,12 @@ function ResponseCard({
                 {splitContentIntoSpans(content)}
               </h2>
 
-              <Button
+              <ButtonWithoutLoadingState
                 variant="ghost"
                 tooltip="This content is 100% correct based on the sources you provided."
               >
                 <SeeSourcesDialog />
-              </Button>
+              </ButtonWithoutLoadingState>
             </div>
             {/* <Animation /> */}
           </article>
@@ -188,7 +189,7 @@ function ResponseCard({
                 handleUnderstood,
               }}
             />
-            <Button
+            <ButtonWithoutLoadingState
               variant="grey"
               tooltip={
                 activeTerm.term ? "Submit question" : "I fully understand this!"
@@ -197,7 +198,7 @@ function ResponseCard({
               icon={
                 activeTerm.term == "" ? "/tick_dark.png" : "/arrow_dark.png"
               }
-            ></Button>
+            ></ButtonWithoutLoadingState>
 
             {/* if highlighted, be arrow_right */}
           </div>
