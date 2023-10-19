@@ -2,23 +2,23 @@
 import React, { useState, useCallback } from "react";
 import { ArrowRight, Plus } from "lucide-react";
 import { ruda, merriweather } from "@/app/fonts";
-import UploadedFile from "./File";
 import { Input } from "./input";
 import { Button } from "./button";
 import Faq from "./Faq";
-import { Files } from "lucide-react";
 import UploadFile from "./UploadFile";
+import File from "./File";
+import Source from "./Source";
 
 type Props = {};
 
 const CreateASource = (props: Props) => {
-  const [uploadSuccessful, setUploadSuccessful] = useState(false); // TODO: Implement this
+  const [sourceName, setSourceName] = useState("");
   const [files, setFiles] = useState([
-    {
-      name: "",
-      subject: "safhsasa",
-      date: "",
-    },
+    // {
+    //   name: "",
+    //   subject: "safhsasa",
+    //   date: "",
+    // },
   ]);
   return (
     <div className="flex flex-col gap-2">
@@ -27,6 +27,7 @@ const CreateASource = (props: Props) => {
           <Input
             placeholder="Topic name (e.g. Electromagnetism)"
             className={`${ruda.className}`}
+            onChange={(e) => setSourceName(e.target.value)}
           />
           <Button
             variant="primary"
@@ -36,15 +37,17 @@ const CreateASource = (props: Props) => {
             <ArrowRight className="h-8 w-8 stroke-2" color="#FFFFFF" />
           </Button>
         </div>
-        {uploadSuccessful ? (
+        {files.length > 0 || sourceName !== "" ? (
           <>
-            {files.map((file, index) => (
-              <UploadedFile
-                key={index}
-                subject={file.subject}
-                date={file.date}
-              />
-            ))}
+            <Source
+              files={files}
+              subject={sourceName}
+              date="Just now"
+              noOfDocuments={files.length}
+              _selected={true}
+              _expanded={true}
+              _uploadOption={false}
+            />
           </>
         ) : (
           <></>

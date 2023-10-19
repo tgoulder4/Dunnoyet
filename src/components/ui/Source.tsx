@@ -12,12 +12,19 @@ import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
 import UploadFile from "./UploadFile";
-
+type File = {
+  subject: string;
+  date: string;
+};
 type Props = {
   key?: number;
   subject: string;
   date: string;
   noOfDocuments: number;
+  files: File[];
+  _selected?: boolean;
+  _expanded?: boolean;
+  _uploadOption?: boolean;
   setNewQuestionIsVisible?: Function;
   // _expanded: boolean;
 };
@@ -27,24 +34,25 @@ const Source = ({
   subject,
   date,
   noOfDocuments,
-  setNewQuestionIsVisible,
-}: // _expanded = false,
-Props) => {
-  const [expanded, setExpanded] = useState(false);
-  const [loadingFiles, setLoadingFiles] = useState(false);
-  const [selected, setSelected] = useState(false);
-  const [files, setFiles] = useState([
+  _selected = false,
+  _expanded = false,
+  _uploadOption = true,
+  files = [
     {
       subject: "The Bourbon Restoration",
       date: "Just now",
-      noOfDocuments: 5,
     },
     {
       subject: "Bourbon Monarchy",
       date: "Just now",
-      noOfDocuments: 1,
     },
-  ]);
+  ],
+  setNewQuestionIsVisible,
+}: // _expanded = false,
+Props) => {
+  const [expanded, setExpanded] = useState(_expanded);
+  const [loadingFiles, setLoadingFiles] = useState(false);
+  const [selected, setSelected] = useState(_selected);
 
   function toggleSelected() {
     setSelected(!selected);
@@ -77,9 +85,13 @@ Props) => {
         <div className="flex justify-between gap-4" onClick={toggleSelected}>
           <Files className="h-12 w-12 stroke-1" />
           <summary className={`${ruda.className} flex flex-col gap-0.5 pr-20`}>
-            <h3 className={`${expanded ? "font-extrabold" : "font-bold"}`}>
-              {subject}
-            </h3>
+            {subject == "" ? (
+              <div className="rounded-lg animate-pulse bg-gray-200 h-5 w-72"></div>
+            ) : (
+              <h3 className={`${expanded ? "font-extrabold" : "font-bold"}`}>
+                {subject}
+              </h3>
+            )}
             <p>
               {noOfDocuments} Documents - {date}
             </p>
@@ -91,14 +103,24 @@ Props) => {
             checked={selected}
             onClick={toggleSelected}
           />
-          {!expanded ? (
-            loadingFiles ? (
-              <>
-                <Loader2 className="animate-spin" color="#3c3c3c" />
-              </>
+          {files.length > 0 ? (
+            !expanded ? (
+              loadingFiles ? (
+                <>
+                  <Loader2 className="animate-spin" color="#3c3c3c" />
+                </>
+              ) : (
+                <>
+                  <ChevronRight
+                    id={`select-${key}`}
+                    className="w-8 h-8"
+                    onClick={toggleExpanded}
+                  />
+                </>
+              )
             ) : (
               <>
-                <ChevronRight
+                <ChevronDown
                   id={`select-${key}`}
                   className="w-8 h-8"
                   onClick={toggleExpanded}
@@ -106,13 +128,7 @@ Props) => {
               </>
             )
           ) : (
-            <>
-              <ChevronDown
-                id={`select-${key}`}
-                className="w-8 h-8"
-                onClick={toggleExpanded}
-              />
-            </>
+            <></>
           )}
         </div>
       </div>
@@ -136,7 +152,7 @@ Props) => {
             {files.map((file, index) => (
               <File key={index} subject={file.subject} date={file.date} />
             ))}
-            <UploadFile />
+            {_uploadOption ? <UploadFile /> : <></>}
           </div>
         </div>
       ) : (
