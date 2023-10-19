@@ -79,7 +79,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           onClick={() => setLoading(true)}
         >
           {loading ? (
-            <Loader2 className="animate-spin" color="#000000" />
+            <>
+              <Loader2 className="animate-spin" color="#000000" />
+            </>
           ) : icon ? (
             <img src={icon} alt={alt} />
           ) : (

@@ -10,7 +10,7 @@ type Props = {
   date: string;
 };
 
-const UploadedFile = ({ key, subject, date }: Props) => {
+const File = ({ key, subject, date }: Props) => {
   const [hovering, setHovering] = useState(false);
   return (
     <div
@@ -38,4 +38,4 @@ const UploadedFile = ({ key, subject, date }: Props) => {
   );
 };
 
-export default UploadedFile;
+export default File;

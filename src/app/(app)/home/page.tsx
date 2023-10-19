@@ -1,5 +1,5 @@
 import { merriweather } from "@/app/fonts";
-import Conversations from "../../../components/ui/Conversations";
+import Conversations from "./components/Conversations";
 type Props = {};
 export default function Home({}: Props) {
   return (

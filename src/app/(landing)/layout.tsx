@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={` bg-white flex flex-col`}>
         <header
-          className={`drop-shadow-md bg-white h-14 flex items-center justify-between p-3 px-16 sticky top-0 z-50`}
+          className={`border-b-gray-200 border-b-2 bg-white h-14 flex items-center justify-between p-3 px-16 sticky top-0 z-50`}
         >
           <div id="brandSide" className={`flex items-center gap-4 h-full`}>
             <Link href="/" className="flex items-center gap-2">

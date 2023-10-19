@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { ruda } from "@/app/fonts";
 import { useState } from "react";
-import UploadedFiles from "./UploadedFiles";
+import UploadedFiles from "./Files";
 import { Checkbox } from "./checkbox";
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
   subject: string;
   date: string;
   noOfDocuments: number;
+  setNewQuestionIsVisible: Function;
   // _expanded: boolean;
 };
 
@@ -25,6 +26,7 @@ const Source = ({
   subject,
   date,
   noOfDocuments,
+  setNewQuestionIsVisible,
 }: // _expanded = false,
 Props) => {
   const [expanded, setExpanded] = useState(false);
@@ -32,6 +34,7 @@ Props) => {
   const [selected, setSelected] = useState(false);
   function toggleSelected() {
     setSelected(!selected);
+    setNewQuestionIsVisible(true);
   }
 
   function toggleExpanded() {
@@ -99,7 +102,19 @@ Props) => {
         </div>
       </div>
       {loadingFiles ? (
-        <div className="bg-accentGrey rounded-lg h-24"></div>
+        <>
+          <div
+            className={`outline outline-1  outline-[#e2e2e2]  w-full px-2 py-4 rounded-lg flex justify-between items-center ml-4`}
+          >
+            <div className="flex justify-between gap-4">
+              <FileText className="h-12 w-12 stroke-0" />
+              <summary className={`${ruda.className} flex flex-col gap-2`}>
+                <div className="rounded-lg animate-pulse bg-gray-200 h-5 w-72"></div>
+                <div className="rounded-lg animate-pulse bg-gray-200 h-5 w-16"></div>
+              </summary>
+            </div>
+          </div>
+        </>
       ) : expanded ? (
         <div className="pl-4">
           <UploadedFiles />
