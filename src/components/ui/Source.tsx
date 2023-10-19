@@ -150,7 +150,7 @@ Props) => {
         <div className="pl-4">
           <div className="flex flex-col gap-3">
             {files.map((file, index) => (
-              <File key={index} subject={file.subject} date={file.date} />
+              <File key={index} subject={file.subject} uploadedAt={file.date} />
             ))}
             {_uploadOption ? <UploadFile /> : <></>}
           </div>

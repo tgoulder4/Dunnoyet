@@ -3,31 +3,22 @@ import React from "react";
 import { useState } from "react";
 import Source from "./Source";
 import { merriweather } from "@/app/fonts";
+import { getSources } from "@/app/(api)/sources";
 type Props = {
   setNewQuestionIsVisible: Function;
 };
 
 const Sources = (props: Props) => {
-  const [sourceGroups, setSourceGroups] = useState([
-    {
-      subject: "The French Revolution",
-      date: "Just now",
-      noOfDocuments: 5,
-    },
-    {
-      subject: "The Normal Distribution",
-      date: "Just now",
-      noOfDocuments: 1,
-    },
-  ]);
+  const [sources, setSources] = useState(getSources());
   return (
     <div className="flex flex-col gap-3">
-      {sourceGroups.map((file, index) => (
+      {sources.map((source, index) => (
         <Source
-          noOfDocuments={file.noOfDocuments}
+          noOfDocuments={source.noOfDocuments}
           key={index}
-          subject={file.subject}
-          date={file.date}
+          subject={source.subject}
+          date={source.date}
+          files={source.files}
           setNewQuestionIsVisible={props.setNewQuestionIsVisible}
         />
       ))}

@@ -7,10 +7,10 @@ import { Button } from "./button";
 type Props = {
   key: number;
   subject: string;
-  date: string;
+  uploadedAt: string;
 };
 
-const File = ({ key, subject, date }: Props) => {
+const File = ({ key, subject, uploadedAt }: Props) => {
   const [hovering, setHovering] = useState(false);
   return (
     <div
@@ -22,7 +22,7 @@ const File = ({ key, subject, date }: Props) => {
         <FileText className="h-12 w-12 stroke-1" />
         <summary className={`${ruda.className} flex flex-col gap-0.5`}>
           <h3 className={`font-bold`}>{subject}</h3>
-          <p>{date}</p>
+          <p>{uploadedAt}</p>
         </summary>
       </div>
       {hovering ? (
