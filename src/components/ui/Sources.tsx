@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import AddMoreSources from "./DropzoneAndFAQ";
 import Source from "./Source";
 import { merriweather } from "@/app/fonts";
-type Props = {};
+type Props = {
+  setNewQuestionIsVisible: Function;
+};
 
 const Sources = (props: Props) => {
   const [sourceGroups, setSourceGroups] = useState([
@@ -27,6 +28,7 @@ const Sources = (props: Props) => {
           key={index}
           subject={file.subject}
           date={file.date}
+          setNewQuestionIsVisible={props.setNewQuestionIsVisible}
         />
       ))}
     </div>

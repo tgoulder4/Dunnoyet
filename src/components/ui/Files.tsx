@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import UploadedFile from "./UploadedFile";
-import UploadAFile from "./UploadAFile";
+import UploadedFile from "./File";
+import UploadAFile from "./Upload";
 type Props = {};
 
-const UploadedFiles = (props: Props) => {
+const Files = (props: Props) => {
   const [thisGroupsFiles, setThisGroupsFiles] = useState([
     {
       subject: "The Bourbon Restoration",
@@ -28,4 +28,4 @@ const UploadedFiles = (props: Props) => {
   );
 };
 
-export default UploadedFiles;
+export default Files;

@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import NewUserQ from "@/components/Message/UserMsg/NewUserQ";
 import { merriweather, ruda } from "@/app/fonts";
-import AddMoreSources from "@/components/ui/DropzoneAndFAQ";
+import Faq from "@/components/ui/Faq";
+import UploadAFile from "@/components/ui/Upload";
 import Sources from "@/components/ui/Sources";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
     },
   ];
   const [uploadClicked, setUploadClicked] = useState(false);
+  const [newQuestionIsVisible, setNewQuestionIsVisible] = useState(false);
   return (
     <>
       <main
@@ -36,67 +38,49 @@ function Thread({ setTitle }: { setTitle: Function }) {
           } outline-2 outline-gray-400`}
         >
           <div className={`relative flex flex-col gap-4 `} id="cardContainer">
-            <>
-              <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-3xl">
-                {uploadClicked ? (
-                  <>
-                    <h2
-                      className={`font-black text-[1.5rem] ${merriweather.className}`}
-                    >
-                      New Source
-                    </h2>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Enter a title for this source (leave blank to auto-generate)"
-                          className={`${ruda.className}`}
-                        />
-                        <Button
-                          variant="primary"
-                          tooltip="Done"
-                          className={`bg-indigo-600 hover:bg-indigo-500 ${ruda.className}`}
-                        >
-                          <ArrowRight
-                            className="h-8 w-8 stroke-2"
-                            color="#FFFFFF"
-                          />
-                        </Button>
-                      </div>
-
-                      <AddMoreSources />
-                    </div>
-                  </>
-                ) : (
-                  <></>
-                )}
-                {!uploadClicked ? (
-                  <div className="flex justify-between" id="title">
-                    <h2
-                      className={`font-black text-[1.5rem] ${merriweather.className}`}
-                    >
-                      My Sources
-                    </h2>
-                    <ButtonWithoutLoadingState
-                      tooltip="Add a source"
-                      variant="grey"
-                      onClick={() => setUploadClicked(!uploadClicked)}
-                    >
-                      <Plus className="h-8 w-8 " />
-                    </ButtonWithoutLoadingState>
-                  </div>
-                ) : (
-                  <></>
-                )}
-
-                <div
-                  id="primaryInteractionArea"
-                  className="flex flex-col gap-4"
-                >
-                  <Sources />
+            <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-3xl">
+              {uploadClicked ? (
+                <>
+                  <h2
+                    className={`font-black text-[1.5rem] ${merriweather.className}`}
+                  >
+                    New Source
+                  </h2>
+                  <UploadAFile />
+                </>
+              ) : (
+                <></>
+              )}
+              {!uploadClicked ? (
+                <div className="flex justify-between" id="title">
+                  <h2
+                    className={`font-black text-[1.5rem] ${merriweather.className}`}
+                  >
+                    My Sources
+                  </h2>
+                  <ButtonWithoutLoadingState
+                    tooltip="Add a source"
+                    variant="grey"
+                    onClick={() => setUploadClicked(!uploadClicked)}
+                  >
+                    <Plus className="h-8 w-8 " />
+                  </ButtonWithoutLoadingState>
                 </div>
+              ) : (
+                <></>
+              )}
+
+              <div id="primaryInteractionArea" className="flex flex-col gap-4">
+                <Sources setNewQuestionIsVisible={setNewQuestionIsVisible} />
               </div>
-            </>
-            <NewUserQ content={messages[0].content} />
+            </div>
+            {newQuestionIsVisible ? (
+              <>
+                <NewUserQ content={messages[0].content} />
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </main>
