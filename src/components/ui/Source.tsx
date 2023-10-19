@@ -9,15 +9,16 @@ import {
 } from "lucide-react";
 import { ruda } from "@/app/fonts";
 import { useState } from "react";
-import UploadedFiles from "./Files";
 import { Checkbox } from "./checkbox";
+import File from "./File";
+import UploadFile from "./UploadFile";
 
 type Props = {
-  key: number;
+  key?: number;
   subject: string;
   date: string;
   noOfDocuments: number;
-  setNewQuestionIsVisible: Function;
+  setNewQuestionIsVisible?: Function;
   // _expanded: boolean;
 };
 
@@ -32,8 +33,22 @@ Props) => {
   const [expanded, setExpanded] = useState(false);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [selected, setSelected] = useState(false);
+  const [files, setFiles] = useState([
+    {
+      subject: "The Bourbon Restoration",
+      date: "Just now",
+      noOfDocuments: 5,
+    },
+    {
+      subject: "Bourbon Monarchy",
+      date: "Just now",
+      noOfDocuments: 1,
+    },
+  ]);
+
   function toggleSelected() {
     setSelected(!selected);
+    if (setNewQuestionIsVisible === undefined) return;
     setNewQuestionIsVisible(true);
   }
 
@@ -117,7 +132,12 @@ Props) => {
         </>
       ) : expanded ? (
         <div className="pl-4">
-          <UploadedFiles />
+          <div className="flex flex-col gap-3">
+            {files.map((file, index) => (
+              <File key={index} subject={file.subject} date={file.date} />
+            ))}
+            <UploadFile />
+          </div>
         </div>
       ) : (
         <></>

@@ -2,7 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import UploadedFile from "./File";
-import UploadAFile from "./Upload";
+import UploadAFile from "./CreateASource";
 type Props = {};
 
 const Files = (props: Props) => {

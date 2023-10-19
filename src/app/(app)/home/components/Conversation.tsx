@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Button } from "../../../../components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import useRedirectAfterSomeSeconds from "@/app/customHooks";
 
 type Props = {
   question: string;
@@ -26,11 +28,16 @@ const Conversation = ({ question, subject, date }: Props) => {
     >
       <div className="flex justify-between items-center">
         {question}
-        <Link href="/learn/The+Bourbon+Monarch" onClick={toggleSelected}>
-          <Button variant={selected ? "primary" : "grey"}>
-            <ArrowRight className="h-6 w-6 stroke-2" />
-          </Button>
-        </Link>
+
+        <Button
+          variant={selected ? "primary" : "grey"}
+          onClick={() => {
+            toggleSelected();
+            useRedirectAfterSomeSeconds("/learn/The+French+Revolution", 2);
+          }}
+        >
+          <ArrowRight className="h-6 w-6 stroke-2" />
+        </Button>
       </div>
       {selected ? (
         <div className="flex flex-col gap-4">

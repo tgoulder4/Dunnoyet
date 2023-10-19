@@ -3,19 +3,22 @@ import React, { useState } from "react";
 import NewUserQ from "@/components/Message/UserMsg/NewUserQ";
 import { merriweather, ruda } from "@/app/fonts";
 import Faq from "@/components/ui/Faq";
-import UploadAFile from "@/components/ui/Upload";
+import UploadAFile from "@/components/ui/CreateASource";
 import Sources from "@/components/ui/Sources";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
+import UploadFile from "@/components/ui/UploadFile";
+import Source from "@/components/ui/Source";
+import CreateASource from "@/components/ui/CreateASource";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
   placeHolderText?: string;
 };
-function Thread({ setTitle }: { setTitle: Function }) {
+function NewQuestion({ setTitle }: { setTitle: Function }) {
   const messages: Array<Text> = [
     {
       type: "New_Question",
@@ -46,7 +49,7 @@ function Thread({ setTitle }: { setTitle: Function }) {
                   >
                     New Source
                   </h2>
-                  <UploadAFile />
+                  <CreateASource />
                 </>
               ) : (
                 <></>
@@ -88,4 +91,4 @@ function Thread({ setTitle }: { setTitle: Function }) {
   );
 }
 
-export default Thread;
+export default NewQuestion;
