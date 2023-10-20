@@ -31,8 +31,8 @@ const Conversation = ({ question, subject, date }: Props) => {
 
         <Button
           variant={selected ? "primary" : "grey"}
+          tooltip="Go to lesson"
           onClick={() => {
-            toggleSelected();
             useRedirectAfterSomeSeconds("/learn/The+French+Revolution", 2);
           }}
         >

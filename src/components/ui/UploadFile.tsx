@@ -31,7 +31,6 @@ const UploadFile = (props: Props) => {
             </h2>
           </div>
         </div>
-        <hr className="border-gray-400" />
       </>
     </div>
   );

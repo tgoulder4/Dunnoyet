@@ -18,11 +18,11 @@ export function getSources() {
       date: "Just now",
       files: [
         {
-          subject: "The Bourbon Restoration",
+          subject: "The_Bourbon_Restoration",
           date: "Just now",
         },
         {
-          subject: "Bourbon Monarchy",
+          subject: "The_Bourbons_in_Italy",
           date: "Just now",
         },
       ],

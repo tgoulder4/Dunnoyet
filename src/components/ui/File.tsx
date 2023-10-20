@@ -22,7 +22,7 @@ const File = ({ key, subject, uploadedAt }: Props) => {
         <FileText className="h-12 w-12 stroke-1" />
         <summary className={`${ruda.className} flex flex-col gap-0.5`}>
           <h3 className={`font-bold`}>{subject}</h3>
-          <p>{uploadedAt}</p>
+          <p>PDF | {uploadedAt}</p>
         </summary>
       </div>
       {hovering ? (
