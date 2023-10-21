@@ -1,25 +1,46 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { ArrowRight, Plus } from "lucide-react";
 import { ruda, merriweather } from "@/app/fonts";
 import { Input } from "./input";
 import { Button } from "./button";
 import Faq from "./Faq";
-import UploadFile from "./UploadFile";
-import File from "./File";
 import Source from "./Source";
+import { toast } from "sonner";
 
-type Props = {};
+type Props = {
+  setSources: Function;
+};
 
 const CreateASource = (props: Props) => {
   const [sourceName, setSourceName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState([
     {
-      name: "",
-      subject: "safhsasa",
-      date: "",
+      name: "hfdhfd",
+      type: "PDF",
+      uploadedAt: "sdg",
     },
   ]);
+  function handleDone() {
+    if (!sourceName || !files.length) {
+      inputRef.current?.focus();
+      toast.error("Please enter a topic name and upload at least one file");
+    } else {
+      toast.success(`Source ${sourceName} created!`);
+
+      props.setSources((prev: any) => [
+        ...prev,
+        {
+          id: Math.random().toString(),
+          subject: sourceName,
+          noOfDocuments: files.length,
+          date: "Just now",
+          files: files,
+        },
+      ]);
+    }
+  }
   return (
     <div className="flex flex-col gap-2">
       <>
@@ -28,11 +49,14 @@ const CreateASource = (props: Props) => {
             placeholder="Topic name (e.g. Electromagnetism)"
             className={`${ruda.className}`}
             onChange={(e) => setSourceName(e.target.value)}
+            ref={inputRef}
           />
+
           <Button
             variant="primary"
             tooltip="Done"
             className={`bg-indigo-600 hover:bg-indigo-500 ${ruda.className}`}
+            onClick={handleDone}
           >
             <ArrowRight className="h-8 w-8 stroke-2" color="#FFFFFF" />
           </Button>
@@ -44,15 +68,14 @@ const CreateASource = (props: Props) => {
               subject={sourceName}
               date="Just now"
               noOfDocuments={files.length}
-              _selected={true}
               _expanded={true}
-              _uploadOption={false}
+              _uploadOption={true}
+              _selectable={false}
             />
           </>
         ) : (
           <></>
         )}
-        <UploadFile />
         <article className={`${ruda.className}`}>
           <h3>
             The knowledge you'll gain is the content you upload - add

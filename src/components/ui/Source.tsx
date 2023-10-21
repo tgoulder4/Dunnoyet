@@ -13,8 +13,9 @@ import { Checkbox } from "./checkbox";
 import File from "./File";
 import UploadFile from "./UploadFile";
 type File = {
-  subject: string;
-  date: string;
+  name: string;
+  uploadedAt: string;
+  type: string;
 };
 type Props = {
   key?: number;
@@ -25,6 +26,7 @@ type Props = {
   _selected?: boolean;
   _expanded?: boolean;
   _uploadOption?: boolean;
+  _selectable?: boolean;
   setNewQuestionIsVisible?: Function;
   // _expanded: boolean;
 };
@@ -36,17 +38,9 @@ const Source = ({
   noOfDocuments,
   _selected = false,
   _expanded = false,
+  _selectable = true,
   _uploadOption = true,
-  files = [
-    {
-      subject: "The Bourbon Restoration",
-      date: "Just now",
-    },
-    {
-      subject: "Bourbon Monarchy",
-      date: "Just now",
-    },
-  ],
+  files,
   setNewQuestionIsVisible,
 }: // _expanded = false,
 Props) => {
@@ -55,6 +49,7 @@ Props) => {
   const [selected, setSelected] = useState(_selected);
 
   function toggleSelected() {
+    if (_selectable == false) return;
     setSelected(!selected);
     if (setNewQuestionIsVisible === undefined) return;
     setNewQuestionIsVisible(true);
@@ -98,11 +93,15 @@ Props) => {
           </summary>
         </div>
         <div className="controls flex gap-4 items-center">
-          <Checkbox
-            className={`h-8 w-8 stroke-1 `}
-            checked={selected}
-            onClick={toggleSelected}
-          />
+          {_selectable ? (
+            <Checkbox
+              className={`h-8 w-8 stroke-1 `}
+              checked={selected}
+              onClick={toggleSelected}
+            />
+          ) : (
+            <></>
+          )}
           {files.length > 0 ? (
             !expanded ? (
               loadingFiles ? (
@@ -133,9 +132,9 @@ Props) => {
         </div>
       </div>
       {loadingFiles ? (
-        <>
+        <div className="pl-4">
           <div
-            className={`outline outline-1  outline-[#e2e2e2]  w-full px-2 py-4 rounded-lg flex justify-between items-center ml-4`}
+            className={`outline outline-1  outline-[#e2e2e2]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
           >
             <div className="flex justify-between gap-4">
               <FileText className="h-12 w-12 stroke-0" />
@@ -145,12 +144,17 @@ Props) => {
               </summary>
             </div>
           </div>
-        </>
+        </div>
       ) : expanded ? (
         <div className="pl-4">
           <div className="flex flex-col gap-3">
             {files.map((file, index) => (
-              <File key={index} subject={file.subject} uploadedAt={file.date} />
+              <File
+                key={index}
+                type={file.type}
+                name={file.name}
+                uploadedAt={file.uploadedAt}
+              />
             ))}
             {_uploadOption ? <UploadFile /> : <></>}
           </div>

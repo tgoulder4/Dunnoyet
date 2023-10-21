@@ -6,10 +6,20 @@ import { merriweather } from "@/app/fonts";
 import { getSources } from "@/app/(api)/sources";
 type Props = {
   setNewQuestionIsVisible: Function;
+  sources: {
+    id: string;
+    subject: string;
+    noOfDocuments: number;
+    date: string;
+    files: {
+      name: string;
+      type: string;
+      uploadedAt: string;
+    }[];
+  }[];
 };
 
-const Sources = (props: Props) => {
-  const [sources, setSources] = useState(getSources());
+const Sources = ({ setNewQuestionIsVisible, sources }: Props) => {
   return (
     <div className="flex flex-col gap-3">
       {sources.map((source, index) => (
@@ -19,7 +29,7 @@ const Sources = (props: Props) => {
           subject={source.subject}
           date={source.date}
           files={source.files}
-          setNewQuestionIsVisible={props.setNewQuestionIsVisible}
+          setNewQuestionIsVisible={setNewQuestionIsVisible}
         />
       ))}
     </div>

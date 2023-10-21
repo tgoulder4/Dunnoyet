@@ -2,17 +2,11 @@
 import React, { useState } from "react";
 import NewUserQ from "@/components/Message/UserMsg/NewUserQ";
 import { merriweather, ruda } from "@/app/fonts";
-import Faq from "@/components/ui/Faq";
-import UploadAFile from "@/components/ui/CreateASource";
 import Sources from "@/components/ui/Sources";
 import { Minus, Plus } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
-import UploadFile from "@/components/ui/UploadFile";
-import Source from "@/components/ui/Source";
 import CreateASource from "@/components/ui/CreateASource";
+import { getSources } from "@/app/(api)/sources";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
@@ -27,6 +21,7 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
   ];
   const [uploadClicked, setUploadClicked] = useState(false);
   const [newQuestionIsVisible, setNewQuestionIsVisible] = useState(false);
+  const [sources, setSources] = useState(getSources());
   return (
     <>
       <main
@@ -49,7 +44,7 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
                   >
                     New Source
                   </h2>
-                  <CreateASource />
+                  <CreateASource setSources={setSources} />
                 </>
               ) : (
                 <></>
@@ -67,16 +62,19 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
                 >
                   {uploadClicked ? (
                     <>
-                      <Minus className="h-8 w-8" />
+                      <Minus className="h-6 w-6" />
                     </>
                   ) : (
-                    <Plus className="h-8 w-8 " />
+                    <Plus className="h-6 w-6 " />
                   )}
                 </ButtonWithoutLoadingState>
               </div>
 
               <div id="primaryInteractionArea" className="flex flex-col gap-4">
-                <Sources setNewQuestionIsVisible={setNewQuestionIsVisible} />
+                <Sources
+                  sources={sources}
+                  setNewQuestionIsVisible={setNewQuestionIsVisible}
+                />
               </div>
             </div>
             {newQuestionIsVisible ? (

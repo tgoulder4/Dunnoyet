@@ -1,6 +1,6 @@
 type File = {
   subject: string;
-  date: string;
+  uploadedAt: string;
   noOfDocuments: number;
 };
 type Source = {
@@ -18,12 +18,14 @@ export function getSources() {
       date: "Just now",
       files: [
         {
-          subject: "The_Bourbon_Restoration",
-          date: "Just now",
+          name: "The_Bourbon_Restoration",
+          type: "PDF",
+          uploadedAt: "Just now",
         },
         {
-          subject: "The_Bourbons_in_Italy",
-          date: "Just now",
+          name: "The_Bourbons_in_Italy",
+          type: "PDY",
+          uploadedAt: "Just now",
         },
       ],
     },
