@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import ResponseCard from "./Message/GPTMsg/Answer/ResponseCard";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
 import UserQuestionCard from "./Message/UserMsg/UserQ";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import NewUserQ from "./Message/UserMsg/NewUserQ";
 import { toast } from "sonner";
 import { ruda } from "@/app/fonts";

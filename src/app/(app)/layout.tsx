@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar/navbar";
 import { Plus } from "lucide-react";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
-  title: "New Question | dunnoyet",
+  title: "Learn - dunnoyet",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({

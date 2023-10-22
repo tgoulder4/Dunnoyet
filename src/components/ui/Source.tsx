@@ -18,9 +18,9 @@ type File = {
   type: string;
 };
 type Props = {
-  key?: number;
+  key: number;
   subject: string;
-  date: string;
+  lastUsed: string;
   noOfDocuments: number;
   files: File[];
   _selected?: boolean;
@@ -28,18 +28,22 @@ type Props = {
   _uploadOption?: boolean;
   _selectable?: boolean;
   setNewQuestionIsVisible?: Function;
+  setActiveIndex?: Function;
   // _expanded: boolean;
+  _expandable?: boolean;
 };
 
 const Source = ({
   key,
   subject,
-  date,
+  lastUsed,
   noOfDocuments,
   _selected = false,
   _expanded = false,
+  _expandable = true,
   _selectable = true,
   _uploadOption = true,
+  setActiveIndex,
   files,
   setNewQuestionIsVisible,
 }: // _expanded = false,
@@ -61,6 +65,8 @@ Props) => {
       setLoadingFiles(false);
       return;
     }
+    if (setActiveIndex) setActiveIndex(key);
+    console.log(`Active index: ${key}`);
     setLoadingFiles(!loadingFiles);
     setTimeout(() => {
       setLoadingFiles(false);
@@ -88,7 +94,7 @@ Props) => {
               </h3>
             )}
             <p>
-              {noOfDocuments} Documents - {date}
+              {noOfDocuments} Documents - Last used {lastUsed}
             </p>
           </summary>
         </div>
@@ -110,20 +116,32 @@ Props) => {
                 </>
               ) : (
                 <>
-                  <ChevronRight
-                    id={`select-${key}`}
-                    className="w-8 h-8"
-                    onClick={toggleExpanded}
-                  />
+                  {_expandable ? (
+                    <>
+                      <ChevronRight
+                        id={`select-${key}`}
+                        className="w-8 h-8"
+                        onClick={toggleExpanded}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </>
               )
             ) : (
               <>
-                <ChevronDown
-                  id={`select-${key}`}
-                  className="w-8 h-8"
-                  onClick={toggleExpanded}
-                />
+                {_expandable ? (
+                  <>
+                    <ChevronDown
+                      id={`select-${key}`}
+                      className="w-8 h-8"
+                      onClick={toggleExpanded}
+                    />
+                  </>
+                ) : (
+                  <></>
+                )}
               </>
             )
           ) : (

@@ -11,11 +11,12 @@ import { toast } from "sonner";
 type Props = {
   setSources: Function;
 };
-
+let createdSourcesCount = 0;
 const CreateASource = (props: Props) => {
   const [sourceName, setSourceName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState([
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [newFiles, setNewFiles] = useState([
     {
       name: "hfdhfd",
       type: "PDF",
@@ -23,20 +24,22 @@ const CreateASource = (props: Props) => {
     },
   ]);
   function handleDone() {
-    if (!sourceName || !files.length) {
+    if (!sourceName || !newFiles.length) {
       inputRef.current?.focus();
-      toast.error("Please enter a topic name and upload at least one file");
+      toast.error("Please enter a topic name and upload at least one file", {
+        className: "bg-red-500 text-white" + ruda.className,
+      });
     } else {
-      toast.success(`Source ${sourceName} created!`);
+      toast.success(`Source '${sourceName}' created!`);
 
       props.setSources((prev: any) => [
         ...prev,
         {
           id: Math.random().toString(),
           subject: sourceName,
-          noOfDocuments: files.length,
+          noOfDocuments: newFiles.length,
           date: "Just now",
-          files: files,
+          files: newFiles,
         },
       ]);
     }
@@ -61,13 +64,15 @@ const CreateASource = (props: Props) => {
             <ArrowRight className="h-8 w-8 stroke-2" color="#FFFFFF" />
           </Button>
         </div>
-        {files.length > 0 || sourceName !== "" ? (
+        {newFiles.length > 0 || sourceName !== "" ? (
           <>
             <Source
-              files={files}
+              key={createdSourcesCount++}
+              files={newFiles}
               subject={sourceName}
-              date="Just now"
-              noOfDocuments={files.length}
+              lastUsed="Just now"
+              _expandable={false}
+              noOfDocuments={newFiles.length}
               _expanded={true}
               _uploadOption={true}
               _selectable={false}

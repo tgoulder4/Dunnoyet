@@ -65,16 +65,13 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
                       <Minus className="h-6 w-6" />
                     </>
                   ) : (
-                    <Plus className="h-6 w-6 " />
+                    <Plus className="h-6 w-6 stroke-2 " />
                   )}
                 </ButtonWithoutLoadingState>
               </div>
 
               <div id="primaryInteractionArea" className="flex flex-col gap-4">
-                <Sources
-                  sources={sources}
-                  setNewQuestionIsVisible={setNewQuestionIsVisible}
-                />
+                <Sources setNewQuestionIsVisible={setNewQuestionIsVisible} />
               </div>
             </div>
             {newQuestionIsVisible ? (

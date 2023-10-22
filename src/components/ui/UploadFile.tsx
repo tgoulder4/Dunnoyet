@@ -1,24 +1,31 @@
 "use client";
-import React, { useState, useCallback } from "react";
 import { ArrowRight, Plus } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { ruda, merriweather } from "@/app/fonts";
-import UploadedFile from "./File";
-import { Input } from "./input";
-import { Button } from "./button";
-import Faq from "./Faq";
-import { Files } from "lucide-react";
+import { setSources, IFile, getSources } from "@/app/(api)/sources";
 
-type Props = {};
+type Props = {
+  addFile?: Function;
+};
 
 const UploadFile = (props: Props) => {
   const { getRootProps, getInputProps } = useDropzone();
+  const file: IFile = {
+    name: "Test",
+    uploadedAt: "Today",
+    type: "pdf",
+  };
+  function saveUpload() {
+    let sources = getSources();
+    setSources(sources[sourceID].files.push(file));
+  }
   return (
     <div className="flex flex-col gap-2">
       <>
         <div
           className={`border border-dashed border-gray-400 grid place-items-center h-24 bg-white hover:bg-slate-100 rounded-md`}
           {...getRootProps({})}
+          onClick={saveUpload}
         >
           <input className="flex flex-col items-center" {...getInputProps()} />
 

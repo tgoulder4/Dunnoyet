@@ -28,7 +28,7 @@ function NewUserQ({
   return (
     <>
       <div
-        className={`${className} animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3 h-72`}
+        className={`${className} animate-in slide-in-from-bottom-4 w-full bg-primary p-8 rounded-t-[30px] rounded-bl-[30px] flex justify-between gap-3 `}
         {...props}
       >
         {!loading ? (

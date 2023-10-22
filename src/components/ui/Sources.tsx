@@ -2,34 +2,26 @@
 import React from "react";
 import { useState } from "react";
 import Source from "./Source";
-import { merriweather } from "@/app/fonts";
-import { getSources } from "@/app/(api)/sources";
+import { ISources, getSources } from "@/app/(api)/sources";
 type Props = {
   setNewQuestionIsVisible: Function;
-  sources: {
-    id: string;
-    subject: string;
-    noOfDocuments: number;
-    date: string;
-    files: {
-      name: string;
-      type: string;
-      uploadedAt: string;
-    }[];
-  }[];
 };
 
-const Sources = ({ setNewQuestionIsVisible, sources }: Props) => {
+const Sources = ({ setNewQuestionIsVisible }: Props) => {
+  const Sources: ISources = getSources();
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   return (
     <div className="flex flex-col gap-3">
-      {sources.map((source, index) => (
+      {Sources.map((source, index) => (
         <Source
           noOfDocuments={source.noOfDocuments}
           key={index}
+          lastUsed={source.lastUsed}
           subject={source.subject}
-          date={source.date}
           files={source.files}
           setNewQuestionIsVisible={setNewQuestionIsVisible}
+          setActiveIndex={setActiveIndex}
+          _expanded={index == activeIndex}
         />
       ))}
     </div>
