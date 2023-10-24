@@ -12,17 +12,13 @@ import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
 import UploadFile from "./UploadFile";
-type File = {
-  name: string;
-  uploadedAt: string;
-  type: string;
-};
+import { IFile, ISource } from "@/app/(api)/sources";
 type Props = {
   key: number;
   subject: string;
   lastUsed: string;
   noOfDocuments: number;
-  files: File[];
+  files: IFile[];
   _selected?: boolean;
   _expanded?: boolean;
   _uploadOption?: boolean;
@@ -38,13 +34,13 @@ const Source = ({
   subject,
   lastUsed,
   noOfDocuments,
+  files,
   _selected = false,
   _expanded = false,
   _expandable = true,
   _selectable = true,
   _uploadOption = true,
   setActiveIndex,
-  files,
   setNewQuestionIsVisible,
 }: // _expanded = false,
 Props) => {
@@ -174,7 +170,6 @@ Props) => {
                 uploadedAt={file.uploadedAt}
               />
             ))}
-            {_uploadOption ? <UploadFile /> : <></>}
           </div>
         </div>
       ) : (

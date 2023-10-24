@@ -51,6 +51,8 @@ export interface ButtonProps
   asChild?: boolean;
   icon?: string;
   alt?: string;
+  loading?: boolean;
+  disableLoading?: boolean;
   tooltip?: string | React.ReactNode;
 }
 
@@ -60,6 +62,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant,
       tooltip = "false",
+      loading = false,
+      disableLoading = false,
       icon,
       alt,
       asChild = false,
@@ -67,11 +71,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const [loading, setLoading] = useState(false);
     const [stillLoading, setStillLoading] = useState(false);
     function commonContent() {
       return (
-        <div className="" onClick={() => setLoading(true)}>
+        <div className="">
           <Comp
             className={cn(
               buttonVariants({ variant, size: "tighter", className })

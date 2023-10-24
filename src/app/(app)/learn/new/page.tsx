@@ -4,15 +4,15 @@ import NewUserQ from "@/components/Message/UserMsg/NewUserQ";
 import { merriweather, ruda } from "@/app/fonts";
 import Sources from "@/components/ui/Sources";
 import { Minus, Plus } from "lucide-react";
-import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
 import CreateASource from "@/components/ui/CreateASource";
-import { getSources } from "@/app/(api)/sources";
+import { getSources, setSources } from "@/app/(api)/sources";
+import MySources from "@/components/ui/MySources";
 type Text = {
   content: string;
   type: "New_Question" | "Question" | "Response" | "Interrogation";
   placeHolderText?: string;
 };
-function NewQuestion({ setTitle }: { setTitle: Function }) {
+function NewQuestion() {
   const messages: Array<Text> = [
     {
       type: "New_Question",
@@ -21,7 +21,6 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
   ];
   const [uploadClicked, setUploadClicked] = useState(false);
   const [newQuestionIsVisible, setNewQuestionIsVisible] = useState(false);
-  const [sources, setSources] = useState(getSources());
   return (
     <>
       <main
@@ -39,40 +38,16 @@ function NewQuestion({ setTitle }: { setTitle: Function }) {
             <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-3xl">
               {uploadClicked ? (
                 <>
-                  <h2
-                    className={`font-black text-[1.5rem] ${merriweather.className}`}
-                  >
-                    New Source
-                  </h2>
                   <CreateASource setSources={setSources} />
                 </>
               ) : (
                 <></>
               )}
-              <div className="flex justify-between" id="title">
-                <h2
-                  className={`font-black text-[1.5rem] ${merriweather.className}`}
-                >
-                  My Sources
-                </h2>
-                <ButtonWithoutLoadingState
-                  tooltip="Add a source"
-                  variant="grey"
-                  onClick={() => setUploadClicked(!uploadClicked)}
-                >
-                  {uploadClicked ? (
-                    <>
-                      <Minus className="h-6 w-6" />
-                    </>
-                  ) : (
-                    <Plus className="h-6 w-6 stroke-2 " />
-                  )}
-                </ButtonWithoutLoadingState>
-              </div>
-
-              <div id="primaryInteractionArea" className="flex flex-col gap-4">
-                <Sources setNewQuestionIsVisible={setNewQuestionIsVisible} />
-              </div>
+              <MySources
+                setNewQuestionIsVisible={setNewQuestionIsVisible}
+                setUploadClicked={setUploadClicked}
+                uploadClicked={uploadClicked}
+              />
             </div>
             {newQuestionIsVisible ? (
               <>

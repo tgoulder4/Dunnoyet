@@ -4,8 +4,6 @@ import { Button } from "../../../../components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import useRedirectAfterSomeSeconds from "@/app/customHooks";
-import { ButtonWithoutLoadingState } from "@/components/ui/ButtonWithoutLoadingState";
 
 type Props = {
   question: string;

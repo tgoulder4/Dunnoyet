@@ -21,7 +21,9 @@ interface navItem {
     alt: string;
     logoPath?: string;
     url: string;
+    userAuthButton: React.ReactNode;
     jsx?: React.ReactNode;
+    type?: "userProfileArea";
   };
   rightDivider?: boolean;
 }
@@ -91,6 +93,7 @@ function Navbar({
         </div>
         <div id="userSide" className="flex gap-4 h-full items-center">
           {getNavItems(userSide)}
+          {/*UserAuthbutton*/}
           {/* after learning about authentication, put the login component here */}
         </div>
       </header>

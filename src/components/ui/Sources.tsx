@@ -12,18 +12,21 @@ const Sources = ({ setNewQuestionIsVisible }: Props) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   return (
     <div className="flex flex-col gap-3">
-      {Sources.map((source, index) => (
-        <Source
-          noOfDocuments={source.noOfDocuments}
-          key={index}
-          lastUsed={source.lastUsed}
-          subject={source.subject}
-          files={source.files}
-          setNewQuestionIsVisible={setNewQuestionIsVisible}
-          setActiveIndex={setActiveIndex}
-          _expanded={index == activeIndex}
-        />
-      ))}
+      {Sources.map((source, index) => {
+        if (index !== 0)
+          return (
+            <Source
+              key={index}
+              files={source.files}
+              subject={source.subject}
+              noOfDocuments={source.noOfDocuments}
+              lastUsed={source.lastUsed}
+              setNewQuestionIsVisible={setNewQuestionIsVisible}
+              setActiveIndex={setActiveIndex}
+              _expanded={index == activeIndex}
+            />
+          );
+      })}
     </div>
   );
 };
