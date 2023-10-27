@@ -1,3 +1,4 @@
+//SCHEMAS
 export type IFile = {
   id: string;
   sourceID: string;
@@ -31,6 +32,7 @@ export type IUser = {
   password: string;
   threads: string[];
 };
+//DATA
 let threads: IThread[] = [
   {
     id: "0",
@@ -120,7 +122,8 @@ let sources: ISource[] = [
     files: ["1F2B3C4D5E6F7G8H9I0J"],
   },
 ];
-export function setSources(_sources: ISources): void {
+//MANIPULATION
+export function setSources(_sources: ISource[]): void {
   setTimeout(() => {}, 2000);
   sources = _sources;
 }
@@ -134,14 +137,14 @@ export function addFileToSource(sourceID: string, file: IFile): void {
     (source) => source.id === sourceID
   );
   if (source) {
-    source.files.push(file);
+    source.files.push(file.id);
   }
 }
-export function getSources(): ISources {
+export function getSources(): ISource[] {
   setTimeout(() => {}, 2000);
   return sources;
 }
-export function getSourceByID(id: string): ISource {
+export function getSourceByID(id: string): ISource | null {
   setTimeout(() => {}, 2000);
   const result: ISource | undefined = sources.find(
     (source) => source.id === id
@@ -149,6 +152,6 @@ export function getSourceByID(id: string): ISource {
   if (result) {
     return result;
   } else {
-    return mockSource;
+    return null;
   }
 }

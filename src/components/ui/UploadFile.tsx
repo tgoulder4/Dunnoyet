@@ -8,7 +8,7 @@ import {
   getSources,
   ISources,
   getSourceByID,
-} from "@/app/(api)/sources";
+} from "@/app/(api)/api";
 
 type Props = {
   callbackToRunOnceFinished: Function;

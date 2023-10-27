@@ -5,7 +5,7 @@ import { merriweather, ruda } from "@/app/fonts";
 import Sources from "@/components/ui/Sources";
 import { Minus, Plus } from "lucide-react";
 import CreateASource from "@/components/ui/CreateASource";
-import { getSources, setSources } from "@/app/(api)/sources";
+import { getSources, setSources } from "@/app/(api)/api";
 import MySources from "@/components/ui/MySources";
 type Text = {
   content: string;

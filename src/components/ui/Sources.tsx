@@ -2,7 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import Source from "./Source";
-import { ISources, getSources } from "@/app/(api)/sources";
+import { ISources, getSources } from "@/app/(api)/api";
 type Props = {
   setNewQuestionIsVisible: Function;
 };

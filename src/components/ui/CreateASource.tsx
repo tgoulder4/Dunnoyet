@@ -7,12 +7,7 @@ import { Button } from "./button";
 import Faq from "./Faq";
 import Source from "./Source";
 import { toast } from "sonner";
-import {
-  addSource,
-  getSourceByID,
-  ISource,
-  getSources,
-} from "@/app/(api)/sources";
+import { addSource, getSourceByID, ISource, getSources } from "@/app/(api)/api";
 import UploadFile from "./UploadFile";
 
 type Props = {

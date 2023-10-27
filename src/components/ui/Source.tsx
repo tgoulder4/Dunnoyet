@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
 import UploadFile from "./UploadFile";
-import { IFile, ISource } from "@/app/(api)/sources";
+import { IFile, ISource } from "@/app/(api)/api";
 type Props = {
   key: number;
   subject: string;
