@@ -19,14 +19,14 @@ type Props = {
   lastUsed: string;
   noOfDocuments: number;
   files: IFile[];
-  _selected?: boolean;
-  _expanded?: boolean;
-  _uploadOption?: boolean;
-  _selectable?: boolean;
+  appearanceMods: {
+    _selectable?: boolean;
+    _selected?: boolean;
+    _expanded?: boolean;
+    _expandable?: boolean;
+  };
   setNewQuestionIsVisible?: Function;
   setActiveIndex?: Function;
-  // _expanded: boolean;
-  _expandable?: boolean;
 };
 
 const Source = ({
@@ -35,11 +35,12 @@ const Source = ({
   lastUsed,
   noOfDocuments,
   files,
-  _selected = false,
-  _expanded = false,
-  _expandable = true,
-  _selectable = true,
-  _uploadOption = true,
+  appearanceMods: {
+    _selected = false,
+    _expanded = false,
+    _expandable = true,
+    _selectable = true,
+  },
   setActiveIndex,
   setNewQuestionIsVisible,
 }: // _expanded = false,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "./button";
 import { ruda, merriweather } from "../../app/fonts";
+import UserAuthButton from "./UserAuthButton";
 interface navItem {
   content: {
     variant:
@@ -21,7 +22,6 @@ interface navItem {
     alt: string;
     logoPath?: string;
     url: string;
-    userAuthButton: React.ReactNode;
     jsx?: React.ReactNode;
     type?: "userProfileArea";
   };
@@ -94,6 +94,7 @@ function Navbar({
         <div id="userSide" className="flex gap-4 h-full items-center">
           {getNavItems(userSide)}
           {/*UserAuthbutton*/}
+          <UserAuthButton />
           {/* after learning about authentication, put the login component here */}
         </div>
       </header>

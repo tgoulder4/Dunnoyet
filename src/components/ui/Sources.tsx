@@ -23,7 +23,7 @@ const Sources = ({ setNewQuestionIsVisible }: Props) => {
               lastUsed={source.lastUsed}
               setNewQuestionIsVisible={setNewQuestionIsVisible}
               setActiveIndex={setActiveIndex}
-              _expanded={index == activeIndex}
+              appearanceMods={{ _expanded: index == activeIndex }}
             />
           );
       })}

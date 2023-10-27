@@ -1,72 +1,125 @@
 export type IFile = {
+  id: string;
+  sourceID: string;
   name: string;
   uploadedAt: string;
   type: string;
 };
 export type ISource = {
   id: string;
+  userID: string;
   subject: string;
   noOfDocuments: number;
   lastUsed: string;
-  files: IFile[];
+  files: string[];
 };
-export type ISources = ISource[];
-let sources: ISources = [
+export type IMessage = {
+  content: string;
+  type: "New_Question" | "Question" | "Response" | "Interrogation";
+  placeHolderText?: string;
+};
+export type IThread = {
+  id: string;
+  messages: IMessage[];
+  sourceID: string[];
+  lastUsed: string;
+};
+export type IUser = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  threads: string[];
+};
+let threads: IThread[] = [
   {
     id: "0",
-    subject: "Test",
-    lastUsed: "Just now",
-    noOfDocuments: 2,
-    files: [
+    messages: [
       {
-        name: "The_Bourbon_Restoration",
-        type: "PDF",
-        uploadedAt: "Just now",
+        content: "Hello",
+        type: "Question",
       },
       {
-        name: "The_Bourbons_in_Italy",
-        type: "PDY",
-        uploadedAt: "Just now",
+        content: "Hi",
+        type: "Response",
       },
     ],
+    sourceID: ["0"],
+    lastUsed: "Just now",
   },
   {
     id: "1F2B3C4D5E6F7G8H9I0J",
-    subject: "Test",
-    lastUsed: "Just now",
-    noOfDocuments: 2,
-    files: [
+    messages: [
       {
-        name: "The_Bourbon_Restoration",
-        type: "PDF",
-        uploadedAt: "Just now",
+        content: "Hello",
+        type: "Question",
       },
       {
-        name: "The_Bourbons_in_Italy",
-        type: "PDY",
-        uploadedAt: "Just now",
+        content: "Hi",
+        type: "Response",
       },
     ],
+    sourceID: ["1F2B3C4D5E6F7G8H9I0J"],
+    lastUsed: "Just now",
   },
 ];
-let mockSource: ISource = {
-  id: "0",
-  subject: "N/A",
-  lastUsed: "-",
-  noOfDocuments: 0,
-  files: [
-    {
-      name: "File 1",
-      type: "PDF",
-      uploadedAt: "-",
-    },
-    {
-      name: "File 2",
-      type: "PDF",
-      uploadedAt: "-",
-    },
-  ],
-};
+let users: IUser[] = [
+  {
+    id: "0",
+    name: "Test",
+    email: "",
+    password: "",
+    threads: ["0"],
+  },
+  {
+    id: "1F2B3C4D5E6F7G8H9I0J",
+    name: "Tye",
+    email: "test@gmail.com",
+    password: "testpassword",
+    threads: ["1F2B3C4D5E6F7G8H9I0J"],
+  },
+  {
+    id: "1F2B3C4D5E6F7G8H9I0J",
+    name: "Tye",
+    email: "test@gmail.com",
+    password: "testpassword",
+    threads: [],
+  },
+];
+let files: IFile[] = [
+  {
+    id: "0",
+    sourceID: "0",
+    name: "File 1",
+    uploadedAt: "Just now",
+    type: "PDF",
+  },
+  {
+    id: "1F2B3C4D5E6F7G8H9I0J",
+    sourceID: "1F2B3C4D5E6F7G8H9I0J",
+    name: "File 2",
+    uploadedAt: "Just now",
+    type: "PDF",
+  },
+];
+let sources: ISource[] = [
+  {
+    id: "0",
+    userID: "0",
+    subject: "NewSrcTest",
+    lastUsed: "N/A",
+    noOfDocuments: 0,
+    files: ["0", "1F2B3C4D5E6F7G8H9I0J"],
+  },
+  {
+    id: "1F2B3C4D5E6F7G8H9I0J",
+    userID: "1F2B3C4D5E6F7G8H9I0J",
+    subject: "NewSrcTest",
+    lastUsed: "N/A",
+    noOfDocuments: 0,
+    files: ["1F2B3C4D5E6F7G8H9I0J"],
+  },
+];
 export function setSources(_sources: ISources): void {
   setTimeout(() => {}, 2000);
   sources = _sources;

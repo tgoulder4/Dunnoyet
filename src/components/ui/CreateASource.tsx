@@ -7,7 +7,12 @@ import { Button } from "./button";
 import Faq from "./Faq";
 import Source from "./Source";
 import { toast } from "sonner";
-import { addSource, getSourceByID, ISource } from "@/app/(api)/sources";
+import {
+  addSource,
+  getSourceByID,
+  ISource,
+  getSources,
+} from "@/app/(api)/sources";
 import UploadFile from "./UploadFile";
 
 type Props = {
@@ -19,19 +24,7 @@ const CreateASource = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [newSource, setNewSource] = useState<ISource>({
-    id: "0",
-    subject: "Physics",
-    noOfDocuments: 1,
-    lastUsed: "Today",
-    files: [
-      {
-        name: "hfdhfd",
-        type: "PDF",
-        uploadedAt: "sdg",
-      },
-    ],
-  });
+  const [newSource, setNewSource] = useState<ISource>(getSourceByID("0"));
   async function handleDone() {
     setLoading(true);
     if (!sourceName || !newSource.files.length) {
@@ -49,10 +42,10 @@ const CreateASource = (props: Props) => {
         lastUsed: "Just now",
         files: newSource.files,
       });
+      props.setSources(getSources());
       setLoading(false);
     }
   }
-  const { subject, noOfDocuments, lastUsed, files } = getSourceByID("0");
   return (
     <>
       <h2 className={`font-black text-[1.5rem] ${merriweather.className}`}>
@@ -82,10 +75,10 @@ const CreateASource = (props: Props) => {
             <>
               <Source
                 key={createdSourcesCount++}
-                subject={subject}
-                noOfDocuments={noOfDocuments}
-                lastUsed={lastUsed}
-                files={files}
+                subject={sourceName}
+                noOfDocuments={newSource.noOfDocuments}
+                lastUsed={newSource.lastUsed}
+                files={newSource.files}
                 _expandable={false}
                 _expanded={true}
                 _uploadOption={true}

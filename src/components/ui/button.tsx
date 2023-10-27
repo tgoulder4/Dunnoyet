@@ -53,6 +53,7 @@ export interface ButtonProps
   alt?: string;
   loading?: boolean;
   disableLoading?: boolean;
+  padding?: string;
   tooltip?: string | React.ReactNode;
 }
 

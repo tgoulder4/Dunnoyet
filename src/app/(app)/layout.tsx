@@ -52,16 +52,6 @@ export default function RootLayout({
                 tooltip: "New Question",
               },
             },
-            {
-              content: {
-                logoPath: "/pfp.png",
-                alt: "Profile Picture",
-                variant: "ghost",
-                url: "/",
-                padding: "p-0",
-                tooltip: "My Profile",
-              },
-            },
           ]}
           alignment="between"
         />
