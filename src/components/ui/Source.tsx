@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  ArrowRight,
   ChevronDown,
   ChevronRight,
   FileText,
@@ -11,14 +10,17 @@ import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
-import UploadFile from "./UploadFile";
-import { IFile, ISource } from "@/app/(api)/api";
+import {
+  IFile,
+  ISource,
+  getFilesFromSourceId,
+  getSourceWhereIdIs,
+} from "@/app/(api)/api";
 type Props = {
+  sourceID: string;
   key: number;
   subject: string;
   lastUsed: string;
-  noOfDocuments: number;
-  files: IFile[];
   appearanceMods: {
     _selectable?: boolean;
     _selected?: boolean;
@@ -31,10 +33,7 @@ type Props = {
 
 const Source = ({
   key,
-  subject,
-  lastUsed,
-  noOfDocuments,
-  files,
+  sourceID,
   appearanceMods: {
     _selected = false,
     _expanded = false,
@@ -70,7 +69,9 @@ Props) => {
       setExpanded(!expanded);
     }, 2000);
   }
-
+  const source: ISource | null = getSourceWhereIdIs(sourceID);
+  if (source == null) return <></>;
+  const files: IFile[] = getFilesFromSourceId(sourceID);
   return (
     <>
       <div
@@ -83,15 +84,15 @@ Props) => {
         <div className="flex justify-between gap-4" onClick={toggleSelected}>
           <Files className="h-12 w-12 stroke-1" />
           <summary className={`${ruda.className} flex flex-col gap-0.5 pr-20`}>
-            {subject == "" ? (
+            {source.subject == "" ? (
               <div className="rounded-lg animate-pulse bg-gray-200 h-5 w-72"></div>
             ) : (
               <h3 className={`${expanded ? "font-extrabold" : "font-bold"}`}>
-                {subject}
+                {source.subject}
               </h3>
             )}
             <p>
-              {noOfDocuments} Documents - Last used {lastUsed}
+              {source.files.length} Documents - Last used {source.lastUsed}
             </p>
           </summary>
         </div>
@@ -105,7 +106,7 @@ Props) => {
           ) : (
             <></>
           )}
-          {files.length > 0 ? (
+          {source.files.length > 0 ? (
             !expanded ? (
               loadingFiles ? (
                 <>

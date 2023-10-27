@@ -7,13 +7,10 @@ import Image from "next/legacy/image";
 import NewUserQ from "./Message/UserMsg/NewUserQ";
 import { toast } from "sonner";
 import { ruda } from "@/app/fonts";
-type Text = {
-  content: string;
-  type: "New_Question" | "Question" | "Response" | "Interrogation";
-  placeHolderText?: string;
-};
+import { IMessage } from "@/app/(api)/api";
+
 function Thread() {
-  const [messages, setMessages] = useState<Array<Text>>([
+  const [messages, setMessages] = useState<Array<IMessage>>([
     //it won't ever be only new_question, but this is just for testing
     {
       type: "New_Question",
@@ -30,7 +27,7 @@ function Thread() {
       className: `${ruda.className} p-8`,
     });
   }, []);
-  function addMessage(message: Text) {
+  function addMessage(message: IMessage) {
     setMessages([...messages, message]);
   }
   return (

@@ -10,7 +10,6 @@ export type ISource = {
   id: string;
   userID: string;
   subject: string;
-  noOfDocuments: number;
   lastUsed: string;
   files: string[];
 };
@@ -110,15 +109,13 @@ let sources: ISource[] = [
     userID: "0",
     subject: "NewSrcTest",
     lastUsed: "N/A",
-    noOfDocuments: 0,
     files: ["0", "1F2B3C4D5E6F7G8H9I0J"],
   },
   {
     id: "1F2B3C4D5E6F7G8H9I0J",
     userID: "1F2B3C4D5E6F7G8H9I0J",
-    subject: "NewSrcTest",
-    lastUsed: "N/A",
-    noOfDocuments: 0,
+    subject: "The Bourbon Restoration",
+    lastUsed: "Just Now",
     files: ["1F2B3C4D5E6F7G8H9I0J"],
   },
 ];
@@ -140,11 +137,20 @@ export function addFileToSource(sourceID: string, file: IFile): void {
     source.files.push(file.id);
   }
 }
-export function getSources(): ISource[] {
+export function getFileWhereIdIs(id: string): IFile | null {
+  setTimeout(() => {}, 2000);
+  const result: IFile | undefined = files.find((file) => file.id === id);
+  if (result) {
+    return result;
+  } else {
+    return null;
+  }
+}
+export function getAllSources(): ISource[] {
   setTimeout(() => {}, 2000);
   return sources;
 }
-export function getSourceByID(id: string): ISource | null {
+export function getSourceWhereIdIs(id: string): ISource | null {
   setTimeout(() => {}, 2000);
   const result: ISource | undefined = sources.find(
     (source) => source.id === id
@@ -154,4 +160,19 @@ export function getSourceByID(id: string): ISource | null {
   } else {
     return null;
   }
+}
+export function getFilesFromSourceId(id: string): IFile[] {
+  setTimeout(() => {}, 2000);
+  const matchingSourceByID: ISource | undefined = sources.find(
+    (source) => source.id === id
+  );
+  const finalFiles = matchingSourceByID?.files.map((fileID) => {
+    let _file = files.find((file) => file.id === fileID);
+    if (_file) {
+      return _file;
+    } else {
+      return null;
+    }
+  });
+  return finalFiles;
 }
