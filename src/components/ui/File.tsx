@@ -5,12 +5,12 @@ import { useState } from "react";
 import { Button } from "./button";
 
 type Props = {
-  key: number;
-  subject: string;
-  date: string;
+  name: string;
+  uploadedAt: string;
+  type: string;
 };
 
-const File = ({ key, subject, date }: Props) => {
+const File = ({ name, uploadedAt, type }: Props) => {
   const [hovering, setHovering] = useState(false);
   return (
     <div
@@ -21,14 +21,17 @@ const File = ({ key, subject, date }: Props) => {
       <div className="flex justify-between gap-4">
         <FileText className="h-12 w-12 stroke-1" />
         <summary className={`${ruda.className} flex flex-col gap-0.5`}>
-          <h3 className={`font-bold`}>{subject}</h3>
-          <p>{date}</p>
+          <h3 className={`font-bold`}>{name}</h3>
+          <p>
+            <code className="bg-gray-300 p-1 rounded-sm font-bold">{type}</code>
+            {"  "} {uploadedAt}
+          </p>
         </summary>
       </div>
       {hovering ? (
         <>
           <Button variant="ghost" tooltip="Delete file">
-            <Trash2 id={`select-${key}`} className="w-6 h-6" />
+            <Trash2 className="w-6 h-6" />
           </Button>
         </>
       ) : (

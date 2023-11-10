@@ -51,6 +51,9 @@ export interface ButtonProps
   asChild?: boolean;
   icon?: string;
   alt?: string;
+  loading?: boolean;
+  disableLoading?: boolean;
+  padding?: string;
   tooltip?: string | React.ReactNode;
 }
 
@@ -60,6 +63,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant,
       tooltip = "false",
+      loading = false,
+      disableLoading = false,
       icon,
       alt,
       asChild = false,
@@ -67,27 +72,36 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const [loading, setLoading] = useState(false);
+    const [stillLoading, setStillLoading] = useState(false);
     function commonContent() {
       return (
-        <Comp
-          className={cn(
-            buttonVariants({ variant, size: "tighter", className })
-          )}
-          ref={ref}
-          {...props}
-          onClick={() => setLoading(true)}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="animate-spin" color="#000000" />
-            </>
-          ) : icon ? (
-            <img src={icon} alt={alt} />
-          ) : (
-            props.children
-          )}
-        </Comp>
+        <div className="">
+          <Comp
+            className={cn(
+              buttonVariants({ variant, size: "tighter", className })
+            )}
+            ref={ref}
+            {...props}
+          >
+            {loading ? (
+              <>
+                {stillLoading ? (
+                  <p>Still loading...</p>
+                ) : (
+                  () =>
+                    setTimeout(() => {
+                      setStillLoading(true);
+                    }, 2000)
+                )}
+                <Loader2 className="animate-spin" color="#000000" />
+              </>
+            ) : icon ? (
+              <img src={icon} alt={alt} />
+            ) : (
+              props.children
+            )}
+          </Comp>
+        </div>
       );
     }
     const Comp = asChild ? Slot : "button";

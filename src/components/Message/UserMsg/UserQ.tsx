@@ -1,7 +1,6 @@
 "use client";
 import { merriweather } from "@/app/fonts";
 import { Button } from "../../ui/button";
-import { ButtonWithoutLoadingState } from "../../ui/ButtonWithoutLoadingState";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
@@ -60,7 +59,7 @@ function UserQuestionCard({
                 </h2>
                 {hovering ? (
                   <div className="flex items-end h-full">
-                    <ButtonWithoutLoadingState
+                    <Button
                       variant="outline"
                       icon="/pencil_dark.png"
                       onClick={handleEdit}
@@ -90,7 +89,7 @@ function UserQuestionCard({
                 />
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-end w-full">
-                    <ButtonWithoutLoadingState
+                    <Button
                       variant="grey"
                       icon="/arrow_dark.png"
                       tooltip="Submit answer"

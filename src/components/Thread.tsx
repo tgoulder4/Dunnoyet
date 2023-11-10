@@ -3,34 +3,46 @@ import React, { useState, useEffect } from "react";
 import ResponseCard from "./Message/GPTMsg/Answer/ResponseCard";
 import InterrogativeCard from "./Message/GPTMsg/Interrogative/InterrogativeMsg";
 import UserQuestionCard from "./Message/UserMsg/UserQ";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import NewUserQ from "./Message/UserMsg/NewUserQ";
 import { toast } from "sonner";
 import { ruda } from "@/app/fonts";
-type Text = {
-  content: string;
-  type: "New_Question" | "Question" | "Response" | "Interrogation";
-  placeHolderText?: string;
+import {
+  IMessage,
+  getMessagesFromDatabaseWhereThreadIdIs,
+} from "@/app/(api)/api";
+type Props = {
+  threadID?: string;
+  //find messages via threadID or treat as static and pass messages in.
+  _messages?: IMessage[];
 };
-function Thread() {
-  const [messages, setMessages] = useState<Array<Text>>([
-    //it won't ever be only new_question, but this is just for testing
-    {
-      type: "New_Question",
-      content: "Who were the Bourbon Monarch?",
-    },
-    {
-      type: "Response",
-      content:
-        "The Bourbon Monarch were the rulers of France before the French Revolution. They were overthrown by the French Revolution.",
-    },
-  ]);
+function Thread(props: Props) {
+  function getMessages(): Array<IMessage> | null {
+    if (props.threadID) {
+      //get messages from database
+      return getMessagesFromDatabaseWhereThreadIdIs(props.threadID);
+    } else {
+      if (props._messages) {
+        return props._messages as Array<IMessage>;
+      } else {
+        throw new Error(
+          "No messages were passed in and no threadID was passed in"
+        );
+      }
+    }
+  }
+  const [messages, setMessages] = useState<Array<IMessage>>(
+    getMessages() as Array<IMessage>
+  );
+  if (!messages) {
+    return <></>;
+  }
   useEffect(() => {
     toast.success("Lesson entered: The Bourbon Monarch", {
       className: `${ruda.className} p-8`,
     });
   }, []);
-  function addMessage(message: Text) {
+  function addMessage(message: IMessage) {
     setMessages([...messages, message]);
   }
   return (

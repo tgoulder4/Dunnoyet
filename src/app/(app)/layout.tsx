@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar/navbar";
 import { Plus } from "lucide-react";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
-  title: "New Question | dunnoyet",
+  title: "Learn - dunnoyet",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({
@@ -50,16 +50,6 @@ export default function RootLayout({
                 padding: "p-2",
                 jsx: <Plus className="h-full" color="#FFFFFF" />,
                 tooltip: "New Question",
-              },
-            },
-            {
-              content: {
-                logoPath: "/pfp.png",
-                alt: "Profile Picture",
-                variant: "ghost",
-                url: "/",
-                padding: "p-0",
-                tooltip: "My Profile",
               },
             },
           ]}

@@ -1,9 +1,9 @@
 import { merriweather } from "@/app/fonts";
-import { ButtonWithoutLoadingState } from "../../../../ui/ButtonWithoutLoadingState";
 import { Term } from "@/components/Message/GPTMsg/Answer/ResponseCard";
 import { Input } from "@/components/ui/input2";
 import { ruda } from "@/app/fonts";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 const interrogativeTerms = [
   {
     term: "Elaborate!",
@@ -77,7 +77,7 @@ function InterrogativeButtons({
               const hueForButton =
                 hueStart + hueDiff * (index / (interrogativeTerms.length - 1));
               return (
-                <ButtonWithoutLoadingState
+                <Button
                   variant={
                     index == interrogativeTerms.length - 1 ? "ghost" : "outline"
                   }
@@ -85,11 +85,12 @@ function InterrogativeButtons({
                   key={interrogativeTerm.term}
                   tooltip="false"
                   size={"tighter"}
+                  disableLoading={true}
                   onClick={() => {
                     index == interrogativeTerms.length - 1 ? (
                       <div className="flex flex-col gap-2">
                         {additionalTerms.map((additionalTerm) => (
-                          <ButtonWithoutLoadingState
+                          <Button
                             variant="outline"
                             className={`w-full text-xl ${merriweather.className}`}
                             onClick={() =>
@@ -97,7 +98,7 @@ function InterrogativeButtons({
                             }
                           >
                             {additionalTerm.term}
-                          </ButtonWithoutLoadingState>
+                          </Button>
                         ))}
                       </div>
                     ) : (
@@ -112,7 +113,7 @@ function InterrogativeButtons({
                   }}
                 >
                   {interrogativeTerm.term}
-                </ButtonWithoutLoadingState>
+                </Button>
               );
             })}
           </div>
