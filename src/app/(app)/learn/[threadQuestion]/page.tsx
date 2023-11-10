@@ -10,7 +10,7 @@ export default function Home({}: Props) {
         The Bourbon Monarch
       </h2>
       <div className="flex flex-col gap-3 pb-16">
-        <Thread />
+        <Thread threadID="1F2B3C4D5E6F7G8H9I0J" />
       </div>
     </main>
   );

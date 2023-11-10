@@ -3,6 +3,11 @@ import { Minus, Plus } from "lucide-react";
 import Sources from "@/components/ui/Sources";
 import { merriweather } from "@/app/fonts";
 import { Button } from "./button";
+import {
+  ISource,
+  getSources,
+  getSourceFromDatabaseWhereSourceIdIs,
+} from "@/app/(api)/api";
 type Props = {
   uploadClicked?: boolean;
   setUploadClicked: Function;
@@ -11,6 +16,8 @@ type Props = {
 
 const MySources = (props: Props) => {
   const [uploadClicked, setUploadClicked] = useState(props.uploadClicked);
+  const userID = "1F2B3C4D5E6F7G8H9I0J";
+  const sources: ISource[] = getSources(userID);
   return (
     <>
       <div className="flex justify-between" id="title">
@@ -33,7 +40,10 @@ const MySources = (props: Props) => {
       </div>
 
       <div id="primaryInteractionArea" className="flex flex-col gap-4">
-        <Sources setNewQuestionIsVisible={props.setNewQuestionIsVisible} />
+        <Sources
+          sources={sources}
+          setNewQuestionIsVisible={props.setNewQuestionIsVisible}
+        />
       </div>
     </>
   );

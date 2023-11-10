@@ -2,28 +2,34 @@
 import { ArrowRight, Plus } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { ruda, merriweather } from "@/app/fonts";
-import {
-  setSources,
-  IFile,
-  getSources,
-  ISources,
-  getSourceByID,
-} from "@/app/(api)/api";
+import React, { useCallback } from "react";
+import { IFile, addFileToDatabase } from "@/app/(api)/api";
 
 type Props = {
-  callbackToRunOnceFinished: Function;
+  addFileToTheNewSource: (file: IFile) => void;
+  sourceID: string;
 };
 
 const UploadFile = (props: Props) => {
-  const { getRootProps, getInputProps } = useDropzone();
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    accept: "application/pdf";
+    maxFiles: 5;
+    onDrop: (acceptedFiles) => {
+      console.log(acceptedFiles);
+    };
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const file: IFile = {
+    id: Math.random().toString(),
+    sourceID: props.sourceID,
     name: "Test",
     uploadedAt: "Today",
     type: "pdf",
   };
   function saveUpload() {
-    getSourceByID("0").files.push(file);
-    props.callbackToRunOnceFinished();
+    addFileToDatabase(file);
+    props.addFileToTheNewSource(file);
   }
   return (
     <div className="flex flex-col gap-2">

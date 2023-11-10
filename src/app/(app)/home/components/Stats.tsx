@@ -5,7 +5,7 @@ type Props = {};
 
 const Stats = (props: Props) => {
   return (
-    <div className="flex gap-2 divide-x-2 divide-gray-200">
+    <div className="flex p-4 divide-x-2 bg-white divide-gray-50 rounded-lg">
       <Stat type="questions" />
       <Stat type="concepts" />
     </div>

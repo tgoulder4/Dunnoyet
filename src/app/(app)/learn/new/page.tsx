@@ -5,7 +5,8 @@ import { merriweather, ruda } from "@/app/fonts";
 import Sources from "@/components/ui/Sources";
 import { Minus, Plus } from "lucide-react";
 import CreateASource from "@/components/ui/CreateASource";
-import { getSources, setSources } from "@/app/(api)/api";
+import { getSources, ISource } from "@/app/(api)/api";
+import { Button } from "@/components/ui/button";
 import MySources from "@/components/ui/MySources";
 type Text = {
   content: string;
@@ -21,6 +22,8 @@ function NewQuestion() {
   ];
   const [uploadClicked, setUploadClicked] = useState(false);
   const [newQuestionIsVisible, setNewQuestionIsVisible] = useState(false);
+  const userID = "1F2B3C4D5E6F7G8H9I0J";
+  const [sources, setSources] = useState<ISource[]>(getSources(userID));
   return (
     <>
       <main
@@ -43,11 +46,33 @@ function NewQuestion() {
               ) : (
                 <></>
               )}
-              <MySources
-                setNewQuestionIsVisible={setNewQuestionIsVisible}
-                setUploadClicked={setUploadClicked}
-                uploadClicked={uploadClicked}
-              />
+              <div className="flex justify-between" id="title">
+                <h2
+                  className={`font-black text-[1.5rem] ${merriweather.className}`}
+                >
+                  My Sources
+                </h2>
+                <Button
+                  tooltip="Add a source"
+                  variant="grey"
+                  onClick={() => setUploadClicked(!uploadClicked)}
+                >
+                  {uploadClicked ? (
+                    <>
+                      <Minus className="h-6 w-6" />
+                    </>
+                  ) : (
+                    <Plus className="h-6 w-6 stroke-2 " />
+                  )}
+                </Button>
+              </div>
+
+              <div id="primaryInteractionArea" className="flex flex-col gap-4">
+                <Sources
+                  sources={sources}
+                  setNewQuestionIsVisible={setNewQuestionIsVisible}
+                />
+              </div>
             </div>
             {newQuestionIsVisible ? (
               <>

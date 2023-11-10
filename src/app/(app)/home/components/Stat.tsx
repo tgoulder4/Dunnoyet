@@ -1,4 +1,4 @@
-import { merriweather } from "@/app/fonts";
+import { merriweather, ruda } from "@/app/fonts";
 import React from "react";
 
 type Props = {
@@ -6,10 +6,18 @@ type Props = {
 };
 
 const Stat = (props: Props) => {
+  let number = 29;
+  let descriptor = "Concepts Learnt";
+  switch (props.type) {
+  }
   return (
-    <div className={`p-6 flex flex-col ${merriweather.className}`}>
-      <h1>29</h1>
-      <p>Concepts learnt</p>
+    <div
+      className={`rounded-lg flex flex-col bg-white hover:bg-gray-50 items-start py-4  px-8 justify-center h-full ${merriweather.className}`}
+    >
+      <h1 className={`${merriweather.className} text-9xl font-bold`}>
+        {number}
+      </h1>
+      <p className={`${ruda.className}`}>{descriptor}</p>
     </div>
   );
 };

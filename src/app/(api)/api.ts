@@ -23,6 +23,7 @@ export type IThread = {
   messages: IMessage[];
   sourceID: string[];
   lastUsed: string;
+  subject: string;
 };
 export type IUser = {
   id: string;
@@ -32,9 +33,13 @@ export type IUser = {
   threads: string[];
 };
 //DATA
-let threads: IThread[] = [
+const threads: IThread[] = [
   {
     id: "0",
+    sourceID: ["0"],
+    lastUsed: "Just now",
+    subject: "A cute roleplay",
+
     messages: [
       {
         content: "Hello",
@@ -45,11 +50,12 @@ let threads: IThread[] = [
         type: "Response",
       },
     ],
-    sourceID: ["0"],
-    lastUsed: "Just now",
   },
   {
     id: "1F2B3C4D5E6F7G8H9I0J",
+    sourceID: ["1F2B3C4D5E6F7G8H9I0J"],
+    lastUsed: "Just now",
+    subject: "Another cute roleplay",
     messages: [
       {
         content: "Hello",
@@ -60,11 +66,72 @@ let threads: IThread[] = [
         type: "Response",
       },
     ],
-    sourceID: ["1F2B3C4D5E6F7G8H9I0J"],
+  },
+  {
+    id: "2K3L4M5N6O7P8Q9R0S",
+    sourceID: ["2K3L4M5N6O7P8Q9R0S"],
     lastUsed: "Just now",
+    subject: "Yet another cute roleplay",
+    messages: [
+      {
+        content: "How are you?",
+        type: "Question",
+      },
+      {
+        content: "I'm doing well, thanks for asking!",
+        type: "Response",
+      },
+    ],
+  },
+  {
+    id: "3T4U5V6W7X8Y9Z0A1B",
+    sourceID: ["3T4U5V6W7X8Y9Z0A1B"],
+    lastUsed: "Just now",
+    subject: "Yet another cute roleplay",
+    messages: [
+      {
+        content: "What's your favorite color?",
+        type: "Question",
+      },
+      {
+        content:
+          "I don't really have a favorite color, but I like blue and green.",
+        type: "Response",
+      },
+    ],
+  },
+  {
+    id: "4C5D6E7F8G9H0I1J2K",
+    sourceID: ["4C5D6E7F8G9H0I1J2K"],
+    lastUsed: "Just now",
+    subject: "Yet another cuter roleplay",
+    messages: [
+      {
+        content: "What's your favorite food?",
+        type: "Question",
+      },
+      {
+        content: "I like pizza and sushi.",
+        type: "Response",
+      },
+    ],
   },
 ];
-let users: IUser[] = [
+let userID = "1F2B3C4D5E6F7G8H9I0J";
+export function getCurrentUserID() {
+  return userID;
+}
+export function getFilesByFileIDs(fileIDs: string[]): IFile[] {
+  const result: IFile[] = [];
+  fileIDs.forEach((fileID) => {
+    const file = files.find((file) => file.id === fileID);
+    if (file) {
+      result.push(file);
+    }
+  });
+  return result;
+}
+const users: IUser[] = [
   {
     id: "0",
     name: "Test",
@@ -80,14 +147,14 @@ let users: IUser[] = [
     threads: ["1F2B3C4D5E6F7G8H9I0J"],
   },
   {
-    id: "1F2B3C4D5E6F7G8H9I0J",
-    name: "Tye",
+    id: "1G2B3C4A5E6F7G8H9I0J",
+    name: "Goulder",
     email: "test@gmail.com",
     password: "testpassword",
-    threads: [],
+    threads: ["2K3L4M5N6O7P8Q9R0S"],
   },
 ];
-let files: IFile[] = [
+const files: IFile[] = [
   {
     id: "0",
     sourceID: "0",
@@ -102,14 +169,28 @@ let files: IFile[] = [
     uploadedAt: "Just now",
     type: "PDF",
   },
+  {
+    id: "2H2B3C4D5E6F7G8H9I0J",
+    sourceID: "1F2B3C4D5E6F7G8H9I0J",
+    name: "File 2",
+    uploadedAt: "Just now",
+    type: "PDF",
+  },
 ];
-let sources: ISource[] = [
+const sources: ISource[] = [
   {
     id: "0",
     userID: "0",
     subject: "NewSrcTest",
     lastUsed: "N/A",
     files: ["0", "1F2B3C4D5E6F7G8H9I0J"],
+  },
+  {
+    id: "4C5D6E7F8G9H0I1J2K",
+    userID: "1G2B3C4A5E6F7G8H9I0J",
+    subject: "TestSrc",
+    lastUsed: "Just Now",
+    files: ["2H2B3C4D5E6F7G8H9I0J"],
   },
   {
     id: "1F2B3C4D5E6F7G8H9I0J",
@@ -120,24 +201,20 @@ let sources: ISource[] = [
   },
 ];
 //MANIPULATION
-export function setSources(_sources: ISource[]): void {
+export function getUserWhereIdIs(id: string): IUser | null {
   setTimeout(() => {}, 2000);
-  sources = _sources;
-}
-export async function addSource(source: ISource): Promise<void> {
-  await setTimeout(() => {}, 2000);
-  sources.push(source);
-}
-export function addFileToSource(sourceID: string, file: IFile): void {
-  setTimeout(() => {}, 2000);
-  const source: ISource | undefined = sources.find(
-    (source) => source.id === sourceID
-  );
-  if (source) {
-    source.files.push(file.id);
+  const result: IUser | undefined = users.find((user) => user.id === id);
+  if (result) {
+    return result;
+  } else {
+    return null;
   }
 }
-export function getFileWhereIdIs(id: string): IFile | null {
+export async function addFileToDatabase(_file: IFile): Promise<void> {
+  setTimeout(() => {}, 2000);
+  files.push(_file);
+}
+export function getFileFromDatabaseWhereIdIs(id: string): IFile | null {
   setTimeout(() => {}, 2000);
   const result: IFile | undefined = files.find((file) => file.id === id);
   if (result) {
@@ -146,11 +223,45 @@ export function getFileWhereIdIs(id: string): IFile | null {
     return null;
   }
 }
-export function getAllSources(): ISource[] {
+export function getThreadsByUserId(id: string): IThread[] {
   setTimeout(() => {}, 2000);
-  return sources;
+  const result: IThread[] = threads.filter((thread) =>
+    thread.sourceID.includes(id)
+  );
+  return result;
 }
-export function getSourceWhereIdIs(id: string): ISource | null {
+export function getMessagesFromDatabaseWhereThreadIdIs(threadID: string) {
+  setTimeout(() => {}, 2000);
+  const result: IThread | undefined = threads.find(
+    (thread) => thread.id === threadID
+  );
+  if (result) {
+    return result.messages;
+  } else {
+    return null;
+  }
+}
+export function getSources(userID: string): ISource[] {
+  setTimeout(() => {}, 2000);
+  const result: ISource[] = sources.filter(
+    (source) => source.userID === userID
+  );
+  return result;
+}
+export async function addSourceToAUsersSources(
+  userID: string,
+  source: ISource
+): Promise<void> {
+  setTimeout(() => {}, 2000);
+  sources.push(source);
+}
+export async function pushSourceToDatabase(_source: ISource): Promise<void> {
+  setTimeout(() => {}, 2000);
+  sources.push(_source);
+}
+export async function getSourceFromDatabaseWhereSourceIdIs(
+  id: string
+): Promise<ISource | null> {
   setTimeout(() => {}, 2000);
   const result: ISource | undefined = sources.find(
     (source) => source.id === id
@@ -161,16 +272,22 @@ export function getSourceWhereIdIs(id: string): ISource | null {
     return null;
   }
 }
-export function getFilesFromSourceId(id: string): IFile[] {
+export function getFilesFromDatabaseFromSourceId(
+  id: string
+): Array<IFile | null> {
   setTimeout(() => {}, 2000);
   const matchingSourceByID: ISource | undefined = sources.find(
     (source) => source.id === id
   );
-  const finalFiles = matchingSourceByID?.files.map((fileID) => {
+  if (matchingSourceByID === undefined) {
+    return [];
+  }
+  const finalFiles = matchingSourceByID.files.map((fileID) => {
     let _file = files.find((file) => file.id === fileID);
     if (_file) {
       return _file;
     } else {
+      //null implies that the corresponding file was not found in the files array. this should never happen unless improperly configured
       return null;
     }
   });

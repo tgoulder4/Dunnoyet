@@ -10,17 +10,11 @@ import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
-import {
-  IFile,
-  ISource,
-  getFilesFromSourceId,
-  getSourceWhereIdIs,
-} from "@/app/(api)/api";
+import { IFile, ISource } from "@/app/(api)/api";
 type Props = {
-  sourceID: string;
-  key: number;
-  subject: string;
-  lastUsed: string;
+  index: number;
+  source: ISource;
+  files: (IFile | null)[];
   appearanceMods: {
     _selectable?: boolean;
     _selected?: boolean;
@@ -32,8 +26,9 @@ type Props = {
 };
 
 const Source = ({
-  key,
-  sourceID,
+  index,
+  source,
+  files,
   appearanceMods: {
     _selected = false,
     _expanded = false,
@@ -61,17 +56,21 @@ Props) => {
       setLoadingFiles(false);
       return;
     }
-    if (setActiveIndex) setActiveIndex(key);
-    console.log(`Active index: ${key}`);
+    if (setActiveIndex) setActiveIndex(index);
+    console.log(`Active index: ${index}`);
     setLoadingFiles(!loadingFiles);
     setTimeout(() => {
       setLoadingFiles(false);
       setExpanded(!expanded);
     }, 2000);
   }
-  const source: ISource | null = getSourceWhereIdIs(sourceID);
+
+  if (!source)
+    throw new Error(
+      "'source' and/or 'files' couldn't be given their values as there was no sourceID given and _source and _files weren't passed to the Source.tsx component."
+    );
+
   if (source == null) return <></>;
-  const files: IFile[] = getFilesFromSourceId(sourceID);
   return (
     <>
       <div
@@ -117,7 +116,7 @@ Props) => {
                   {_expandable ? (
                     <>
                       <ChevronRight
-                        id={`select-${key}`}
+                        id={`select-${index}`}
                         className="w-8 h-8"
                         onClick={toggleExpanded}
                       />
@@ -132,7 +131,7 @@ Props) => {
                 {_expandable ? (
                   <>
                     <ChevronDown
-                      id={`select-${key}`}
+                      id={`select-${index}`}
                       className="w-8 h-8"
                       onClick={toggleExpanded}
                     />
@@ -164,14 +163,16 @@ Props) => {
       ) : expanded ? (
         <div className="pl-4">
           <div className="flex flex-col gap-3">
-            {files.map((file, index) => (
-              <File
-                key={index}
-                type={file.type}
-                name={file.name}
-                uploadedAt={file.uploadedAt}
-              />
-            ))}
+            {files.map((file) => {
+              if (!file) return <></>;
+              return (
+                <File
+                  type={file.type}
+                  name={file.name}
+                  uploadedAt={file.uploadedAt}
+                />
+              );
+            })}
           </div>
         </div>
       ) : (

@@ -7,8 +7,20 @@ import { Button } from "./button";
 import Faq from "./Faq";
 import Source from "./Source";
 import { toast } from "sonner";
-import { addSource, getSourceByID, ISource, getSources } from "@/app/(api)/api";
+import {
+  getCurrentUserID,
+  getSources,
+  getSourceFromDatabaseWhereSourceIdIs,
+  getFilesFromDatabaseFromSourceId,
+  ISource,
+  pushSourceToDatabase,
+  addSourceToAUsersSources,
+  IFile,
+  addFileToDatabase,
+  getFilesByFileIDs,
+} from "@/app/(api)/api";
 import UploadFile from "./UploadFile";
+import { Textarea } from "./textarea";
 
 type Props = {
   setSources: Function;
@@ -16,13 +28,30 @@ type Props = {
 let createdSourcesCount = 0;
 const CreateASource = (props: Props) => {
   const [sourceName, setSourceName] = useState("");
+  const [filesUploaded, setFilesUploaded] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [newSource, setNewSource] = useState<ISource>(getSourceByID("0"));
+  const userID = getCurrentUserID();
+  const sourceID = Math.random().toString();
+  const [theNewSourceTheyreUploading, setTheNewSourceTheyreUploading] =
+    useState({
+      id: sourceID,
+      userID: getCurrentUserID(),
+      subject: sourceName,
+      lastUsed: "Just now",
+      files: filesUploaded,
+    });
+  //create a new source in the db
+  addSourceToAUsersSources(userID, theNewSourceTheyreUploading);
+  //retrieve its ID
+  function addFileToTheNewSource(file: IFile) {
+    filesUploaded.push(file.id);
+    setFilesUploaded(filesUploaded);
+    setTheNewSourceTheyreUploading(theNewSourceTheyreUploading);
+  }
   async function handleDone() {
     setLoading(true);
-    if (!sourceName || !newSource.files.length) {
+    if (!sourceName || !theNewSourceTheyreUploading.files.length) {
       inputRef.current?.focus();
       toast.error("Please enter a topic name and upload at least one file", {
         className: "bg-red-500 text-white" + ruda.className,
@@ -30,14 +59,8 @@ const CreateASource = (props: Props) => {
     } else {
       toast.success(`Source '${sourceName}' created!`);
 
-      await addSource({
-        id: Math.random().toString(),
-        subject: sourceName,
-        noOfDocuments: newSource.files.length,
-        lastUsed: "Just now",
-        files: newSource.files,
-      });
-      props.setSources(getSources());
+      await pushSourceToDatabase(theNewSourceTheyreUploading);
+      props.setSources(getSourceFromDatabaseWhereSourceIdIs(userID));
       setLoading(false);
     }
   }
@@ -66,20 +89,19 @@ const CreateASource = (props: Props) => {
               <ArrowRight className="h-8 w-8 stroke-2" color="#FFFFFF" />
             </Button>
           </div>
-          {newSource.files.length > 0 || sourceName !== "" ? (
+          {theNewSourceTheyreUploading.files.length > 0 || sourceName !== "" ? (
             <>
               <Source
-                key={createdSourcesCount++}
-                subject={sourceName}
-                noOfDocuments={newSource.noOfDocuments}
-                lastUsed={newSource.lastUsed}
-                files={newSource.files}
-                _expandable={false}
-                _expanded={true}
-                _uploadOption={true}
-                _selectable={false}
+                index={createdSourcesCount++}
+                source={theNewSourceTheyreUploading}
+                files={getFilesByFileIDs(theNewSourceTheyreUploading.files)}
+                appearanceMods={{
+                  _expandable: false,
+                  _expanded: true,
+                  _selectable: false,
+                }}
               />
-              <UploadFile callbackToRunOnceFinished={handleDone} />
+              <Textarea onChange={(e) => setSourceName(e.target.value)} />
             </>
           ) : (
             <></>

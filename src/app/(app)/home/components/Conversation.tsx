@@ -1,3 +1,4 @@
+"use client";
 import { merriweather, ruda } from "@/app/fonts";
 import React, { useState } from "react";
 import { Button } from "../../../../components/ui/button";
@@ -8,10 +9,10 @@ import { redirect } from "next/navigation";
 type Props = {
   question: string;
   subject: string;
-  date: string;
+  lastUsed: string;
 };
 
-const Conversation = ({ question, subject, date }: Props) => {
+const Conversation = ({ question, subject, lastUsed }: Props) => {
   const [opened, setOpened] = useState(false);
   return (
     <div

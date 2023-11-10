@@ -5,13 +5,12 @@ import { useState } from "react";
 import { Button } from "./button";
 
 type Props = {
-  key: number;
   name: string;
   uploadedAt: string;
   type: string;
 };
 
-const File = ({ key, name, uploadedAt, type }: Props) => {
+const File = ({ name, uploadedAt, type }: Props) => {
   const [hovering, setHovering] = useState(false);
   return (
     <div
@@ -32,7 +31,7 @@ const File = ({ key, name, uploadedAt, type }: Props) => {
       {hovering ? (
         <>
           <Button variant="ghost" tooltip="Delete file">
-            <Trash2 id={`select-${key}`} className="w-6 h-6" />
+            <Trash2 className="w-6 h-6" />
           </Button>
         </>
       ) : (
