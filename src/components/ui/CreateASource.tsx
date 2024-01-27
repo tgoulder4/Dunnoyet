@@ -18,7 +18,7 @@ import {
   IFile,
   addFileToDatabase,
   getFilesByFileIDs,
-} from "@/app/(api)/api";
+} from "@/app/(api)/Actions/actions";
 import UploadFile from "./UploadFile";
 import { Textarea } from "./textarea";
 

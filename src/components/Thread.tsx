@@ -9,32 +9,18 @@ import { toast } from "sonner";
 import { ruda } from "@/app/fonts";
 import {
   IMessage,
-  getMessagesFromDatabaseWhereThreadIdIs,
-} from "@/app/(api)/api";
+} from "@/app/(api)/types";
 type Props = {
-  threadID?: string;
   //find messages via threadID or treat as static and pass messages in.
-  _messages?: IMessage[];
+  _messages: IMessage[];
 };
-function Thread(props: Props) {
-  function getMessages(): Array<IMessage> | null {
-    if (props.threadID) {
-      //get messages from database
-      return getMessagesFromDatabaseWhereThreadIdIs(props.threadID);
-    } else {
-      if (props._messages) {
-        return props._messages as Array<IMessage>;
-      } else {
-        throw new Error(
-          "No messages were passed in and no threadID was passed in"
-        );
-      }
-    }
-  }
+const Thread = (props: Props) => {
+  const { _messages } = props;
   const [messages, setMessages] = useState<Array<IMessage>>(
-    getMessages() as Array<IMessage>
+    _messages
   );
-  if (!messages) {
+  if (messages === null) {
+    console.error("Couldn't render thread.tsx as messages is null")
     return <></>;
   }
   useEffect(() => {

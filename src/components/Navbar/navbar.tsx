@@ -5,14 +5,14 @@ import UserAuthButton from "./UserAuthButton";
 interface navItem {
   content: {
     variant:
-      | "link"
-      | "ghost"
-      | "default"
-      | "destructive"
-      | "outline"
-      | "secondary"
-      | null
-      | undefined;
+    | "link"
+    | "ghost"
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | null
+    | undefined;
     text?: {
       text: string;
       color: string;
@@ -47,14 +47,14 @@ function Navbar({
         <Button
           asChild
           variant={item.content.variant}
+          key={item.content.url}
           className={`h-full ${item.content.padding}`}
           tooltip={item.content.tooltip ? item.content.tooltip : "false"}
         >
           <Link
             href={item.content.url}
-            className={`${
-              item.content.text ? "text-" + item.content.text.color : ""
-            } font-[600] `}
+            className={`${item.content.text ? "text-" + item.content.text.color : ""
+              } font-[600] `}
           >
             {item.content.jsx ? (
               <>{item.content.jsx}</>

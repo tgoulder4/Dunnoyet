@@ -5,7 +5,6 @@ import { merriweather, ruda } from "@/app/fonts";
 import Sources from "@/components/ui/Sources";
 import { Minus, Plus } from "lucide-react";
 import CreateASource from "@/components/ui/CreateASource";
-import { getSources, ISource } from "@/app/(api)/api";
 import { Button } from "@/components/ui/button";
 import MySources from "@/components/ui/MySources";
 type Text = {
@@ -33,9 +32,8 @@ function NewQuestion() {
           New Question
         </h2>
         <div
-          className={`flex flex-col gap-3 ${
-            uploadClicked ? "pb-24" : ""
-          } outline-2 outline-gray-400`}
+          className={`flex flex-col gap-3 ${uploadClicked ? "pb-24" : ""
+            } outline-2 outline-gray-400`}
         >
           <div className={`relative flex flex-col gap-4 `} id="cardContainer">
             <div className="w-full bg-white flex flex-col gap-3 p-8 rounded-3xl">

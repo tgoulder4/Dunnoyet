@@ -9,7 +9,7 @@
     --complementary: 0 0% 24%; /* #3d3d3d */
     --complementary_lighter: 0 0% 59%; /* #969696 */
     --complementary_lightest: 0 0% 89%; /* #e3e3e3 */
-    --foreground: 240 10% 4%; /* #0a0a0b */
+    --black: 240 10% 4%; /* #0a0a0b */
     --card: 0 0% 100%; /* #ffffff */
     --card-foreground: 0 0% 24%; /* #3d3d3d */
     --popover: 0 0% 100%; /* #ffffff */

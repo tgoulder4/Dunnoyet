@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
@@ -47,8 +47,9 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  style?: CSSProperties;
   icon?: string;
   alt?: string;
   loading?: boolean;
@@ -61,6 +62,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
+      style,
       variant,
       tooltip = "false",
       loading = false,
@@ -76,7 +78,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     function commonContent() {
       return (
         <div className="">
-          <Comp
+          <Comp style={{ ...style, padding: props.padding }}
             className={cn(
               buttonVariants({ variant, size: "tighter", className })
             )}

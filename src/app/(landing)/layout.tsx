@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Button } from "../../components/Navbar/button";
 import { merriweather, ruda } from "@/app/fonts";
 import Link from "next/link";
+import { colours } from "../constants";
 
 export const metadata: Metadata = {
   title: "dunnoyet.",
@@ -37,42 +38,30 @@ export default function RootLayout({
               <div className="badge"></div>
             </div>
           </div>
-          <div id="middle" className="flex items-center gap-4 h-full">
-            <Button
-              asChild
-              variant="link"
-              className="text-complementary font-bold"
-            >
-              <Link href="/" className={`${ruda.className}`}>
-                Pricing
-              </Link>
-            </Button>
-            <div className="w-[2px] h-full bg-[rgba(0,0,0,0.1)]"></div>
-            <Button
-              asChild
-              variant="link"
-              className="text-complementary font-bold"
-            >
-              <Link href="/" className={`${ruda.className}`}>
-                How It Works
-              </Link>
-            </Button>
-          </div>
           <div id="userSide" className="flex gap-2 h-full items-center">
             {/* after learning about authentication, put the login component here */}
             <Button
               asChild
-              variant="default"
-              className={`${merriweather.className} font-bold text-white`}
+              variant="link"
+              className="text-complementary font-bold"
             >
-              <Link href="/learn/new">Try a Question Free</Link>
+              <Link className={`${ruda.className} text-sm font-bold`} style={{ font: ruda.className }} href="/learn/new">Pricing</Link>
+            </Button>
+            <Button
+              asChild
+              variant="link"
+              className="text-complementary font-bold"
+            >
+              <Link className={`${ruda.className} text-sm font-bold`} href="/learn/new">How it works</Link>
             </Button>
             <Button
               asChild
               variant="link"
               className={`${merriweather.className} font-bold text-complementary`}
             >
-              <Link href="/learn">Login</Link>
+              <Button style={{ backgroundColor: colours.black }}>
+                <Link style={{ color: colours.white, font: merriweather.className }} href="/learn">Learn</Link>
+              </Button>
             </Button>
           </div>
         </header>

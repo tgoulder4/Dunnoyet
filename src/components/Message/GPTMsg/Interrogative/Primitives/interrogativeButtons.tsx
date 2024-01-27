@@ -92,6 +92,7 @@ function InterrogativeButtons({
                         {additionalTerms.map((additionalTerm) => (
                           <Button
                             variant="outline"
+                            key={additionalTerm.term}
                             className={`w-full text-xl ${merriweather.className}`}
                             onClick={() =>
                               passDownFunctions.handleTermSelect(additionalTerm)

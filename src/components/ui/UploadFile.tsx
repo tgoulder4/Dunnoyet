@@ -3,7 +3,7 @@ import { ArrowRight, Plus } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { ruda, merriweather } from "@/app/fonts";
 import React, { useCallback } from "react";
-import { IFile, addFileToDatabase } from "@/app/(api)/api";
+import { IFile, addFileToDatabase } from "@/app/(api)/Actions/actions";
 
 type Props = {
   addFileToTheNewSource: (file: IFile) => void;

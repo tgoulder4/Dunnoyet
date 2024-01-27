@@ -1,9 +1,9 @@
 import { merriweather } from "@/app/fonts";
 import Conversation from "./components/Conversation";
 import Stats from "./components/Stats";
-import { getThreadsByUserId, getCurrentUserID } from "@/app/(api)/api";
+import { getThreadsByUserId } from "@/app/(api)/Actions/actions"
 type Props = {};
-export default function Home({}: Props) {
+export default function Home({ }: Props) {
   const threads = getThreadsByUserId(getCurrentUserID());
   return (
     <main
@@ -16,10 +16,10 @@ export default function Home({}: Props) {
       <h2 className={` text-[2rem] ${merriweather.className}`}>Past lessons</h2>
       <div className="flex flex-col gap-3 pb-16">
         <div className="flex flex-col gap-3">
-          {threads.map((thread, index) => (
+          {threads.map((thread) => (
             <Conversation
               question={thread.messages[0].content}
-              key={index}
+              key={thread.id}
               subject={thread.subject}
               lastUsed={thread.lastUsed}
             />

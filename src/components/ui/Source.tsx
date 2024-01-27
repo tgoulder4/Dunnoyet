@@ -10,7 +10,7 @@ import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
-import { IFile, ISource } from "@/app/(api)/api";
+import { IFile, ISource } from "@/app/(api)/Actions/actions";
 type Props = {
   index: number;
   source: ISource;
@@ -38,7 +38,7 @@ const Source = ({
   setActiveIndex,
   setNewQuestionIsVisible,
 }: // _expanded = false,
-Props) => {
+  Props) => {
   const [expanded, setExpanded] = useState(_expanded);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [selected, setSelected] = useState(_selected);
@@ -74,11 +74,10 @@ Props) => {
   return (
     <>
       <div
-        className={`${
-          !selected
-            ? "hover:bg-[#f4f4ff] outline bg-[#FFFFFF] outline-[#efefef]"
-            : "outline outline-2 bg-[#ECEEFF]"
-        } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
+        className={`${!selected
+          ? "hover:bg-[#f4f4ff] outline bg-[#FFFFFF] outline-[#efefef]"
+          : "outline outline-2 bg-[#ECEEFF]"
+          } outline-[#888FCE]  w-full px-2 py-4 rounded-lg flex justify-between items-center`}
       >
         <div className="flex justify-between gap-4" onClick={toggleSelected}>
           <Files className="h-12 w-12 stroke-1" />
