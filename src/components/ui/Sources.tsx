@@ -7,7 +7,7 @@ import {
   ISource,
   getFilesFromDatabaseFromSourceId,
   getSourceFromDatabaseWhereSourceIdIs,
-} from "@/app/(api)/Actions/actions";
+} from "@/lib/Actions/actions";
 type Props = {
   setNewQuestionIsVisible: Function;
   setUploadClicked?: Function;

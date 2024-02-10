@@ -40,6 +40,9 @@ import { fabric } from "fabric";
 type Props = {};
 const page = (props: Props) => {
   return (
+    <>
+      <h1>Coming soon!</h1>
+    </>
   );
 };
 

@@ -9,6 +9,8 @@ const config: Config = {
     "./src/**/**/*.{ts,tsx}",
   ],
   theme: {
+    fontFamily: {
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -27,6 +29,7 @@ const config: Config = {
       },
       fontFamily: {
         Merriweather: ["Merriweather", "serif"],
+        Ruda: ["Ruda", "sans-serif"],
       },
       colors: {
         complementary: "hsl(var(--complementary))",

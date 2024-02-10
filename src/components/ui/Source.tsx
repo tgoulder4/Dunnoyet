@@ -10,7 +10,7 @@ import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
-import { IFile, ISource } from "@/app/(api)/Actions/actions";
+import { IFile, ISource } from "@/lib/Actions/actions";
 type Props = {
   index: number;
   source: ISource;

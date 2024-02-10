@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Button } from "./button";
 import { ruda, merriweather } from "../../app/fonts";
 import UserAuthButton from "./UserAuthButton";
+import { sizing } from "@/lib/constants";
 interface navItem {
+  jsx?: React.ReactNode,
   content: {
     variant:
     | "link"
@@ -11,20 +13,23 @@ interface navItem {
     | "destructive"
     | "outline"
     | "secondary"
+    | "white"
     | null
     | undefined;
     text?: {
       text: string;
       color: string;
     };
-    padding?: string;
+    backgroundColour?: string;
     tooltip?: string;
+    padding?: string;
     alt: string;
     logoPath?: string;
     url: string;
     jsx?: React.ReactNode;
     type?: "userProfileArea";
   };
+  tooltip?: string;
   rightDivider?: boolean;
 }
 interface NavbarProps {
@@ -43,16 +48,18 @@ function Navbar({
 }: NavbarProps) {
   function getNavItems(items: Array<navItem>) {
     return items.map((item) => (
-      <>
-        <Button
+      <>{
+        item.jsx ? item.jsx : <Button
           asChild
           variant={item.content.variant}
-          key={item.content.url}
+          style={{ fontSize: sizing.globalFontSize }}
+          key={item.content.alt}
           className={`h-full ${item.content.padding}`}
           tooltip={item.content.tooltip ? item.content.tooltip : "false"}
         >
           <Link
             href={item.content.url}
+
             className={`${item.content.text ? "text-" + item.content.text.color : ""
               } font-[600] `}
           >
@@ -69,8 +76,9 @@ function Navbar({
             )}
           </Link>
         </Button>
+      }
         {item.rightDivider ? (
-          <div className="w-[2px] h-full bg-[rgb(0_0_0_/_25%)]"></div>
+          <div className="flex-1 w-[2px] h-full bg-[rgb(0_0_0_/_25%)]"></div>
         ) : (
           <></>
         )}
@@ -80,11 +88,11 @@ function Navbar({
   return (
     <>
       <header
-        className={`drop-shadow-md ${color} h-14 flex items-center justify-${alignment} p-3 px-16 ${ruda.className} sticky top-0 z-50`}
+        className={`drop-shadow-md ${color} h-16  flex items-center justify-${alignment} py-3 px-16 sticky top-0 z-50`}
       >
         <div
           id="brandSide"
-          className={`${merriweather.className} flex items-center gap-4 h-full`}
+          className={`flex items-center gap-4 h-full`}
         >
           {getNavItems(brandSide)}
         </div>

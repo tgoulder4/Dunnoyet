@@ -1,12 +1,12 @@
-import "./../globals.css";
+import "./globals.css";
 import type { Metadata } from "next";
-import { Button } from "../../components/Navbar/button";
+import { Button } from "../components/Navbar/button";
 import { merriweather, ruda } from "@/app/fonts";
 import Link from "next/link";
-import { colours } from "../constants";
+import { DunnoyetLogo, colours, sizing } from "../lib/constants";
 
 export const metadata: Metadata = {
-  title: "dunnoyet.",
+  title: "dunnoyet - Serious in depth learning",
   description: "Serious in depth learning.",
 };
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={` bg-white flex flex-col`}>
+      <body className={` bg-white flex flex-col`} style={{ fontSize: sizing.globalFontSize }}>
         <header
           className={`border-b-gray-200 border-b-2 bg-white h-14 flex items-center justify-between p-3 px-16 sticky top-0 z-50`}
         >
@@ -59,17 +59,14 @@ export default function RootLayout({
               variant="link"
               className={`${merriweather.className} font-bold text-complementary`}
             >
-              <Button style={{ backgroundColor: colours.black }}>
-                <Link style={{ color: colours.white, font: merriweather.className }} href="/learn">Learn</Link>
+              <Button asChild style={{ backgroundColor: colours.dark.backgroundDark }}>
+                <Link style={{ color: colours.dark.text, font: merriweather.className }} href="/learn">Learn</Link>
               </Button>
             </Button>
           </div>
         </header>
 
         {children}
-        <footer className="bg-complementary h-48 px-16">
-          <Button icon="logo_light.png" variant="ghost" />
-        </footer>
       </body>
     </html>
   );

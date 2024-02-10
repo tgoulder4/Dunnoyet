@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from "@/components/Navbar/button";
 import { merriweather } from '../../app/fonts'
-import { colours } from '../../app/constants'
+import { colours } from '../../lib/constants'
 import Laptop from './Laptop'
 import Link from 'next/link'
 

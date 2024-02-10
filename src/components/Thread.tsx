@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { ruda } from "@/app/fonts";
 import {
   IMessage,
-} from "@/app/(api)/types";
+} from "@/lib/types";
 type Props = {
   //find messages via threadID or treat as static and pass messages in.
   _messages: IMessage[];
