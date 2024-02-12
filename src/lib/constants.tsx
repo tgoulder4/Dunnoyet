@@ -35,6 +35,21 @@ export const sizing = {
     largestFontSize: '2.625rem',
     largerFontSize: '2.25rem'
 }
+export const spacing = {
+    gaps: {
+        groupedElement: 14,
+        separateElement: 28,
+        largest: 56,
+    },
+    padding: {
+        normalX: 20,
+        normalY: 28,
+        smallerX: 10,
+        smallerY: 12,
+    },
+}
+export const maxLandingWidth = "1320px";
+
 export const DunnoyetLogo = ({ colour }: { colour: string }) => {
     return (
         <svg width="61" height="27" viewBox="0 0 61 27" fill="none" xmlns="http://www.w3.org/2000/svg">

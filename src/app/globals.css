@@ -91,7 +91,7 @@
 */
 * {
   margin: 0;
-  color: #3c3c3c;
+  /* color: #3c3c3c; */
 }
 Button img {
   width: 100%;

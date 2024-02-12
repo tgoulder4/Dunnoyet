@@ -1,20 +1,21 @@
 import React from 'react'
 import { Button } from "@/components/Navbar/button";
 import { merriweather } from '../../app/fonts'
-import { colours } from '../../lib/constants'
+import { colours, maxLandingWidth, spacing } from '../../lib/constants'
 import Laptop from './Laptop'
 import Link from 'next/link'
 
 function MainTitleArea() {
     return (
-        <section className="flex flex-col justify-between items-center h-80 gap-5 sm:w-inherit w-full">
+        <section style={{ paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY, maxWidth: maxLandingWidth }} className="flex flex-col justify-between items-center gap-5 sm:w-inherit w-full">
             <article
                 className={`${merriweather.className} flex-1 flex flex-col gap-2 w-full`}
             >
                 <div className="h-full w-11/12">
                     <h1
                         id="mainTitle"
-                        className={`${merriweather.className} relative font-black text-4xl leading-[1.4] z-20`}
+                        style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
+                        className={`${merriweather.className} relative text-[5vw]  leading-[1.4] z-20`}
                     >
                         Learn anything in serious depth in less than 1 minute with dunnoyet.
                         <div
@@ -33,7 +34,7 @@ function MainTitleArea() {
                         className={`${merriweather.className}`}
                         style={{ backgroundColor: colours.primary }}
                     >
-                        <Link className="font-bold" href="/home">
+                        <Link className={`font-bold text-xl`} href="/learn">
                             Try One Question Free
                         </Link>
                     </Button>

@@ -7,8 +7,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-function DisplacingButton({ text, children, tooltip }: { text?: string, children?: React.ReactNode, tooltip?: string }) {
+import { TinyColor } from '@ctrl/tinycolor';
+function DisplacingButton({ backgroundColour, text, children, tooltip }: { backgroundColour: string, text?: string, children?: React.ReactNode, tooltip?: string }) {
+    const color = new TinyColor(backgroundColour);
     const [state, setState] = useState("inactive");
     const getOffset = useCallback(() => {
         switch (state) {
@@ -24,8 +25,8 @@ function DisplacingButton({ text, children, tooltip }: { text?: string, children
     }, [state])
     function commonContent() {
         return (
-            <div style={{ borderRadius: 10, offset: getOffset() }} className='flex flex-row' onMouseEnter={() => setState("hovering")} onMouseLeave={() => setState("inactive")} onMouseDown={() => setState("clicking")}>{
-                text ? <h2 style={{ fontSize: sizing.globalFontSize }}>{text}</h2> : children}</div>
+            <div style={{ backgroundColor: color.toString(), boxShadow: '0px 6px 0px 0px rgba(0, 0, 0, 0.25)' + color.darken(25).toString(), borderRadius: 10, offset: getOffset() }} className='flex flex-0 flex-row px-[28px] py-[8px]' onMouseEnter={() => setState("hovering")} onMouseLeave={() => setState("inactive")} onMouseDown={() => setState("clicking")}>{
+                text ? <h2 style={{ color: color.isDark() ? '#FFF' : '#000', fontSize: sizing.globalFontSize }}>{text}</h2> : children}</div>
         )
     }
     return (<>
