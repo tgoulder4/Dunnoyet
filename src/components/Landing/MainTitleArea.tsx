@@ -4,12 +4,13 @@ import { merriweather } from '../../app/fonts'
 import { colours, maxLandingWidth, spacing } from '../../lib/constants'
 import Laptop from './Laptop'
 import Link from 'next/link'
+import NewButton from '../ui/NewButton';
 
 function MainTitleArea() {
     return (
-        <section style={{ paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY, maxWidth: maxLandingWidth }} className="flex flex-col justify-between items-center gap-5 sm:w-inherit w-full">
+        <section style={{ paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY, maxWidth: maxLandingWidth, rowGap: spacing.gaps.largest }} className="flex flex-col justify-between items-center sm:w-inherit w-full">
             <article
-                className={`${merriweather.className} flex-1 flex flex-col gap-2 w-full`}
+                style={{ rowGap: spacing.gaps.groupedElement }} className={`${merriweather.className} flex-1 flex flex-col w-full`}
             >
                 <div className="h-full w-11/12">
                     <h1
@@ -18,9 +19,13 @@ function MainTitleArea() {
                         className={`${merriweather.className} relative text-[5vw]  leading-[1.4] z-20`}
                     >
                         Learn anything in serious depth in less than 1 minute with dunnoyet.
-                        <div
+                        <div style={{
+                            width: "clamp(3.5rem, 45vw, 36rem)",
+                            height: "clamp(1.5rem, 4.5vw, 3.8rem)",
+                            top: "clamp(1.5rem, 7.7vw, 6rem)"
+                        }}
                             id="block"
-                            className="bg-complementary_lightest w-[38vw] h-6 absolute top-[76px] left-0 z-[-1]"
+                            className="hidden textBreak:block absolute bg-complementary_lightest left-0 z-[-1]"
                         ></div>
                     </h1>
                 </div>
@@ -29,15 +34,7 @@ function MainTitleArea() {
             understanding.
           </h2> */}
                 <div className="flex gap-2">
-                    <Button
-                        variant="link"
-                        className={`${merriweather.className}`}
-                        style={{ backgroundColor: colours.primary }}
-                    >
-                        <Link className={`font-bold text-xl`} href="/learn">
-                            Try One Question Free
-                        </Link>
-                    </Button>
+                    <NewButton className='text-2xl px-[28px] py-[14px] font-bold' buttonVariant='primary' actionOrLink="/learn">Try One Question Free</NewButton>
                 </div>
             </article>
             <Laptop />

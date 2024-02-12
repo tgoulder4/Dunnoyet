@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import Settings from "../ui/Settings/Settings";
 import NewButton from "../ui/NewButton";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 type Props = {};
 

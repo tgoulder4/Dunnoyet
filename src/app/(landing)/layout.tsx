@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={` bg-white flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
         <nav style={{ paddingRight: spacing.padding.normalY, paddingLeft: spacing.padding.normalY }}
-          className={` bg-white h-14 flex items-center justify-between p-3 sticky top-0 z-50`}>
+          className={`shadow bg-white flex items-center justify-between p-3 sticky top-0 z-50`}>
           <div id="brandSide" className={`flex items-center gap-4 h-full`}>
             <Link href="/" className="flex items-center gap-2">
               <Button
@@ -41,33 +41,13 @@ export default function RootLayout({
           </div>
           <div id="userSide" className="flex gap-2 h-full items-center">
             {/* after learning about authentication, put the login component here */}
-            <Button
-              asChild
-              variant="link"
-              className="text-complementary font-bold"
-            >
-              <Link className={`${ruda.className} text-sm font-bold`} style={{ font: ruda.className }} href="/learn/new">Pricing</Link>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              className="text-complementary font-bold"
-            >
-              <Link className={`${ruda.className} text-sm font-bold`} href="/learn/new">How it works</Link>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              className={`${merriweather.className} font-bold text-complementary`}
-            >
-              <Button asChild style={{ backgroundColor: colours.dark.backgroundDark }}>
-                <Link style={{ color: colours.dark.text, font: merriweather.className }} href="/learn">Learn</Link>
-              </Button>
-            </Button>
+            <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">Pricing</NewButton>
+            <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">How it works</NewButton>
+            <NewButton style={{ fontFamily: merriweather.style.fontFamily }} buttonVariant="black" actionOrLink="/learn">Learn</NewButton>
           </div>
         </nav>
         {children}
-        <footer className="bg-complementary h-48 px-16">
+        <footer style={{ backgroundColor: colours.accent, }} className="h-48 px-16">
           <Button asChild variant="ghost">
             <DunnoyetLogo colour="white" />
           </Button>

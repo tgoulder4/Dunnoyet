@@ -17,6 +17,7 @@ interface buttonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
     actionOrLink: (() => void) | string,
     className?: string
     textColour?: string
+    noAnimation?: boolean
 }
 function NewButton({
     buttonVariant,
@@ -27,7 +28,8 @@ function NewButton({
     tooltip,
     actionOrLink,
     className,
-    textColour
+    textColour,
+    noAnimation
 }: buttonProps) {
     let bgColour = "";
     const [hovered, setHovered] = useState(false);
@@ -48,7 +50,7 @@ function NewButton({
     return (
         <Link style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }} onClick={typeof actionOrLink === 'function' ? () => actionOrLink() : () => { }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} href={
             typeof actionOrLink === 'string' ? actionOrLink : "#"
-        } className={`${className} hover:scale-105 transition-transform flex flex-row gap-3 items-center px-[16px] py-[8px] w-fit hover:underline rounded-[10px]`}>
+        } className={`${className} ${!noAnimation ? "hover:scale-105 transition-transform" : ""} flex flex-row gap-3 items-center px-[16px] py-[8px] w-fit hover:underline rounded-[10px]`}>
             {text} {children}
         </Link>
     )

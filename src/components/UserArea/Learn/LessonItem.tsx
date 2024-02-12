@@ -1,6 +1,6 @@
 'use client'
 import { colours, spacing } from '@/lib/constants'
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
