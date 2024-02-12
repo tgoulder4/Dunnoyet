@@ -1,8 +1,7 @@
 import { IFile, IMessage, ISource, IThread, IUser } from "../types";
 import { users, threads } from "../mockData";
 import { MockTavilySearchAPIRetriever, createCompletion } from "./createCompletion";
-import sleep from "../../../../lib/sleep";
-
+import sleep from "@/lib/sleep";
 //DATA
 export async function getUsersThreadsWhereUserIdIs(userId: string): Promise<IThread[]> {
     await sleep(2000);

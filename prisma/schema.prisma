@@ -12,12 +12,13 @@ datasource db {
 }
 
 model User {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  email            String   @unique
-  name             String?
-  lessons          Lesson[]
-  helperName       String
-  brainDescription String
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email                     String   @unique
+  password                  String
+  name                      String?
+  lessons                   Lesson[]
+  tutorName                 String
+  knowledgePointsUnderstood String[]
 
   @@map("users")
 }
@@ -28,7 +29,6 @@ model Lesson {
   messages  Message[]
   beganAt   DateTime  @default(now())
   updatedAt DateTime  @default(now())
-  //relation field below
   user      User      @relation(fields: [userId], references: [id])
   userId    String    @db.ObjectId
 
