@@ -6,6 +6,7 @@ export const metadata: Metadata = {
     description: "Log into your account."
 }
 function LoginPage() {
+    //if they're already logged in, redirect them to the user area.
     return (
         <SignUpOrIn type='signin' />
     )

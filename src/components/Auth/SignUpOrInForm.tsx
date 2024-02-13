@@ -14,12 +14,6 @@ function SignUpOrInForm({ type }: { type: "signin" | "signup" }) {
     const passwordRef = useRef<HTMLInputElement>(null);
     const [errorMessage, dispatch] = useFormState(authenticate, undefined);
     const { pending } = useFormStatus();
-    // function handleDispatch(event: React.FormEvent<HTMLFormElement>): void {
-    //     event.preventDefault();
-    //     const username = usernameRef.current?.value;
-    //     const password = passwordRef.current?.value;
-    //     dispatch({ username, password });
-    // }
     useEffect(() => {
         usernameRef.current?.focus()
     }, [])

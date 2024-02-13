@@ -1,16 +1,13 @@
 "use client"
 import React, { useState } from 'react'
-import ChatAreaHeader from '../../../../components/UserArea/Learn/Chat'
-import { colours, sizing, spacing } from '@/lib/constants'
+import { sizing, spacing } from '@/lib/constants'
 import { Plus } from 'lucide-react'
-import DisplacingButton from '@/components/ui/displacingButton'
 import LessonItem from '../../../../components/UserArea/Learn/LessonItem'
 import SummaryItem from '../../../../components/UserArea/Learn/SummaryItem'
 import { merriweather } from '@/app/fonts'
 import Tip from '../../../../components/UserArea/Learn/Tip'
 import Chat from '../../../../components/UserArea/Learn/Chat'
 import NewButton from '@/components/ui/NewButton'
-import { Metadata } from 'next'
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
 // }
