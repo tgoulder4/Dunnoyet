@@ -12,7 +12,7 @@ function MainTitleArea() {
             <article
                 style={{ rowGap: spacing.gaps.groupedElement }} className={`${merriweather.className} flex-1 flex flex-col w-full`}
             >
-                <div className="h-full w-11/12">
+                <div className="h-full md:w-11/12">
                     <h1
                         id="mainTitle"
                         style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
