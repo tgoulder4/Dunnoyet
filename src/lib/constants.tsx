@@ -16,6 +16,7 @@ export const colours = {
     destructive: "#f75a72",
     destructiveForeground: "#fcfcfc",
     border: "#e8e8ed",
+    inputBorder: "#757575",
     link: "#19445C",
     textLegend: "#616161",
     light: {

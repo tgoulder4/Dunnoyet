@@ -7,7 +7,7 @@ import {
   ISource,
   getSources,
   getSourceFromDatabaseWhereSourceIdIs,
-} from "@/lib/Actions/actions";
+} from "@/lib/actions/actions";
 type Props = {
   uploadClicked?: boolean;
   setUploadClicked: Function;

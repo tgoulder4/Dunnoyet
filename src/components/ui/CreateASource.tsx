@@ -18,7 +18,7 @@ import {
   IFile,
   addFileToDatabase,
   getFilesByFileIDs,
-} from "@/lib/Actions/actions";
+} from "@/lib/actions/actions";
 import UploadFile from "./UploadFile";
 import { Textarea } from "./textarea";
 

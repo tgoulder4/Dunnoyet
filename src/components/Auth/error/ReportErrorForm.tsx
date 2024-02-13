@@ -3,7 +3,7 @@ import React from 'react'
 import NewButton from '@/components/ui/NewButton'
 import { colours, spacing } from '@/lib/constants'
 
-function Form() {
+function ReportErrorForm() {
     return (
         <form className='flex flex-col' style={{ rowGap: spacing.gaps.groupedElement }}>
             <label style={{ color: colours.textLegend }} htmlFor="errorReport">Report Issue</label>
@@ -15,4 +15,4 @@ function Form() {
     )
 }
 
-export default Form
+export default ReportErrorForm

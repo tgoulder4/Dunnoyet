@@ -8,7 +8,7 @@ function LessonItem({ topic, currentInformationIntakeSummary, threadID, imageURL
     const [hovered, setHovered] = useState(false);
     return (
         <Link href={`/learn/${threadID}`}>
-            <div className="flex flex-row gap-0 w-[32rem] h-56" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+            <div className="flex flex-row gap-0 w-full h-56" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
                 borderRadius: '10px',
                 border: '1px solid rgba(0, 0, 0, 0.60)',
                 background: '#FFF'

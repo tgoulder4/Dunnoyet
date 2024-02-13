@@ -3,9 +3,8 @@ import { AuthError } from "next-auth";
 import { signIn } from "./auth"
 
 type FormData = {
-    email: string;
+    username: string;
     password: string;
-
 }
 export async function authenticate(prevState: string | undefined, formData: FormData) {
     try {

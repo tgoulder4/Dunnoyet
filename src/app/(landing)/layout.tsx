@@ -18,9 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>Dunnoyet - Seriously in-depth learning</title>
+      </head>
       <body className={` bg-white flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-        <nav style={{ paddingRight: spacing.padding.normalY, paddingLeft: spacing.padding.normalY }}
-          className={`shadow bg-white flex items-center justify-between p-3 sticky top-0 z-50`}>
+        <nav
+          className={`shadow px-[100px] bg-white flex items-center justify-between p-3 sticky top-0 z-50`}>
           <div id="brandSide" className={`flex items-center gap-4 h-full`}>
             <Link href="/" className="flex items-center gap-2">
               <Button
