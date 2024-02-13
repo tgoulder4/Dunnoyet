@@ -3,7 +3,8 @@ import { AuthError } from "next-auth";
 import { signIn } from "./auth"
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
-    console.log("authenticate called with", { prevState, formData })
+    console.dir("authenticate called, FormData:")
+    console.dir(formData, { depth: null })
     try {
         await signIn("credentials", formData)
     }
