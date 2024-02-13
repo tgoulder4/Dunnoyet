@@ -1,4 +1,4 @@
-"use client"
+
 import { merriweather } from '@/app/fonts'
 import { colours, sizing, spacing } from '@/lib/constants'
 import React from 'react'
@@ -6,9 +6,9 @@ import SignUpOrInForm from './SignUpOrInForm'
 
 function SignUpOrIn({ type }: { type: 'signup' | 'signin' }) {
     return (<div className="flex w-full h-full">
-        <form className='flex-2 grow' style={{ padding: 2 * spacing.gaps.largest, paddingTop: spacing.gaps.largest }}>
-            <SignUpOrInForm type={type} />
-        </form>
+
+        <SignUpOrInForm type={type} />
+
         <div style={{ borderTopLeftRadius: 10, padding: spacing.gaps.largest, backgroundColor: colours.primary }} className="flex-[20] h-full hidden lg:flex  flex-col items-start justify-between">
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize }} className='w-full max-w-sm text-white'>Unlock the power of Learning</h1>
             <div className="w-full flex items-end place-content-end mb-[-50px]">

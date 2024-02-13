@@ -15,6 +15,7 @@ export type ILesson = {
 export type IUser = {
     id: string;
     name: string;
+    username: string;
     email: string;
     password: string;
     lessons: ILesson[];

@@ -1,5 +1,4 @@
 import { TavilySearchAPIRetriever } from "@langchain/community/retrievers/tavily_search_api";
-import { IThread } from "../types";
 import OpenAI from "openai";
 
 /**

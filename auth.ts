@@ -6,11 +6,11 @@ import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
-async function getUser(email: string): Promise<IUser | null> {
+export async function getUser(username: string): Promise<IUser | null> {
     try {
         const user = await prisma.user.findUnique({
             where: {
-                email: email, // This matches the user with the provided email.
+                username: username, // This matches the user with the provided email.
             },
         });
         return user as IUser;
@@ -24,17 +24,28 @@ export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [
         Credentials({
+            name: 'credentials',
             async authorize(credentials) {
-                const parsedCredentials = z.object({ email: z.string().email(), password: z.string().min(6) })
+                console.log("authorize called with credentials: ", credentials)
+                const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6) })
                     .safeParse(credentials);
+                console.log("parsedCredentials: ", parsedCredentials)
                 if (parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
-                    const user = await getUser(email);
-                    if (!user) return null;
-                    const passwordsMatch = await bcrypt.compare(password, user.password);
-                    if (passwordsMatch) return user;
+                    const { username, password } = parsedCredentials.data;
+                    const user = await getUser(username);
+                    console.log("user: ", user)
+                    if (!user) {
+                        console.log("User not found.")
+                        return null
+                    };
+                    const passwordsMatch = await bcrypt.compare(password, '$2b$10$gHSwwTtLSsFrEu8NzNb5WeIY6J5WzHtKJRDSh0Lfrc5BQD1ACKQeW');
+                    if (passwordsMatch) {
+                        console.log("Credentials are valid, returning user.", user)
+                        return user;
+                    } else {
+                        console.log("Passwords didn't match. Entered:[", password, "]", " Stored:[", user.password, "]")
+                    }
                 }
-                console.log("Credentials are invalid.");
                 return null;
 
             }

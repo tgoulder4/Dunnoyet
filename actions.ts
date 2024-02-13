@@ -2,11 +2,8 @@
 import { AuthError } from "next-auth";
 import { signIn } from "./auth"
 
-type FormData = {
-    username: string;
-    password: string;
-}
 export async function authenticate(prevState: string | undefined, formData: FormData) {
+    console.log("authenticate called with", { prevState, formData })
     try {
         await signIn("credentials", formData)
     }
@@ -16,7 +13,8 @@ export async function authenticate(prevState: string | undefined, formData: Form
                 case 'CredentialsSignin': return 'Invalid credentials';
                 default: return 'An error occurred';
             }
+        } else {
+            throw err;
         }
-        throw err;
     }
 }

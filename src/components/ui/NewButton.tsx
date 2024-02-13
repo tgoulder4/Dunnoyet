@@ -14,7 +14,7 @@ interface buttonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
     text?: string,
     icon?: ReactNode,
     tooltip?: string,
-    actionOrLink: (() => void) | string,
+    actionOrLink?: (() => void) | string,
     className?: string
     textColour?: string
     noAnimation?: boolean
