@@ -13,7 +13,9 @@ import InputWithLegend from './InputWithFieldset'
 function SignInForm() {
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
-    const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    // const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    //CORRECTION:
+    const [responseMsg,dispatch]=useFormState(authenticate,undefined)
     const { pending } = useFormStatus();
     useEffect(() => {
         usernameRef.current?.focus()
@@ -28,10 +30,13 @@ function SignInForm() {
                     <InputWithLegend ref={usernameRef} idAndName="username" type="text" placeholder="Username" defaultValue='tgoulder4' />
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>
                         {
-                            errorMessage &&
+                            errorMessage==instanceOf AuthError?
                             // passwordRef.current?.focus()
                             <div className='grid place-items-center w-full font-bold py-[14px] rounded-[10px]' style={{ backgroundColor: 'rgb(255,27,27,0.38)' }}>
-                                {errorMessage}
+                                {responseMsg}
+                            </div>:
+                            <div className='grid place-items-center w-full font-bold py-[14px] rounded-[10px]' style={{ backgroundColor: 'rgb(66, 186, 150)' }}>
+                                {responseMsg}
                             </div>
                         }
                     </InputWithLegend>
