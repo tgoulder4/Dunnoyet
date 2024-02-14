@@ -22,3 +22,16 @@ export type IUser = {
     tutorName: string;
     knowledgePointsUnderstood: string[];
 };
+export type ITip = {
+
+    id?: string;
+    title: string;
+    content: string;
+    link: string;
+    uiDetailId?: string;
+
+}
+export type IDetail = {
+    id?: string;
+    tips: ITip[];
+}
