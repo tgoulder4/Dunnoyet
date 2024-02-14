@@ -1,3 +1,4 @@
+'use server'
 import { IUser } from '@/lib/validation/enforceTypes';
 import { authConfig } from './auth.config';
 import NextAuth from "next-auth";
@@ -5,6 +6,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { prismaClient } from './lib/db/prisma';
+
 const prisma = prismaClient;
 export async function getUser(username: string): Promise<IUser | null> {
     try {
@@ -13,7 +15,7 @@ export async function getUser(username: string): Promise<IUser | null> {
                 username: username, // This matches the user with the provided email.
             },
         });
-        return user as IUser;
+        return { ...user, lessons: [] } as IUser;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);

@@ -20,7 +20,7 @@ export type IUser = {
     username: string;
     email: string;
     password: string;
-    lessons: ILesson[];
+    lessons: ILesson[] | string[];
     tutorName: string;
     knowledgePointsUnderstood: string[];
 };

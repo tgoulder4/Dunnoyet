@@ -19,19 +19,26 @@ export default function RootLayout({
 }) {
   return (
     <div className={` bg-white flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-      <nav style={{ paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY, maxWidth: maxLandingWidth, }}
-        className={`shadow bg-white flex items-center justify-between py-[14px] sticky top-0 z-50`}>
-        <div id="brandSide" className={`flex items-center gap-4 h-full`}>
-          <NewButton style={{ paddingLeft: 0 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
-          <div className="flex">
-            <div className="badge"></div>
+      <nav style={{
+        // paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY
+      }
+      }
+        className={`grid place-items-center shadow bg-white py-[28px] px-[56px] sticky top-0 z-50`}>
+        <div className="flex items-center justify-between w-full" style={{}}>
+
+          <div id="brandSide" className={`flex items-center gap-4 h-full`}>
+            <NewButton noAnimation style={{ scale: 2 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
+            <div className="flex">
+              <div className="badge"></div>
+            </div>
           </div>
-        </div>
-        <div id="userSide" className="flex gap-2 h-full items-center">
-          {/* after learning about authentication, put the login component here */}
-          <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">Pricing</NewButton>
-          <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">How it works</NewButton>
-          <NewButton style={{ fontFamily: merriweather.style.fontFamily }} buttonVariant="black" actionOrLink="/learn">Learn</NewButton>
+          <div id="userSide" className="flex gap-2 h-full items-center">
+            {/* after learning about authentication, put the login component here */}
+            <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">Pricing</NewButton>
+            <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">How it works</NewButton>
+            <NewButton style={{ fontFamily: merriweather.style.fontFamily }} buttonVariant="black" actionOrLink="/learn">Learn</NewButton>
+          </div>
+
         </div>
       </nav>
       {children}

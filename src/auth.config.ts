@@ -1,5 +1,24 @@
 import type { NextAuthConfig } from "next-auth"
+import prisma from "./lib/db/prisma"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import type { DefaultSession } from "next-auth";
+import type DefaultUser from "next-auth";
 
+declare module "next-auth" {
+    interface User {
+        // Add your additional properties here:
+        givenName?: string | null;
+        preferLanguage?: string | null;
+    }
+}
+
+declare module "@auth/core/adapters" {
+    interface AdapterUser {
+        // Add your additional properties here:
+        role: string | null;
+        // preferLanguage: string | null;
+    }
+}
 export const authConfig: NextAuthConfig = {
     pages: {
         signIn: "/auth/login",
@@ -9,6 +28,7 @@ export const authConfig: NextAuthConfig = {
     session: {
         strategy: "jwt",
     },
+    adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async redirect({ url, baseUrl }) {
@@ -18,6 +38,8 @@ export const authConfig: NextAuthConfig = {
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
         },
+
+
         // jwt: async ({ token, user, account, profile, isNewUser }) => {
         //     // Add access_token to the token right after signin
         //     if (account?.accessToken) {
@@ -25,17 +47,9 @@ export const authConfig: NextAuthConfig = {
         //     }
         //     return Promise.resolve(token)
         // },
-        // async session({ session, token, user }) {
-        //     // `session` is the session object
-        //     // `user` is the user object from the database (available when using database sessions)
-        //     // You can add properties to the session object here
-
-        //     session.user.id = user.id; // For example, adding the user's ID to the session
-        //     session.expires = token.expires as Date & string; // Update session expiration to match token
-        //     session.user.name = user.name; // Add the user's name to the session
-        //     session.user.email = user.email; // Add the user's email to the session
-
-        //     // You can also add other properties from the user object or even perform additional fetching here
+        // session({ session, user }) {
+        //     session.user.role = user.role,
+        //         session.user.id = user.id
         //     return session
         // },
 
