@@ -12,6 +12,7 @@ export async function authenticate(prevState: string | undefined, formData: Form
     console.dir(formData, { depth: null })
     try {
         await signIn("credentials", formData)
+         //CORRECTION: return 'Signing you in...'
     }
     catch (err) {
         if (err instanceof AuthError) {
