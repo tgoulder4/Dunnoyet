@@ -7,12 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { authConfig } from "@/auth.config";
 export async function GET(req: NextRequest, res: NextResponse) {
     try {
-        // const body = await req.json();
-        // const parseResult = createLessonSchema.safeParse(body);
-        // if (!parseResult.success) {
-        //     return NextResponse.json({ error: parseResult.error.errors }, { status: 400 });
-        // }
-        // const lesson = parseResult.data;
+        const body = await req.json();
+        const parseResult = createLessonSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json({ error: parseResult.error.errors }, { status: 400 });
+        }
+        const lesson = parseResult.data;
         const sess = await getServerSession(authConfig).auth();
         if (!sess) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
         return NextResponse.json({ message: sess }, { status: 201 });

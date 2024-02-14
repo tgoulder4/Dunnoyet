@@ -21,7 +21,7 @@ function LessonItem({ topic, currentInformationIntakeSummary, threadID, imageURL
                         </svg>
                         <h2 style={{ fontWeight: 800 }}>{topic}</h2>
                     </div>
-                    <h3 className='lg:max-w-full text-ellipsis'>{currentInformationIntakeSummary}</h3>
+                    <h3 className='lg:max-w-full line-clamp-3 text-ellipsis'>{currentInformationIntakeSummary}</h3>
                 </div>
                 <div className="flex gap-2 items-center">
                     <h2 style={{ color: colours.link, textDecoration: hovered ? 'underline' : 'none', fontWeight: hovered ? 700 : 500 }}>Continue Lesson </h2>

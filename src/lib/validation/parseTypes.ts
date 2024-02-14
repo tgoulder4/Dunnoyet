@@ -10,7 +10,7 @@ export const createMessageSchema = z.object({
     content: z.string(),
     role: z.enum(["User", "Assistant"]),
     type: z.enum(["New_Question", "Question", "Response", "Interrogation"]),
-    placeHolderText: z.string().optional()
+    lessonId: z.string()
 })
 // export type ILesson = {
 //     id: string,
@@ -21,6 +21,7 @@ export const createMessageSchema = z.object({
 //     userId: string;
 // }
 export const createLessonSchema = z.object({
+    userId: z.string(),
     subject: z.string(),
     messages: z.array(createMessageSchema),
     beganAt: z.string(),
@@ -41,9 +42,6 @@ export const createUserSchema = z.object({
     username: z.string(),
     email: z.string(),
     password: z.string(),
-    lessons: z.array(createLessonSchema),
-    tutorName: z.string(),
-    knowledgePointsUnderstood: z.array(z.string())
 })
 // export type ITip = {
 
@@ -57,7 +55,6 @@ export const createTipSchema = z.object({
     title: z.string(),
     content: z.string(),
     link: z.string(),
-    uiDetailId: z.string().optional()
 })
 // export type IDetail = {
 //     id?: string;

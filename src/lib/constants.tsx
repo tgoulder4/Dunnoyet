@@ -52,7 +52,7 @@ export const spacing = {
 }
 export const maxLandingWidth = "1320px";
 
-export const DunnoyetLogo = ({ colour }: { colour: string }) => {
+export const DunnoyetLogo = ({ colour, withText }: { colour: string, withText?: boolean }) => {
     return (
         <div className="flex flex-row items-center" style={{ columnGap: spacing.gaps.groupedElement }}>
             <svg width="61" height="27" viewBox="0 0 61 27" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,7 +65,8 @@ export const DunnoyetLogo = ({ colour }: { colour: string }) => {
                     </clipPath>
                 </defs>
             </svg>
-            <h1 className="hidden xl:block text-black" style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.globalFontSize }}>dunnoyet.</h1>
+
+            {withText && <h1 className="hidden xl:block text-black" style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.globalFontSize }}>dunnoyet.</h1>}
         </div>
 
     )
