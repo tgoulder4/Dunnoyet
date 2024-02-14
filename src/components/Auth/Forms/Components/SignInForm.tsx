@@ -10,7 +10,7 @@ import { authenticate } from '../../../../actions'
 import { ArrowRightIcon, Loader2 } from 'lucide-react'
 import InputWithLegend from './InputWithFieldset'
 import { AuthError } from "next-auth";
-
+import { Loader2 } from "lucide-react";
 function SignInForm() {
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -38,6 +38,7 @@ function SignInForm() {
                             </div>:
                             <div className='grid place-items-center w-full font-bold py-[14px] rounded-[10px]' style={{ backgroundColor: 'rgb(66, 186, 150)' }}>
                                 {responseMsg}
+<Loader2 className="animate-spin" color="#000000" />
                             </div>
                         }
                     </InputWithLegend>
