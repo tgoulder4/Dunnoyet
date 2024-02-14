@@ -21,7 +21,7 @@ function SignUpForm() {
     return (
         <form
             action={dispatch}
-            className='flex-2 grow' style={{ padding: 2 * spacing.gaps.largest, paddingTop: spacing.gaps.largest }}>
+            className='flex-2 grow' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
             <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize }}>Create an account</h1>
                 <fieldset name='fs' className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>

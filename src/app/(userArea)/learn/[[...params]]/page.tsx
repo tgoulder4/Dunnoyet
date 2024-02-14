@@ -78,7 +78,7 @@ function page({ params }: { params: { params: string } }) {
     console.log("params", params);
     const [chatIsOpen, setChatIsOpen] = useState(false);
     return (
-        <main className="flex flex-col" style={{ paddingLeft: 'clamp(24px,6vw,84px)', paddingRight: 'clamp(24px,6vw,84px)', rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
+        <main className="flex flex-col" style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize, fontWeight: 300 }}>Welcome back, Tye!</h1>
                 <NewButton buttonVariant='black' actionOrLink={() => { setChatIsOpen(true); redirect("/learn/new"); }}><Plus className="h-full" color="white" />

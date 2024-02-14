@@ -31,7 +31,8 @@ export const colours = {
 export const sizing = {
     globalFontSize: '1.2rem',
     largestFontSize: '2.625rem',
-    largerFontSize: '2.25rem'
+    largerFontSize: '2.25rem',
+    variableWholePagePadding: 'clamp(24px,6vw,84px)',
 }
 export const spacing = {
     gaps: {
