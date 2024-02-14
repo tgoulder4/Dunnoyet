@@ -24,6 +24,15 @@ model User {
   @@map("users")
 }
 
+model Tips {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  content String
+  link    String
+
+  @@map("tips")
+}
+
 model Lesson {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   subject   String

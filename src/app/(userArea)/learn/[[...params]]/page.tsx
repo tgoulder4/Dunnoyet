@@ -8,6 +8,7 @@ import { merriweather } from '@/app/fonts'
 import Tip from '../../../../components/UserArea/Learn/Tip'
 import Chat from '../../../../components/UserArea/Learn/Chat'
 import NewButton from '@/components/ui/NewButton'
+import { redirect } from 'next/navigation'
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
 // }
@@ -60,7 +61,7 @@ function page({ params }: { params: { params: string } }) {
         <main className="px-32 flex flex-col" style={{ rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize, fontWeight: 300 }}>Welcome back, Tye!</h1>
-                <NewButton buttonVariant='black' actionOrLink={() => setChatIsOpen(true)}><Plus className="h-full" color="white" />
+                <NewButton buttonVariant='black' actionOrLink={() => { setChatIsOpen(true); redirect("/learn/new"); }}><Plus className="h-full" color="white" />
                     Learn something new</NewButton>
             </div>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
