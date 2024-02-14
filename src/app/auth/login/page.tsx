@@ -1,6 +1,7 @@
-import SignUpOrIn from '@/components/auth/SignUpOrIn'
 import React from 'react'
 import { Metadata } from 'next'
+import SignInForm from '@/components/auth/Forms/Components/SignInForm'
+import SignUpOrIn from '@/components/auth/Forms/SignUpOrIn'
 export const metadata: Metadata = {
     title: "dunnoyet - Login",
     description: "Log into your account."
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 function LoginPage() {
     //if they're already logged in, redirect them to the user area.
     return (
-        <SignUpOrIn type='signin' />
+        <SignUpOrIn type="signin" />
     )
 }
 

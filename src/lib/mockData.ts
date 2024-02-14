@@ -1,4 +1,4 @@
-import { IFile, IThread, IUser } from "./types";
+import { IFile, IThread, IUser } from "./validation/enforceTypes";
 export const threads: IThread[] = [
     {
         id: "0",

@@ -22,11 +22,11 @@ export const authConfig: NextAuthConfig = {
                     // console.log("Is logged in, and in user area. AUTHORISED")
                     return true
                 };
-                console.log("Not logged in, and in user area. REDIRECTING TO LOGIN")
+                console.log("Not logged in, and in user area. Redirecting to /auth/login")
                 return false;
             } else if (isLoggedIn) {
                 // console.log("Is logged in, and not user area. REDIRECTING TO USER AREA")
-                console.log("redirecitng to /learn", nextUrl)
+                console.log("redirecitng to /learn")
                 return Response.redirect(new URL("/learn", nextUrl))
             };
             // console.log("Not logged in, and not user area. AUTHORISED")

@@ -77,33 +77,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const [stillLoading, setStillLoading] = useState(false);
     function commonContent() {
       return (
-        <div className="">
-          <Comp style={{ ...style, padding: props.padding }}
-            className={cn(
-              buttonVariants({ variant, size: "tighter", className })
-            )}
-            ref={ref}
-            {...props}
-          >
-            {loading ? (
-              <>
-                {stillLoading ? (
-                  <p>Still loading...</p>
-                ) : (
-                  () =>
-                    setTimeout(() => {
-                      setStillLoading(true);
-                    }, 2000)
-                )}
-                <Loader2 className="animate-spin" color="#000000" />
-              </>
-            ) : icon ? (
-              <img src={icon} alt={alt} />
-            ) : (
-              props.children
-            )}
-          </Comp>
-        </div>
+        <Comp style={{ ...style, padding: props.padding }}
+          className={cn(
+            buttonVariants({ variant, size: "tighter", className })
+          )}
+          ref={ref}
+          {...props}
+        >
+          {loading ? (
+            <>
+              {stillLoading ? (
+                <p>Still loading...</p>
+              ) : (
+                () =>
+                  setTimeout(() => {
+                    setStillLoading(true);
+                  }, 2000)
+              )}
+              <Loader2 className="animate-spin" color="#000000" />
+            </>
+          ) : icon ? (
+            <img src={icon} alt={alt} />
+          ) : (
+            props.children
+          )}
+        </Comp>
+
       );
     }
     const Comp = asChild ? Slot : "button";

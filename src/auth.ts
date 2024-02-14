@@ -1,11 +1,11 @@
-import { IUser } from '@/lib/types';
+import { IUser } from '@/lib/validation/enforceTypes';
 import { authConfig } from './auth.config';
 import NextAuth from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-const prisma = new PrismaClient();
+import { prismaClient } from './lib/db/prisma';
+const prisma = prismaClient;
 export async function getUser(username: string): Promise<IUser | null> {
     try {
         const user = await prisma.user.findUnique({
@@ -20,11 +20,13 @@ export async function getUser(username: string): Promise<IUser | null> {
     }
     return null;
 }
+
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [
         Credentials({
             name: 'credentials',
+
             async authorize(credentials) {
                 console.log("authorize called with credentials: ", credentials)
                 const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6) })

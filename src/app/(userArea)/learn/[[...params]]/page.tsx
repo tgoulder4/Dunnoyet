@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { sizing, spacing } from '@/lib/constants'
 import { Plus } from 'lucide-react'
 import LessonItem from '../../../../components/UserArea/Learn/LessonItem'
@@ -9,9 +9,13 @@ import Tip from '../../../../components/UserArea/Learn/Tip'
 import Chat from '../../../../components/UserArea/Learn/Chat'
 import NewButton from '@/components/ui/NewButton'
 import { redirect } from 'next/navigation'
+import { IDetail, ITip } from '@/lib/validation/enforceTypes'
+import { prismaClient } from '@/lib/db/prisma'
+var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
 // }
+const prisma = prismaClient;
 const lessonItems = [
     {
         topic: 'Wave-Particle Duality',
@@ -53,8 +57,24 @@ const summaryItems = [{
     number: 128,
     description: "New Concepts Learned"
 }]
-
+async function getTips(): Promise<ITip[] | [] | null> {
+    const tips: ITip[] | null = await prisma.uIDetail.findFirst({
+        select: {
+            tips: {
+                select: {
+                    id: true,
+                    title: true,
+                    content: true,
+                    link: true,
+                    uiDetailId: true,
+                }
+            }
+        }
+    }).then(result => result?.tips || null)
+    return tips ? tips : [];
+}
 function page({ params }: { params: { params: string } }) {
+
     console.log("params", params);
     const [chatIsOpen, setChatIsOpen] = useState(false);
     return (
@@ -78,6 +98,7 @@ function page({ params }: { params: { params: string } }) {
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize, fontWeight: 300 }}>Summary</h1>
                 <div className="flex flex-row flex-wrap" style={{ columnGap: spacing.gaps.separateElement, rowGap: spacing.gaps.separateElement }}>
                     <Tip />
+
                     {
                         summaryItems.map((summaryItem) => {
                             return <SummaryItem key={summaryItem.description} number={summaryItem.number} desc={summaryItem.description} />

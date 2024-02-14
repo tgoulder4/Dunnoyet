@@ -1,3 +1,4 @@
+
 //TYPES
 export type IMessage = {
     content: string;
@@ -11,6 +12,7 @@ export type ILesson = {
     messages: IMessage[];
     beganAt: string;
     updatedAt: string;
+    userId: string;
 }
 export type IUser = {
     id: string;
