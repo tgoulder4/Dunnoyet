@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { Button } from "../../components/Navbar/button";
 import { merriweather, ruda } from "@/app/fonts";
 import Link from "next/link";
-import { DunnoyetLogo, colours, sizing, spacing } from "../../lib/constants";
+import { DunnoyetLogo, colours, sizing, spacing, maxLandingWidth } from "../../lib/constants";
 import NewButton from "@/components/ui/NewButton";
 import { useState } from "react";
+
 
 export const metadata: Metadata = {
   title: "dunnoyet - Serious in depth learning",
@@ -18,22 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <div className={` bg-white flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-      <nav
-        className={`shadow px-[100px] bg-white flex items-center justify-between p-3 sticky top-0 z-50`}>
+      <nav style={{ paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY, maxWidth: maxLandingWidth, }}
+        className={`shadow bg-white flex items-center justify-between py-[14px] sticky top-0 z-50`}>
         <div id="brandSide" className={`flex items-center gap-4 h-full`}>
-          <Link href="/" className="flex items-center gap-2">
-            <Button
-              variant="link"
-              icon="/glasses_green.png"
-              className="p-0"
-              tooltip="false"
-            />
-            <h2
-              className={`select-none ${merriweather.className} text-complementary`}
-            >
-              dunnoyet.
-            </h2>
-          </Link>
+          <NewButton style={{ paddingLeft: 0 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
           <div className="flex">
             <div className="badge"></div>
           </div>

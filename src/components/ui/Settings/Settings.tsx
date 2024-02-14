@@ -1,20 +1,19 @@
 import React from "react";
 import { Button } from "../button";
+import { sizing, spacing } from "@/lib/constants";
+import NewButton from "../NewButton";
 
 type Props = {};
 
 const Settings = (props: Props) => {
   return (
-    <div className="px-6 py-4 flex">
+    <div style={{ fontSize: sizing.globalFontSize }} className="px-6 py-4 flex">
       {/*buttons!*/}
       <div className="flex flex-col">
-        <Button
-          variant="ghost"
-          className="hover:bg-gray-200 w-full !justify-start !py-2"
-          size="tighter"
+        <button className="hover:bg-slate-300 transition-colors rounded-[10px] py-[14px] px-[28px]"
         >
           Questions
-        </Button>{" "}
+        </button>
         {/*x questions asked, y concepts learnt, keep learning!*/}
         <Button
           variant="ghost"

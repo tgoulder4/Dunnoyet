@@ -23,7 +23,7 @@ function SignInForm() {
             action={dispatch}
             className='flex-2 grow' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
             <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
-                <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize }}>Sign into your account</h1>
+                <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: 'clamp(1rem,3vw,' + sizing.largestFontSize + ')' }}>Sign into your account</h1>
                 <fieldset name='fs' className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
                     <InputWithLegend ref={usernameRef} idAndName="username" type="text" placeholder="Username" defaultValue='tgoulder4' />
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>
