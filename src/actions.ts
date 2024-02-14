@@ -30,24 +30,20 @@ export async function createUser(prevState: string | undefined, formData: FormDa
         const credentials = Object.fromEntries(formData.entries());
         // const enteredUsername=credentials.
         console.log("credentials: ", credentials);
-        return 'User created successfully';
-        //validate the credentials
-        // const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6), email: z.string().email() }).safeParse(credentials);
-        // if (!parsedCredentials.success) {
-        //     console.error("Invalid credentials - couldn't create user. ", parsedCredentials.error);
-        //     return null;
-        // }
-        // //hash the password
-        // const hashedPassword = await bcrypt.hash(parsedCredentials.data.password, 10);
-        // const user = await prisma.user.create({
-        //     data: {
-        //         username: _username.,
-        //         email: credentials.email,
-        //         password: hashedPassword,
-        //         tutorName: ''
-        //     },
-        // });
-        // return user;
+        const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6), email: z.string().email() }).safeParse(credentials);
+        if (!parsedCredentials.success) return 'Server: Credentials didn\'t match the required format';
+
+        //hash the password
+        const hashedPassword = await bcrypt.hash(parsedCredentials.data.password, 10);
+        const user = await prisma.user.create({
+            data: {
+                username: credentials.username as string,
+                email: credentials.email as string,
+                password: hashedPassword as string,
+                tutorName: ''
+            },
+        });
+        return 'user';
     }
     catch (error) {
         console.error("Couldn't create the user. ", error);

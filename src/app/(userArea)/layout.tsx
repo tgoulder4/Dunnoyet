@@ -16,8 +16,8 @@ export default function RootLayout({
   const bgColour = new TinyColor(colours.primary);
   return (
     <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-      <nav style={{ backgroundColor: colours.primary }} className="flex flex-row justify-between items-center h-[70px] px-16">
-        <div className="leftSide flex items-center h-full" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.groupedElement }}>
+      <nav style={{ backgroundColor: colours.primary, paddingLeft: spacing.gaps.groupedElement, paddingRight: spacing.gaps.groupedElement }} className="flex flex-row justify-between items-center h-[70px] px-16">
+        <div className="leftSide flex items-center h-full" style={{ columnGap: spacing.gaps.groupedElement }}>
           <NewButton buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: 'white' })}</NewButton>
           <div className="flex-1 w-[1px] h-full" style={{ backgroundColor: bgColour.darken(8).toString() }}></div>
           <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>

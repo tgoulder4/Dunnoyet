@@ -13,11 +13,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
         //     return NextResponse.json({ error: parseResult.error.errors }, { status: 400 });
         // }
         // const lesson = parseResult.data;
-        const sess = await getServerSession(
-            authConfig,
-        ).auth();
-        if (!sess) return NextResponse.json({ error: "No session found - you aren't logged in so you can't create a lesson!" }, { status: 401 });
-        console.log("sess: ", sess);
+        const sess = await getServerSession(authConfig).auth();
+        if (!sess) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
         return NextResponse.json({ message: sess }, { status: 201 });
     }
     catch (error) {
