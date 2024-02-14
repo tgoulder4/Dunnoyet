@@ -31,7 +31,7 @@ function SignInForm() {
                     <InputWithLegend ref={usernameRef} idAndName="username" type="text" placeholder="Username" defaultValue='tgoulder4' />
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>
                         {
-                            errorMessage==instanceof AuthError?
+                            errorMessage instanceof AuthError?
                             // passwordRef.current?.focus()
                             <div className='grid place-items-center w-full font-bold py-[14px] rounded-[10px]' style={{ backgroundColor: 'rgb(255,27,27,0.38)' }}>
                                 {responseMsg}
