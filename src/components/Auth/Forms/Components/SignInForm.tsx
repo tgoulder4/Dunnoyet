@@ -9,6 +9,7 @@ import { useFormState, useFormStatus } from 'react-dom'
 import { authenticate } from '../../../../actions'
 import { ArrowRightIcon, Loader2 } from 'lucide-react'
 import InputWithLegend from './InputWithFieldset'
+import { AuthError } from "next-auth";
 
 function SignInForm() {
     const usernameRef = useRef<HTMLInputElement>(null);
@@ -30,7 +31,7 @@ function SignInForm() {
                     <InputWithLegend ref={usernameRef} idAndName="username" type="text" placeholder="Username" defaultValue='tgoulder4' />
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>
                         {
-                            errorMessage==instanceOf AuthError?
+                            errorMessage==instanceof AuthError?
                             // passwordRef.current?.focus()
                             <div className='grid place-items-center w-full font-bold py-[14px] rounded-[10px]' style={{ backgroundColor: 'rgb(255,27,27,0.38)' }}>
                                 {responseMsg}
