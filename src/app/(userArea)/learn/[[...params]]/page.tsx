@@ -70,7 +70,7 @@ function page({ params }: { params: { params: string } }) {
     useEffect(() => {
         async function main() {
             const tips = await getTips();
-            console.log("tips @page.tsx useEffect: ", tips)
+            console.log("tips: ", tips)
         }
         main()
     }, [])

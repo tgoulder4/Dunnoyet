@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from 'react'
 import NextAuth from 'next-auth/react'
 import getServerSession, { Session } from 'next-auth';
@@ -11,27 +10,20 @@ import { ILesson } from '@/lib/validation/enforceTypes';
 import { useSession } from 'next-auth/react';
 
 export default function LessonItems() {
-    const sess = useSession();
-
+    const userID = useSession().data?.user?.id;
+    if (userID == undefined) throw new Error("No user ID found");
+    console.log("userID: ", userID);
+    const [items, setItems] = useState(null as ILesson[] | null);
     useEffect(() => {
-        console.log("sess: ", sess)
-    }, [sess]);
-    if (sess) {
-
-        const userID = sess.data?.user?.id;
-        if (userID === null) throw new Error("Session.data.user.id was null. Session was " + JSON.stringify(sess));
-    }
-    // const [items, setItems] = useState(null as ILesson[] | null);
-    // useEffect(() => {
-    //     async function main() {
-    //         const items = await getLessons(userID);
-    //         console.log("items from db: ", items);
-    //         setItems(items);
-    //     }
-    //     main()
-    // }, [])
+        async function main() {
+            const items = await getLessons(userID);
+            console.log("items from db: ", items);
+            setItems(items);
+        }
+        main()
+    }, [])
     return (
-        JSON.stringify(sess)
+        JSON.stringify(userID)
         // <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3" style={{ gap: spacing.gaps.groupedElement }}>
         //     {
         //         items.map((item) => {
