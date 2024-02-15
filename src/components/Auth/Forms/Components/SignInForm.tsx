@@ -26,8 +26,8 @@ function SignInForm() {
     return (
         <form
             action={dispatch}
-            className='flex-2 grow' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
-            <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
+            className='flex-[2] flex justify-end' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
+            <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement, width: 'clamp(43px,100%,680px)' }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize) }}>Sign into your account</h1>
                 <h2>Don't have an account yet? <Link href="/auth/register" style={{ color: changeColour(colours.primary).darken(8).toString() }}>Sign up</Link></h2>
                 <fieldset name='fs' className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
