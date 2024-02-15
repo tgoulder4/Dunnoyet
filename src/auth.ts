@@ -5,23 +5,8 @@ import NextAuth from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
-import { prismaClient } from './lib/db/prisma';
+import { getUser } from './actions';
 
-const prisma = prismaClient;
-export async function getUser(username: string): Promise<IUser | null> {
-    try {
-        const user = await prisma.user.findUnique({
-            where: {
-                username: username, // This matches the user with the provided email.
-            },
-        });
-        return { ...user, lessons: [] } as IUser;
-    }
-    catch (error) {
-        console.error("Couldn't retrieve the user. ", error);
-    }
-    return null;
-}
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
@@ -35,7 +20,7 @@ export const { auth, signIn, signOut } = NextAuth({
                 console.log("parsedCredentials: ", parsedCredentials)
                 if (parsedCredentials.success) {
                     const { username, password } = parsedCredentials.data;
-                    const user = await getUser(username);
+                    const user: IUser | null = await getUser(username);
                     console.log("user: ", user)
                     if (!user) {
                         console.log("User not found.")
@@ -45,8 +30,6 @@ export const { auth, signIn, signOut } = NextAuth({
                     if (passwordsMatch) {
                         console.log("Credentials are valid, returning user.", user)
                         return user;
-                    } else {
-                        console.log("Passwords didn't match. Entered:[", password, "]", " Stored:[", user.password, "]")
                     }
                 }
                 return null;

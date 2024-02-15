@@ -33,6 +33,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         textColour,
         noAnimation,
         asChild = false,
+        ...props
     }, ref) => {
         let bgColour = "";
         const [hovered, setHovered] = useState(false);
@@ -53,7 +54,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         const Comp = asChild ? Slot : "button";
         return (
             // <button>
-            <Comp ref={ref}>
+            <Comp {...props} ref={ref}>
                 {
                     typeof actionOrLink === 'string' ?
                         <Link className={`${className} ${!noAnimation ? "hover:scale-105 transition-transform" : ""} 
