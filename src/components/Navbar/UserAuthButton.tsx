@@ -15,6 +15,7 @@ import NewButton from "../ui/NewButton";
 import Image from "next/image";
 import { merriweather, ruda } from "@/app/fonts";
 import { sizing } from "@/lib/constants";
+import { useSession } from "next-auth/react";
 
 type Props = {};
 

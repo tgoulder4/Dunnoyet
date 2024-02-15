@@ -12,27 +12,27 @@ datasource db {
 }
 
 model User {
-  id                        String    @id @default(auto()) @map("_id") @db.ObjectId
-  role                      String?   @default("STUDENT") @db.String
-  username                  String    @unique
-  email                     String    @unique
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  role                      String?  @default("STUDENT") @db.String
+  username                  String   @unique
+  email                     String   @unique
   password                  String
   name                      String?
   lessons                   Lesson[]
-  sessions                  Session[]
+  // sessions                  Session[]
   tutorName                 String
   knowledgePointsUnderstood String[]
 
   @@map("users")
 }
 
-model Session {
-  id           String   @id @default(cuid()) @map("_id") @db.ObjectId
-  sessionToken String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String   @db.ObjectId
-  expires      DateTime
-}
+// model Session {
+//   id           String   @id @default(cuid()) @map("_id") @db.ObjectId
+//   sessionToken String   @unique
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId       String   @db.ObjectId
+//   expires      DateTime
+// }
 
 model UIDetail {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
@@ -53,13 +53,14 @@ model Tip {
 }
 
 model Lesson {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  subject   String
-  messages  Message[]
-  beganAt   DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String    @db.ObjectId
+  id                      String    @id @default(auto()) @map("_id") @db.ObjectId
+  subject                 String
+  messages                Message[]
+  beganAt                 DateTime  @default(now())
+  updatedAt               DateTime  @default(now())
+  user                    User      @relation(fields: [userId], references: [id])
+  userId                  String    @db.ObjectId
+  currentKnowledgeSummary String
 
   @@map("lessons")
 }

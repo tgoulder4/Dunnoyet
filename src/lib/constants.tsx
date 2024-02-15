@@ -1,5 +1,12 @@
 import { merriweather } from "@/app/fonts";
+import { TinyColor } from "@ctrl/tinycolor";
+export const changeColour = (colour: string) => {
+    return new TinyColor(colour)
+}
+export const responsiveFont = (maxSize: string) => {
+    return 'clamp(1.75rem,3vw,' + maxSize + ')'
 
+}
 export const colours = {
     background: "#f4f3fa",
     white: "#ebebeb",

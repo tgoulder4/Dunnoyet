@@ -3,12 +3,12 @@ import prisma from "./lib/db/prisma"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { DefaultSession } from "next-auth";
 import type DefaultUser from "next-auth";
-
 declare module "next-auth" {
     interface User {
         // Add your additional properties here:
         givenName?: string | null;
         preferLanguage?: string | null;
+        role: string | null;
     }
 }
 
@@ -16,6 +16,7 @@ declare module "@auth/core/adapters" {
     interface AdapterUser {
         // Add your additional properties here:
         role: string | null;
+        id: string;
         // preferLanguage: string | null;
     }
 }
@@ -29,7 +30,7 @@ export const authConfig: NextAuthConfig = {
         strategy: "jwt",
     },
     adapter: PrismaAdapter(prisma),
-    secret: process.env.NEXTAUTH_SECRET,
+    // secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async redirect({ url, baseUrl }) {
             // Allows relative callback URLs
@@ -38,15 +39,29 @@ export const authConfig: NextAuthConfig = {
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
         },
-
-
-        // jwt: async ({ token, user, account, profile, isNewUser }) => {
-        //     // Add access_token to the token right after signin
-        //     if (account?.accessToken) {
-        //         token.accessToken = account.accessToken
-        //     }
-        //     return Promise.resolve(token)
-        // },
+        async jwt({ token, user }) {
+            if (user) {
+                token.userId = user.id; // Assuming 'user.id' is the userID from your user model
+                token.name = user.name;
+                token.email = user.email;
+                token.role = user.role;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user && token.userId) {
+                // console.log("session.user: ", session.user)
+                // console.log("token.userId: ", token.userId)
+                session.user = {
+                    id: token.userId as string, // Replace or extend the user object with the userId
+                    name: session.user.name, // Retain existing session.user.name if necessary
+                    email: session.user.email, // Retain existing session.user.email if necessary
+                    emailVerified: session.user.emailVerified, // Retain existing session.user.emailVerified if necessary
+                    role: token.role as string,
+                };
+            }
+            return session;
+        },
         // session({ session, user }) {
         //     session.user.role = user.role,
         //         session.user.id = user.id
@@ -72,6 +87,8 @@ export const authConfig: NextAuthConfig = {
             return true;
         }
     },
+    //generate a jwt private key: openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+    //and for the encryption key, openssl rand -base64 32
     providers: [
 
     ],

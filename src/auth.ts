@@ -28,7 +28,6 @@ export const { auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
             name: 'credentials',
-
             async authorize(credentials) {
                 console.log("authorize called with credentials: ", credentials)
                 const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6) })
@@ -42,7 +41,7 @@ export const { auth, signIn, signOut } = NextAuth({
                         console.log("User not found.")
                         return null
                     };
-                    const passwordsMatch = await bcrypt.compare(password, '$2b$10$gHSwwTtLSsFrEu8NzNb5WeIY6J5WzHtKJRDSh0Lfrc5BQD1ACKQeW');
+                    const passwordsMatch = await bcrypt.compare(password, user.password);
                     if (passwordsMatch) {
                         console.log("Credentials are valid, returning user.", user)
                         return user;

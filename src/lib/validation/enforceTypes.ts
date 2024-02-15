@@ -7,12 +7,12 @@ export type IMessage = {
     placeHolderText?: string;
 };
 export type ILesson = {
-    id: string,
+    id: string;
     subject: string;
-    messages: IMessage[];
-    beganAt: string;
-    updatedAt: string;
-    userId: string;
+    messages?: IMessage[];
+    beganAt: Date;
+    updatedAt: Date;
+    currentKnowledgeSummary: string
 }
 export type IUser = {
     id: string;
@@ -20,13 +20,12 @@ export type IUser = {
     username: string;
     email: string;
     password: string;
+    role: string;
     lessons: ILesson[] | string[];
     tutorName: string;
     knowledgePointsUnderstood: string[];
 };
 export type ITip = {
-
-    id?: string;
     title: string;
     content: string;
     link: string;

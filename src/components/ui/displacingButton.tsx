@@ -25,7 +25,7 @@ function DisplacingButton({ backgroundColour, text, children, tooltip }: { backg
     }, [state])
     function commonContent() {
         return (
-            <div style={{ backgroundColor: color.toString(), boxShadow: '0px 6px 0px 0px rgba(0, 0, 0, 0.25)' + color.darken(25).toString(), borderRadius: 10, offset: getOffset() }} className='flex flex-0 flex-row px-[28px] py-[8px]' onMouseEnter={() => setState("hovering")} onMouseLeave={() => setState("inactive")} onMouseDown={() => setState("clicking")}>{
+            <div style={{ backgroundColor: backgroundColour, boxShadow: '0px 6px 0px 0px rgba(0, 0, 0, 0.25)' + color.darken(25).toString(), borderRadius: 10, offset: getOffset() }} className='flex flex-0 flex-row px-[28px] py-[8px]' onMouseEnter={() => setState("hovering")} onMouseLeave={() => setState("inactive")} onMouseDown={() => setState("clicking")}>{
                 text ? <h2 style={{ color: color.isDark() ? '#FFF' : '#000', fontSize: sizing.globalFontSize }}>{text}</h2> : children}</div>
         )
     }

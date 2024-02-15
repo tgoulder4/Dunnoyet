@@ -1,6 +1,6 @@
 'use client'
 import React, { useRef, useEffect } from 'react'
-import { sizing, spacing } from '@/lib/constants'
+import { responsiveFont, sizing, spacing } from '@/lib/constants'
 import { merriweather } from '@/app/fonts'
 import { Input } from '../../../ui/input'
 import NewButton from '../../../ui/NewButton'
@@ -21,9 +21,9 @@ function SignUpForm() {
     return (
         <form
             action={dispatch}
-            className='flex-2 grow' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
-            <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
-                <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: 'clamp(1rem,3vw,' + sizing.largestFontSize + ')' }}>Create an account</h1>
+            className='flex-[2] flex justify-end' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
+            <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement, width: 'clamp(43px,100%,680px)' }}>
+                <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize) }}>Create an account</h1>
                 <fieldset name='fs' className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>
                     <InputWithLegend ref={usernameRef} idAndName="username" type="text" placeholder="Username" defaultValue='tgoulder4' />
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>

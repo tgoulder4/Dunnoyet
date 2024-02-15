@@ -2,10 +2,8 @@ import "../globals.css";
 import { DunnoyetLogo, colours, sizing, spacing } from '@/lib/constants'
 import React from 'react'
 import NewButton from '@/components/ui/NewButton'
-import { TinyColor } from '@ctrl/tinycolor'
 import { ruda } from '@/app/fonts'
 
-const bgColour = new TinyColor(colours.primary);
 function layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="h-[100vh]">

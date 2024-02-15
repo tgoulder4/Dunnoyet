@@ -1,7 +1,7 @@
 'use server'
 import { AuthError } from "next-auth";
 import { signIn } from "./auth"
-import { ITip } from "@/lib/validation/enforceTypes";
+import { ILesson, ITip } from "@/lib/validation/enforceTypes";
 import { prismaClient } from "./lib/db/prisma";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -12,13 +12,14 @@ export async function authenticate(prevState: string | undefined, formData: Form
     console.dir(formData, { depth: null })
     try {
         await signIn("credentials", formData)
-         //CORRECTION: return 'Signing you in...'
+        console.log("returning 'Signing you in...'")
+        return 'Signing you in...'
     }
     catch (err) {
         if (err instanceof AuthError) {
             switch (err.type) {
                 case 'CredentialsSignin': return 'Invalid credentials';
-                default: return 'An error occurred';
+                default: return 'An error occurred @authenticate';
             }
         } else {
             throw err;
@@ -30,7 +31,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
         //extract the credentials from the form data
         const credentials = Object.fromEntries(formData.entries());
         // const enteredUsername=credentials.
-        console.log("credentials: ", credentials);
+        console.log("entered credentials: ", credentials);
         const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6), email: z.string().email() }).safeParse(credentials);
         if (!parsedCredentials.success) return 'Server: Credentials didn\'t match the required format';
 
@@ -44,7 +45,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 tutorName: ''
             },
         });
-        return 'user';
+        return 'User created!';
     }
     catch (error) {
         console.error("Couldn't create the user. ", error);
@@ -73,4 +74,14 @@ export async function getTips(): Promise<ITip[] | [] | null> {
         }
     }).then(result => result?.tips || null)
     return tips ? tips : [];
+}
+export async function getLessons(userID: string): Promise<ILesson[] | []> {
+    console.log("getLessons called, userID: ", userID)
+    const lessons = await prisma.lesson.findMany({
+        where: {
+            userId: userID
+        },
+    })
+    console.log("lessons: ", lessons)
+    return lessons
 }
