@@ -14,35 +14,25 @@ import Settings from "../ui/Settings/Settings";
 import NewButton from "../ui/NewButton";
 import Image from "next/image";
 import { merriweather, ruda } from "@/app/fonts";
-import { sizing } from "@/lib/constants";
+import { colours, sizing } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 
 type Props = {};
 
 const UserAuthButton = (props: Props) => {
-  const [dialogContent, setDialogContent] = useState({});
+  const user = useSession().data?.user!!;
+  const imageURL = user.image!!;
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {/* <NewButton className="h-full relative aspect-square" buttonVariant="ghost" style={{}} actionOrLink={() => { }}> */}
-        <button className="h-full relative aspect-square">
-          <Image
-            alt='Profile'
-            src='/pfp.png'
-            fill
-            className="rounded-full"
-            style={{ borderColor: "#000", borderWidth: 2 }}
-          />
-        </button>
-        {/* </NewButton> */}
-      </DialogTrigger>
-      <DialogContent style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }} className=" flex flex-col divide-y-[1px] divide-gray-300">
-        <DialogHeader>
-          <DialogTitle className="font-normal">Settings</DialogTitle>
-        </DialogHeader>
-        <Settings />
-      </DialogContent>
-    </Dialog>
+    <NewButton style={{ padding: 0 }} className="relative aspect-auto w-[50px]" buttonVariant="ghost" actionOrLink='/settings'>{
+      !imageURL ? <div style={{ backgroundColor: colours.accent }} className="border-4 border-solid border-[#131313] h-full w-full aspect-square rounded-full grid place-items-center text-black">{user?.name ? user.name[0] : null}</div> :
+        <img
+          alt='Profile'
+          src={imageURL}
+          className="border-4 border-solid border-[#131313] rounded-full object-scale-down  h-full aspect-square "
+        />
+    }
+    </NewButton>
   );
 };
 

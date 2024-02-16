@@ -10,7 +10,7 @@ function LessonItem({ loading, subject, currentKnowledgeSummary, lessonID, image
         <Link className='flex flex-col-reverse sm:flex-row  gap-0 w-full sm:h-56' href={`/learn/${lessonID}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
             borderRadius: '10px',
             border: !loading ? '1px solid rgba(0, 0, 0, 0.60)' : '',
-            background: '#FFF'
+            background: '#FFF',
         }}>{
                 loading ? <div className="rounded-[10px] animate-pulse h-full flex-[3] w-full bg-gray-300"></div> :
                     <>            <article className='flex flex-col justify-between flex-[3] h-full' style={{ padding: spacing.padding.normalY, rowGap: spacing.gaps.groupedElement }}>
