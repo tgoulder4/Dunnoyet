@@ -10,7 +10,9 @@ export default async function CustomSessionProvider({ children }: { children: Re
     //     redirect('/auth/signin')
     // }
     return (
-        <SessionProvider session={session}>
+        <SessionProvider
+            session={session}
+        >
             {children}
         </SessionProvider>
     )

@@ -10,6 +10,7 @@ import { getUser } from './actions';
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
+    basePath: '/auth',
     providers: [
         Credentials({
             name: 'credentials',
