@@ -9,13 +9,15 @@ import { prismaClient } from './lib/db/prisma';
 
 const prisma = prismaClient;
 export async function getUser(username: string): Promise<IUser | null> {
+    console.log("getUser (server) called with username: ", username)
     try {
         const user = await prisma.user.findUnique({
             where: {
                 username: username, // This matches the user with the provided email.
             },
         });
-        return { ...user, lessons: [] } as IUser;
+        if (!user) return null;
+        return user as IUser;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);

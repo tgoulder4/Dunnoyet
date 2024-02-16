@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <CustomSessionProvider>
       <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-        <nav style={{ backgroundColor: colours.primary, paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement }} className="flex flex-row justify-between items-center h-[70px]">
+        <nav style={{ backgroundColor: colours.primary, paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement }} className="flex flex-row justify-between items-center h-[70px] sticky top-0 z-50">
           <div className="leftSide flex items-center h-full" style={{ columnGap: spacing.gaps.groupedElement }}>
             <NewButton buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: 'white', withText: false })}</NewButton>
             <div className="flex-1 w-[1px] h-full" style={{ backgroundColor: changeColour(colours.primary).darken(8).toString() }}></div>

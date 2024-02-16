@@ -16,11 +16,11 @@ export type ILesson = {
 }
 export type IUser = {
     id: string;
-    name: string;
+    name?: string;
     username: string;
     email: string;
     password: string;
-    role: string;
+    role?: string;
     lessons: ILesson[] | string[];
     tutorName: string;
     knowledgePointsUnderstood: string[];

@@ -9,6 +9,7 @@ declare module "next-auth" {
         givenName?: string | null;
         preferLanguage?: string | null;
         role: string | null;
+        tutorName?: string;
     }
 }
 

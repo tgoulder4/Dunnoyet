@@ -5,17 +5,34 @@ import { ILesson, ITip, IUser } from "@/lib/validation/enforceTypes";
 import { prismaClient } from "./lib/db/prisma";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-
+var equal = require('deep-equal');
 const prisma = prismaClient;
-export async function getUser(username: string): Promise<IUser | null> {
+export async function getUser(userID?: string,
+    choose?: {
+        email?: boolean,
+        username?: boolean,
+        tutorName?: boolean,
+        lessons?: boolean,
+        knowledgePointsUnderstood?: boolean
+    }
+): Promise<Pick<IUser, "email" | "tutorName" | "username" | "lessons" | "knowledgePointsUnderstood"> | null> {
     try {
+        console.log("getUser (frontend,w/o password) called with userID: ", userID, " and choose: ", choose)
+        if (equal(choose, {})) throw new Error("Choose is empty tye, you silly goose!")
         const user = await prisma.user.findUnique({
-            where: {
-                username: username, // This matches the user with the provided email.
+            where: { id: userID },
+            select: {
+                id: true,
+                email: choose?.email || false,
+                tutorName: choose?.tutorName || false,
+                username: choose?.username || false,
+                lessons: choose?.lessons || false,
+                knowledgePointsUnderstood: choose?.knowledgePointsUnderstood || false
             },
         });
         if (!user) return null;
-        return { ...user } as IUser;
+        console.log("User which getUser returned: ", user)
+        return user as Pick<IUser, "email" | "tutorName" | "username" | "lessons" | "knowledgePointsUnderstood">;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);
@@ -33,7 +50,7 @@ export async function authenticate(prevState: string | undefined, formData: Form
     catch (err) {
         if (err instanceof AuthError) {
             switch (err.type) {
-                case 'CredentialsSignin': return 'Invalid credentials @authenticate';
+                case 'CredentialsSignin': return 'Invalid credentials';
                 default: return 'An error occurred @authenticate';
             }
         } else {
@@ -92,9 +109,17 @@ export async function createUser(prevState: string | undefined, formData: FormDa
         }
     }
 }
-export async function getTips(): Promise<ITip[] | [] | null> {
-    const tips: ITip[] | null = await prisma.tip.findMany();
-    return tips ? tips : [];
+export async function getTips(): Promise<ITip[] | null> {
+    console.log("getTips called")
+    try {
+        const tips: ITip[] | null = await prisma.tip.findMany();
+        console.log("tips which getTips returned: ", tips)
+        return tips;
+    }
+    catch (error) {
+        console.error("Couldn't retrieve the tips. ", error);
+        return null;
+    }
 }
 export async function getLessons(userID: string): Promise<ILesson[] | []> {
     console.log("getLessons called, userID: ", userID)
@@ -103,6 +128,6 @@ export async function getLessons(userID: string): Promise<ILesson[] | []> {
             userId: userID
         },
     })
-    console.log("lessons: ", lessons)
+    console.log("lessons which getLessons returned: ", lessons)
     return lessons
 }

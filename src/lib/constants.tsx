@@ -3,8 +3,8 @@ import { TinyColor } from "@ctrl/tinycolor";
 export const changeColour = (colour: string) => {
     return new TinyColor(colour)
 }
-export const responsiveFont = (maxSize: string) => {
-    return 'clamp(1.75rem,3vw,' + maxSize + ')'
+export const responsiveFont = (maxSizeInRem: number) => {
+    return 'clamp(' + (0.75 * maxSizeInRem).toFixed(2) + "rem,3vw," + maxSizeInRem + 'rem)'
 
 }
 export const colours = {
@@ -39,8 +39,8 @@ export const colours = {
 }
 export const sizing = {
     globalFontSize: '1.2rem',
-    largestFontSize: '2.625rem',
-    largerFontSize: '2.25rem',
+    largestFontSize: 2.625,
+    largerFontSize: 2.25,
     variableWholePagePadding: 'clamp(24px,6vw,84px)',
 }
 export const spacing = {
