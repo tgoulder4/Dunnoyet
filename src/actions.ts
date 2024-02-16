@@ -93,19 +93,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
     }
 }
 export async function getTips(): Promise<ITip[] | [] | null> {
-    const tips: ITip[] | null = await prisma.uIDetail.findFirst({
-        select: {
-            tips: {
-                select: {
-                    id: true,
-                    title: true,
-                    content: true,
-                    link: true,
-                    uiDetailId: true,
-                }
-            }
-        }
-    }).then(result => result?.tips || null)
+    const tips: ITip[] | null = await prisma.tip.findMany();
     return tips ? tips : [];
 }
 export async function getLessons(userID: string): Promise<ILesson[] | []> {
