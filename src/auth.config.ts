@@ -8,7 +8,7 @@ declare module "next-auth" {
         // Add your additional properties here:
         givenName?: string | null;
         preferLanguage?: string | null;
-        role: string | null;
+        role?: string;
         tutorName?: string;
     }
 }

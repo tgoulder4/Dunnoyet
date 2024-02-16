@@ -19,9 +19,9 @@ export default function LessonItems() {
     const [items, setItems] = useState(null as ILesson[] | [] | null);
     useEffect(() => {
         async function main() {
-            // console.log("LessonItems calling getLessons with userID: ", userID)
-            // const items = await getLessons(userID);
-            // setItems(items);
+            console.log("LessonItems calling getLessons with userID: ", userID)
+            const items = await getLessons(userID);
+            setItems(items);
         }
         main()
     }, [])

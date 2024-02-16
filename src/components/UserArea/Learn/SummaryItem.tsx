@@ -13,7 +13,7 @@ function SummaryItem({ number, desc, loading }: { number?: number, desc?: string
                 borderRadius: '10px',
                 border: '1px solid rgba(0, 0, 0, 0.20)',
                 background: '#FFF',
-                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 10px 0.1px'
+                boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
             }}>
                 <summary className='flex flex-col' style={{ padding: spacing.padding.normalY, rowGap: spacing.gaps.groupedElement }}>
                     <h1 className='text-[2.625rem]' style={{ fontFamily: merriweather.style.fontFamily, fontWeight: 400 }}>{number}</h1>

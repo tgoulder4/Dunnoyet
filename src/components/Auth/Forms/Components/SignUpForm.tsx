@@ -21,7 +21,7 @@ function SignUpForm() {
     return (
         <form
             action={dispatch}
-            className='flex-[2] flex justify-end' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest }}>
+            className='flex-[2] flex justify-end' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.gaps.largest, marginBottom: spacing.gaps.largest }}>
             <div className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement, width: 'clamp(43px,100%,680px)' }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize) }}>Create an account</h1>
                 <fieldset name='fs' className='flex flex-col' style={{ rowGap: spacing.gaps.separateElement }}>

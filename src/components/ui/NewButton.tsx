@@ -51,14 +51,15 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         }
         const bgc = new TinyColor(bgColour);
         const Comp = Slot;
+        console.log("Classname", className)
         return (
             // <button>
             <Comp ref={ref}>
                 {
                     typeof actionOrLink === 'string' ?
                         <Link className={`${className} ${!noAnimation ? "hover:scale-105 transition-transform" : ""} 
-                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] w-fit hover:underline 
-                    rounded-[10px]`}
+                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
+                    rounded-[10px] whitespace-nowrap`}
                             href={actionOrLink}
                             style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
                             onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>{text} {children}</Link> : <>
@@ -69,8 +70,8 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                                 onMouseEnter={() => setHovered(true)}
                                 onMouseLeave={() => setHovered(false)}
                                 className={`${className} ${!noAnimation ? "relative hover:scale-105 transition-transform" : ""} 
-                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] w-fit hover:underline 
-                    rounded-[10px]`}>
+                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
+                    rounded-[10px] whitespace-nowrap`}>
                                 {text} {children}</button></>
                 }
 
