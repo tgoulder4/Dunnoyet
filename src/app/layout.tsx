@@ -1,3 +1,4 @@
+import '@/app/globals.css'
 import SessionProvider from "@/components/auth/context/CustomSessionProvider"
 
 export default function RootLayout({
