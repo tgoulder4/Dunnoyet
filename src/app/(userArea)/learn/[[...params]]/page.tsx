@@ -82,7 +82,7 @@ function page({ params }: { params: { params: string } }) {
         <main className="flex flex-col" style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largestFontSize, fontWeight: 300 }}>Welcome back, {name}!</h1>
-                <NewButton buttonVariant='black' actionOrLink={() => { setChatIsOpen(true); redirect("/learn/new"); }}><Plus className="h-full flex-[0]" color="white" />
+                <NewButton buttonVariant='black' actionOrLink={() => { setChatIsOpen(true); redirect("/learn/new"); }}><Plus className="h-full" color="white" />
                     Learn something new</NewButton>
             </div>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>

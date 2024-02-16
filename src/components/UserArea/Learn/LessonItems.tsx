@@ -16,11 +16,6 @@ export default function LessonItems() {
     // useEffect(() => {
     //     console.log("sess: ", sess)
     // }, [sess]);
-    if (sess) {
-
-        const userID = sess.data?.user?.id;
-        if (userID === null) throw new Error("Session.data.user.id was null. Session was " + JSON.stringify(sess));
-    }
     const [items, setItems] = useState(null as ILesson[] | [] | null);
     useEffect(() => {
         async function main() {
