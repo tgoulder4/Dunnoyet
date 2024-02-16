@@ -25,6 +25,7 @@ export async function getUser(username: string): Promise<IUser | null> {
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
+    basePath: '/auth',
     providers: [
         Credentials({
             name: 'credentials',

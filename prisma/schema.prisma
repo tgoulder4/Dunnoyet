@@ -34,20 +34,11 @@ model User {
 //   expires      DateTime
 // }
 
-model UIDetail {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  tips Tip[]
-
-  @@map("uidetails")
-}
-
 model Tip {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  content    String
-  link       String
-  uiDetail   UIDetail @relation(fields: [uiDetailId], references: [id])
-  uiDetailId String   @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  content String
+  link    String
 
   @@map("tips")
 }
