@@ -21,11 +21,13 @@ export const createMessageSchema = z.object({
 //     userId: string;
 // }
 export const createLessonSchema = z.object({
+    id: z.string(),
     userId: z.string(),
     subject: z.string(),
-    messages: z.array(createMessageSchema),
-    beganAt: z.string(),
-    updatedAt: z.string(),
+    messages: z.array(createMessageSchema).optional(),
+    beganAt: z.date(),
+    updatedAt: z.date(),
+    status: z.enum(["Active", "Completed"]),
 })
 // export type IUser = {
 //     id: string;

@@ -11,8 +11,9 @@ export type ILesson = {
     subject: string;
     messages?: IMessage[];
     beganAt: Date;
+    status: "Active" | "Completed";
     updatedAt: Date;
-    currentKnowledgeSummary: string
+    knowledgePointsFromLesson: string[];
 }
 export type IUser = {
     id: string;
