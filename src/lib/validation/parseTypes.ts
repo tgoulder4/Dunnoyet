@@ -1,3 +1,4 @@
+import { IKnowledge } from './enforceTypes';
 import { z } from 'zod'
 // //TYPES
 // export type IMessage = {
@@ -25,6 +26,9 @@ export const createLessonSchema = z.object({
     userId: z.string(),
     subject: z.string(),
     messages: z.array(createMessageSchema).optional(),
+    knowledgePointsFromLesson: z.array(z.object({
+        lessonId: z.string(), point: z.string(), TwoDCoOrd: z.array(z.string()), confidence: z.enum(["wellKnown", "allegedlyUnderstood", "low"])
+    })),
     beganAt: z.date(),
     updatedAt: z.date(),
     status: z.enum(["Active", "Completed"]),

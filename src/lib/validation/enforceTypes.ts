@@ -1,19 +1,44 @@
-
 //TYPES
+export type IMessagesEndpointResponsePayload = {
+    newMessages: IMessage[];
+    metadata: IMetadata;
+}
+export type IMessagesEndpointSendPayload = {
+    messages: IMessage[];
+    metadata: IMetadata;
+}
+export type IMetadata = {
+    lessonID: string;
+    threads: IMessage[][];
+    subject: string,
+    action?: "understood",
+    knowledgePointChain: IKnowledge[][];
+}
 export type IMessage = {
-    content: string;
-    role: "User" | "Assistant";
-    type: "New_Question" | "Question" | "Response" | "Interrogation";
+    content: string | ISplitResponse[];
+    eliResponseType?: "General" | "WhatComesToMind" | "ChallengeQ";
+    role: "user" | "eli";
     placeHolderText?: string;
 };
+export type ISplitResponse = { text: string, active: boolean };
 export type ILesson = {
     id: string;
     subject: string;
     messages?: IMessage[];
     beganAt: Date;
-    status: "Active" | "Completed";
-    updatedAt: Date;
-    knowledgePointsFromLesson: string[];
+    lessonStatus: "Active" | "Completed";
+    endedAt: Date;
+    knowledgePointChain: string[][] | IKnowledge[][];
+}
+export type IKnowledge = {
+    id?: string,
+    lessonId: string,
+    source: 'reinforced' | 'offered',
+    pointInSolitude: string,
+    pointInChain: string,
+    TwoDCoOrd: number[],
+    //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
+    confidence: number
 }
 export type IUser = {
     id: string;

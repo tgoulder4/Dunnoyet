@@ -5,13 +5,40 @@ topic = createCompletion:
     We’re teaching a student. Given the question ‘What are vectors and scalars’ and
 their answer to ‘what comes to mind when you think of vectors?’ being ‘an arrow pointing somewhere’, determine the name of a very small subtopic we can begin teaching them with which links to their response, in maximum 5 words.
 
-## send UserResponse:
-  switch(UserResponse.type){
-    if ('responseToEndOfThreadQuestion'){
+## on send UserResponse:
+  whatTheirResponseIs=createCompletion(general).initialQ = ‘’
+  rksFromLesson=[]
+  switch(whatTheirResponseIs){  
+    case (‘WHATCOMESTOMIND_FINALANSWER’):         
+        //make a knowledge point, add to pinecone and db and network, get rKs as knowledge context for whole convo, setTopic      
+        trueOrCorrection = isQuestionAnswerTrueOrCorrection(message)      
+        if (trueOrCorrection !== true) 
+        pushNextMessageAsCorrection(threads,trueOrCorrection); 
+        return;      
+        K  = await createCompletion(...)      
+        rKsFromLesson.push(K)      
+        {2DvK} = await createVKand2DPoints(text)      
+        add2DvKToNetwork({2Dvk,KType:’wellknown’})      
+        topic = getTopicByJoiningWhatcomestomindWithInitialQ(initialQ,message.data) //combine original q and whatComesToMindAnswer to form a topic      
+        setTopic(topic)      
+        rKs = getrKForConvo()      
+        getNextAnswer()  
+    case(‘ENDOFTHREADQUESTION_FINALANSWER’):        
+        trueOrCorrection = isQuestionAnswerTrueOrCorrection(message)         
+        if (trueOrCorrection !== true) 
+        pushNextMessageAsCorrection(threads,trueOrCorrection); 
+        return;         
+        2DvK = await createKnowledgePoint(message)        
+        add2DvKToNetwork(2Dvk)         
+        pushNextMessageAsCongratulateOnCorrectAnswer()   
+    case(‘QUESTION’)         
+        newThreadSubject = ReturnSimplifiedQFromTheirQuestion(userResponse.data)         
+        createNewThread(threads,isQ,threads[threads.length].splitResponses[0],messages)
+ removeLastSplitResponseBecauseAddressedAndEndThreadIfNecessary(threads)
 
-    }
-  }
-# fn getSimplifiedQuestion(text)
+
+
+# fn checkIfQuestionAndReturnSimplifiedQIfQuestion(text)
     simplified = createCompletion:('Simplify this question to 5 words or less: ' text)
     return simplified
 # fn extractKnowledgePointFromUserQuestionAsText(text)

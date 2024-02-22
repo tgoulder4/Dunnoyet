@@ -1,4 +1,5 @@
-import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/learn/[[...params]]/pineconeActions'
+'use client'
+import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/learn/pineconeActions'
 import { IMessage } from '@/lib/validation/enforceTypes'
 import React, { useState } from 'react'
 import Conversation from './Conversation'
@@ -6,7 +7,7 @@ type chatProps = {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
-function Chat({
+function ChatWithEli({
     isOpen,
     setIsOpen
 }: chatProps) {
@@ -16,8 +17,8 @@ function Chat({
             isOpen ? <Conversation />
                 : null
         }
-    </>
+    </div>
     )
 }
 
-export default Chat
+export default ChatWithEli
