@@ -10,10 +10,11 @@ export type IMessagesEndpointSendPayload = {
 export type IMetadata = {
     lessonID: string;
     threads: IMessage[][];
-    subject: string,
+    intro?: { subject: string, subjectIntro: string };
+    subject?: string;
     action?: "understood",
-    knowledgePointChain: IKnowledge[][];
-    currentKnowledgePointChainIndex: number;
+    knowledgePointChain: Array<IKnowledge[] | IKnowledge>;
+    currentKnowledgePointIndex: number;
 }
 export type IMessage = {
     content: string | ISplitResponse[];
@@ -31,9 +32,12 @@ export type ILesson = {
     endedAt: Date;
     knowledgePointChain: string[][] | IKnowledge[][];
 }
+/**
+ * @confidence 5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
+ */
 export type IKnowledge = {
     id?: string,
-    lessonId: string,
+    lessonId?: string,
     source: 'reinforced' | 'offered',
     pointInSolitude: string,
     pointInChain: string,
