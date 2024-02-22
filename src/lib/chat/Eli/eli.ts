@@ -40,6 +40,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const howRight = await howRightIsTheUser(messages);
         let K: IKnowledge | null = null;
         if (howRight !== 'NOT') {
+            //if they're at least partly right, add their knowledge to chain
             const Kp = await simplifyToKnowledgePoint(messages);
             if (Kp) {
                 const coOrds = await getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp);
@@ -57,6 +58,20 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                 console.log("Kp is null in getNextMessage");
             }
         }
-        const { splitResponses, subject, subjectIntro } = await getSplitResponses(undefined, theirInput, true, true, howRight === 'NOT');
-    }
+        //get teaching reply split into paras
+        const { splitResponses, subject, subjectIntro } = await getSplitResponses(messages, theirInput, true, true, howRight === 'NOT');
+        //mirror in knowledge chain
+        const newKs = Promise.all(splitResponses.map(async (sr, i) => {
+            const Kp = await simplifyToKnowledgePoint(messages, subject);
+            if (!Kp) throw new Error("Kp is null in getNextMessage");
+            const coOrds = await getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp);
+            return {
+                confidence: i == 0 ? 4 : 2,
+                lessonId: lessonID,
+                pointInSolitude: sr,
+                pointInChain: '',
+                source: 'offered',
+                TwoDCoOrd: coOrds
+            }
+        }
 }
