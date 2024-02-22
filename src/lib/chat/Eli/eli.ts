@@ -1,6 +1,6 @@
 import { IKnowledge, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from "@/lib/validation/enforceTypes";
 import OpenAI from "openai";
-import { howRightIsTheUser, simplifyToKnowledgePoint } from "./instructionsForRetrievingTypeOfTheirMessage";
+import { getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint } from "./instructionsForRetrievingTypeOfTheirMessage";
 import { getEmbedding } from "../openai";
 import * as tsnejs from '@aidanconnelly/tsnejs'
 const openai = new OpenAI();
@@ -9,7 +9,6 @@ const opt = {
     perplexity: 30, // roughly how many neighbors each point influences (30 = default)
     dim: 2 // dimensionality of the embedding (2 = default)
 };
-
 const tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 async function getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp: string): Promise<[number, number]> {
     try {
@@ -33,10 +32,11 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         action,
         lessonID, knowledgePointChain, currentKnowledgePointChainIndex
     } = metadata;
+    let newKnowledgePointChainIndex = currentKnowledgePointChainIndex;
     //IF THEY'RE RESPONDING TO A WHAT COMES TO MIND QUESTION (THEY HAVE NO RELATED KNOWLEDGE ON THE SUBJECT THEY'RE ASKING ABOUT)
     if (messages.length == 3 && messages[1].eliResponseType == "WhatComesToMind") {
         const splitResponses = [];
-        const theirInput = messages[messages.length - 1].content;
+        const theirInput = messages[messages.length - 1].content as string;
         const howRight = await howRightIsTheUser(messages);
         let K: IKnowledge | null = null;
         if (howRight !== 'NOT') {
@@ -51,10 +51,12 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     source: 'reinforced',
                     TwoDCoOrd: coOrds
                 }
-                knowledgePointChain[currentKnowledgePointChainIndex].push(K);
+                knowledgePointChain.push([K]);
+                newKnowledgePointChainIndex = 0;
             } else {
                 console.log("Kp is null in getNextMessage");
             }
         }
+        const { splitResponses, subject, subjectIntro } = await getSplitResponses(undefined, theirInput, true, true, howRight === 'NOT');
     }
 }

@@ -13,6 +13,7 @@ export type IMetadata = {
     subject: string,
     action?: "understood",
     knowledgePointChain: IKnowledge[][];
+    currentKnowledgePointChainIndex: number;
 }
 export type IMessage = {
     content: string | ISplitResponse[];

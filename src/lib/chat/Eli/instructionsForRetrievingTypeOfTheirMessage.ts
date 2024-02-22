@@ -68,4 +68,20 @@ export const simplifyToKnowledgePoint = async (messageHistory: IMessage[], subje
         return null;
     }
 }
-// export const getSplitResponses = (askForSubject?: boolean, rKs: IKnowledge[], askForSubjectIntro?: boolean, userIsWrong?: boolean) => {
+export const getSplitResponses = async (messages: IMessage[], rKs?: IKnowledge[], subject?: string, askForSubject?: boolean, askForSubjectIntro?: boolean, userIsWrong?: boolean): Promise<{ splitResponses: string, subject?: string, subjectIntro?: string }> => {
+    try {
+        const res = await openai.chat.completions.create({
+            messages: [{
+                role: 'system',
+                content: `your name is Eli.` + subject ? ` you’re teaching a student named tye about` + subject : "" + `. The answers you provide must contain EXACT TERMS from their related knowledge:` + rKs ? 'Their knowledge is ' + rKs.map(rk => "Point:" + rk.pointInSolitude + ", Confidence: " + rk.confidence).join("\n\n") : '' + '. Given their response: ' + messages[messages.length - 1] +
+                    `If you reference their knowledge, lazily wrap the areas you used it in with square brackets. Each sentence should be separated by a new line. Don't provide a summary or ask if they'd like to learn anything else. Form at least 5 sentences, and be kind. After answering 'what comes to mind', kindly respond in terms of this.`
+                    + askForSubject || askForSubjectIntro ? ' Put MAIN: around your reply. ' : '' + askForSubject ? 'After your response, put "SUBJECT: " and then the subject of the conversation.' : '' + askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying the subject of the conversation switched to (that subject).' : '' + userIsWrong ? ' Their response is wrong. Please correct them and remember to reference their related knowledge points.' : ''
+            },],
+            model: "gpt-3.5-turbo"
+        })
+        return { splitResponses: askForSubject || askForSubjectIntro ? res.choices[0].message.content?.match(/MAIN: ([^\n]+)/)?.[0] : res.choices[0].message.content, subjectIntro: res.choices[0].message.content?.match(/SUBJECTINTRO: ([^\n]+)/)?.[0] }
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
