@@ -2,7 +2,7 @@
 export type IMessagesEndpointResponsePayload = {
     newMessages: IMessage[];
     metadata: IMetadata;
-}
+} | { error: string }
 export type IMessagesEndpointSendPayload = {
     messages: IMessage[];
     metadata: IMetadata;
@@ -10,15 +10,14 @@ export type IMessagesEndpointSendPayload = {
 export type IMetadata = {
     lessonID: string;
     threads: IMessage[][];
-    intro?: { subject: string, subjectIntro: string };
     subject?: string;
-    action?: "understood",
-    knowledgePointChain: Array<IKnowledge[] | IKnowledge>;
+    action?: "understood" | 'endLesson',
+    knowledgePointChain: Array<IKnowledge>;
     currentKnowledgePointIndex: number;
 }
 export type IMessage = {
-    content: string | ISplitResponse[];
-    eliResponseType?: "General" | "WhatComesToMind" | "ChallengeQ";
+    content: string | ISplitResponse;
+    eliResponseType?: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction';
     role: "user" | "eli";
     placeHolderText?: string;
 };
@@ -30,7 +29,7 @@ export type ILesson = {
     beganAt: Date;
     lessonStatus: "Active" | "Completed";
     endedAt: Date;
-    knowledgePointChain: string[][] | IKnowledge[][];
+    knowledgePointChain: IKnowledge[];
 }
 /**
  * @confidence 5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
@@ -42,6 +41,7 @@ export type IKnowledge = {
     pointInSolitude: string,
     pointInChain: string,
     TwoDCoOrd: number[],
+    vectorEmbedding?: number[],
     //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
     confidence: number
 }
