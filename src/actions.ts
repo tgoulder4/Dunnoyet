@@ -27,12 +27,12 @@ export async function getUser(userID?: string,
                 tutorName: choose?.tutorName || false,
                 username: choose?.username || false,
                 lessons: choose?.lessons || false,
-                knowledgePointsUnderstood: choose?.knowledgePointsUnderstood || false
+                knowledgePoints: choose?.knowledgePointsUnderstood || false
             },
         });
         if (!user) return null;
         console.log("User which getUser returned: ", user)
-        return user as Pick<IUser, "email" | "tutorName" | "username" | "lessons" | "knowledgePointsUnderstood">;
+        return user as IUser;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);
