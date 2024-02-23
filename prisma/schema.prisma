@@ -41,9 +41,9 @@ model knowledgePoint {
 model Lesson {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId
   subject             String
-  messages            Message[]
-  //threads is a 2D array of current knowledge to teach
-  threads             thread[]
+  messages            Message[] @relation("LessonToMessage")
+  //threads is a 2D array of current knowledge to teach !!! CHANGE: this is not included anymore as lessons will be saved at the end of the session so threads isn't needed
+  // threads             Message[] @relation("ThreadsToMessage")
   beganAt             DateTime  @default(now())
   updatedAt           DateTime  @default(now())
   lessonStatus        String    @default("Active")
@@ -55,18 +55,13 @@ model Lesson {
   @@map("lessons")
 }
 
-type thread {
-  threadInitiatorQuestion String
-  splitResponses          Message[]
-}
-
 model Message {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   role    String
   rk      String[]
   content String
 
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  lesson   Lesson @relation("LessonToMessage", fields: [lessonId], references: [id])
   lessonId String @db.ObjectId
 
   @@map("messages")

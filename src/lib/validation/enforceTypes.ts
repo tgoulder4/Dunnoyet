@@ -10,7 +10,7 @@ export type IMessagesEndpointSendPayload = {
 export type IMetadata = {
     lessonID: string;
     threads: IMessage[][];
-    subject?: string;
+    subjects: string[];
     action?: "understood" | 'endLesson',
     knowledgePointChain: Array<IKnowledge>;
     currentKnowledgePointIndex: number;
@@ -24,7 +24,7 @@ export type IMessage = {
 export type ISplitResponse = { text: string, active: boolean };
 export type ILesson = {
     id: string;
-    subject: string;
+    subjects: string[];
     messages?: IMessage[];
     beganAt: Date;
     lessonStatus: "Active" | "Completed";

@@ -51,6 +51,22 @@ export const getIsQuestion = async (subject: string, messageHistory: IMessage[])
         return null;
     }
 }
+export const getIsQuestionResponseTrueOrFalse = async (messageHistory: IMessage[]): Promise<boolean | null> => {
+    try {
+
+        const res = await openai.chat.completions.create({
+            messages: [{
+                role: 'system',
+                content: 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Is their to the question entirely correct? respond either TRUE or FALSE.'
+            },],
+            model: "gpt-3.5-turbo"
+        })
+        return res.choices[0].message.content === "TRUE"
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
 export const simplifyToKnowledgePoint = async (messageHistory: IMessage[], subject?: string): Promise<string | null | undefined> => {
     try {
 
