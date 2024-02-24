@@ -3,10 +3,10 @@ import { IKnowledge, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpoi
 import OpenAI from "openai";
 import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint, simplifyToSubject } from "./instructionsForRetrievingTypeOfTheirMessage";
 import { getEmbedding } from "../openai";
-import * as tsnejs from '@aidanconnelly/tsnejs'
+const tsnejs = require('@aidanconnelly/tsnejs')
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
-import prisma from "@/lib/db/prisma";
+import prisma from "../../../lib/db/prisma";
 const openai = new OpenAI();
 const opt = {
     epsilon: 10,    // epsilon is learning rate (10 = default)
@@ -113,10 +113,12 @@ export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: st
 }
 export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[], userID: string) {
     try {
-        const kps = await prisma.$transaction(async (tx) => {
-            await Promise.all(knowledgePointChain.map(async (Kp) => {
+        console.log("savekNowledgePointsToDBAndPineCone called")
+        const _kps = await Promise.all(knowledgePointChain.map(async (Kp) => {
+            const updatedUser = await prisma.$transaction(async (tx) => {
                 const em = await getEmbedding(Kp.pointInSolitude);
-                const kp = await tx.knowledgePoint.create({
+                console.log("embedding formed: ", em, "for KpSol: ", Kp.pointInSolitude)
+                const K = await tx.knowledgePoint.create({
                     data: {
                         lessonId: lessonID,
                         userId: userID,
@@ -127,21 +129,29 @@ export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowl
                         confidence: Kp.confidence
                     }
                 })
-                if (!kp) throw new Error("kp is null in saveKnowledgePointsToDBAndPineCone");
+                // putting it inside the user instead for faster access
+                console.log("updating user by userID: ", userID)
+                const updatedUser = await tx.user.findUnique({
+                    where: { id: userID }, include: { knowledgePoints: true },
+                });
+                console.log("the user is now: ", updatedUser)
+                if (!updatedUser) throw new Error("kp is null in saveKnowledgePointsToDBAndPineCone");
+                console.log("upserting to pinecone...")
                 await knowledgeIndex.upsert([{
-                    id: kp.id,
+                    id: K.id,
                     values: em,
                     metadata: {
                         source: Kp.source,
                         userId: userID
                     }
                 }])
-
-                return kp;
+                console.log("upserted to pinecone")
+                return updatedUser;
             })
-            )
+            return updatedUser.knowledgePoints;
         })
-        return;
+        )
+        return _kps;
     } catch (e) {
         console.log(e)
         return null;

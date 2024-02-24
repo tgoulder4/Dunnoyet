@@ -94,7 +94,10 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 username: credentials.username as string,
                 email: credentials.email as string,
                 password: hashedPassword as string,
-                tutorName: ''
+                tutorName: '',
+                knowledgePoints: {
+                    create: undefined
+                }
             },
         });
         console.log("User created successfully, ")

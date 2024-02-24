@@ -2,6 +2,7 @@ import { howRightIsTheUser, simplifyToKnowledgePoint } from './../instructionsFo
 import { expect, jest, test } from '@jest/globals';
 import { IMessage } from '@/lib/validation/enforceTypes';
 import { getEmbedding } from '../../openai';
+import { saveKnowledgePointsToDBAndPineCone } from '../eli';
 const getMessageHistory = (conversationToUse: number, length: number): IMessage[] => {
     const exampleConversation: IMessage[] = [
         {
@@ -109,10 +110,23 @@ describe("Prompt tests", () => {
 })
 
 describe("Pinecone and mongodb queries", () => {
-    it("IS CRIT", () => { });
+    it("IS CRIT:PASSING", () => { });
     test("getEmbedding", async () => {
         //please test one at once to save on expenses
-        const embedding = await getEmbedding("A vector is a quantity that has both magnitude and direction.")
-        expect(embedding).toBeTruthy()
+        // const embedding = await getEmbedding("A vector is a quantity that has both magnitude and direction.")
+        // expect(embedding).toBeTruthy()
+    })
+    it("IS CRIT", () => { });
+    test("saveKnowledgePoints", async () => {
+        //please test one at once to save on expenses
+        const rKs = await saveKnowledgePointsToDBAndPineCone("65cbc19a69ec7237e52b4747", [{
+            source: "reinforced",
+            pointInSolitude: "A vector is a quantity that has both magnitude and direction.",
+            pointInChain: "A vector is a quantity that has both magnitude and direction.",
+            TwoDCoOrdinates: [0, 0],
+            confidence: 5
+        }], "65cbc19a69ec7237e52b4747")
+        console.log("rKs: ", rKs)
+        expect(rKs).toBeTruthy()
     })
 })

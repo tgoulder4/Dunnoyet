@@ -1,2 +1,2 @@
 - process.env not working? use dotenv instead. It's installed, just write
-    'import 'dotenv/config' at the top of the file.
+    'import 'dotenv/config' at the top of the file. This interfered with nextjs, setting it to import * as dotenv from 'dotenv/config' instead worked.
