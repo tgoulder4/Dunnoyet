@@ -1,6 +1,7 @@
 'use server'
+import 'dotenv/config'
 import OpenAI from "openai";
-
+// console.log("Process.env: ", process.env)
 const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) throw new Error("No OpenAI API key found");
 const openai = new OpenAI({ apiKey });

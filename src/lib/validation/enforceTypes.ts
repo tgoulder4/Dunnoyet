@@ -9,6 +9,7 @@ export type IMessagesEndpointSendPayload = {
 }
 export type IMetadata = {
     lessonID: string;
+    userID?: string;
     threads: IMessage[][];
     subjects: string[];
     action?: "understood" | 'endLesson',
@@ -37,10 +38,11 @@ export type ILesson = {
 export type IKnowledge = {
     id?: string,
     lessonId?: string,
+    userId?: string,
     source: 'reinforced' | 'offered',
     pointInSolitude: string,
     pointInChain: string,
-    TwoDCoOrd: number[],
+    TwoDCoOrdinates: number[],
     vectorEmbedding?: number[],
     //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
     confidence: number

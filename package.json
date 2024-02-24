@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@aidanconnelly/tsnejs": "^0.1.4",
@@ -30,7 +31,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "deep-equal": "^2.2.3",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
     "fabric": "^5.3.0",
@@ -56,10 +57,13 @@
   "devDependencies": {
     "@prisma/client": "^5.9.1",
     "@types/bcrypt": "^5.0.2",
+    "@types/jest": "^29.5.12",
     "@types/jquery": "^3.5.19",
     "@types/node": "^20.8.2",
+    "jest": "^29.7.0",
     "prisma": "^5.9.1",
     "sass": "^1.70.0",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.3"
   },

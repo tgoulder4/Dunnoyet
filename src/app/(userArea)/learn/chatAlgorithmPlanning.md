@@ -73,7 +73,7 @@ their answer to ‘what comes to mind when you think of vectors?’ being ‘an 
   msg = threads[threads.length-1].splitResponses[0]
   return msg
 # fn removeLatestAssistantMessageBecauseUnderstoodAndEndThreadIfNecessary(threads,threadInitiatorQs)
-    if (threads[threads.length-1].splitResponses.length==0) threads.unshift() : threads[threads.length-1].splitResponses.unshift(); threadInitiatorQs.unshift();
+    if (threads[threads.length-1].splitResponses.length==0) threads.shift() : threads[threads.length-1].splitResponses.shift(); threadInitiatorQs.shift();
 # fn plotKnowledgePointOnVisualiser(2DvK)
     e.g. canvas.plot(2DvK[0],2DvK[1])
 # fn getCartesianCoOrdinatesFromEmbedding(vK)
@@ -111,7 +111,7 @@ const knlp = await createCompletion(
 if (userResponse == Understood){
   contentToExtractFrom = lastAssistantMessage;
   const q = await createCompletion(createQuestionPrompt(threadInitiatingQuestion),...)
-  if (threads[threads.length-1].length ==1) threads.unshift()
+  if (threads[threads.length-1].length ==1) threads.shift()
 
 
   I used the t-Distributed Stochastic Neighbor Embedding statistical method to reduce the user's embedded knowledge from 1536 dimensions to 2. https://www.npmjs.com/package/tsne-js

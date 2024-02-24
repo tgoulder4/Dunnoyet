@@ -18,20 +18,22 @@ export const getTeachingResponse = (subject: string, rKs: IKnowledge[], messageH
 //future function:
 // export const getIsDetour = (messages: IMessage[]): Promise<boolean> => { }
 //ALL UNTESTED FNS:
-export const howRightIsTheUser = async (messageHistory: IMessage[], subject?: string,): Promise<'FULLY' | 'PARTLY' | 'NOT' | null> => {
+export const howRightIsTheUser = async (messageHistory: IMessage[], subject?: string,)
+    : Promise<'FULLY' | 'PARTLY' | 'NOT' | null> => {
     try {
-
+        const prompt = subject ? 'We are teaching a student together about ' + subject + "." : '' + 'Given your knowledge and the chat history: "' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n" How right is the student in their latest response? respond either "FULLY" if theyre fully right, respond "PARTLY" if theyre partly right, and if theyre completely wrong, respond "NOT". if they dont say any anything that shows what they know, say NOT.'
+        console.log("HowRightIsTheUserCalled, prompt is " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together about ' + subject + '. Given your knowledge and the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n How right is the student? respond either "FULLY", "PARTLY", or if theyre completely and utterly wrong, respond "NOT". if they dont say any explicitly extractable knowledge, say NOT.'
+                content: prompt
             },],
             model: "gpt-3.5-turbo"
         })
         return res.choices[0].message.content as 'FULLY' | 'PARTLY' | 'NOT';
     }
     catch (e) {
-        console.log(e);
+        console.log("content of completion was null at howRightIsTheUser. Error:" + e);
         return null;
     }
 }
@@ -41,7 +43,7 @@ export const getIsQuestion = async (subject: string, messageHistory: IMessage[])
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together about ' + subject + '. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\nIs their response a question? respond either TRUE or FALSE.'
+                content: 'We are teaching a student together about ' + subject + '. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\nIs their response a question? respond either TRUE or FALSE.'
             },],
             model: "gpt-3.5-turbo"
         })
@@ -51,58 +53,66 @@ export const getIsQuestion = async (subject: string, messageHistory: IMessage[])
         return null;
     }
 }
-export const getIsQuestionResponseTrueOrFalse = async (messageHistory: IMessage[]): Promise<boolean | null> => {
-    try {
+//FAILING
+// export const getIsQuestionResponseTrueOrFalse = async (messageHistory: IMessage[]): Promise<boolean | null> => {
 
-        const res = await openai.chat.completions.create({
-            messages: [{
-                role: 'system',
-                content: 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Is their to the question entirely correct? respond either TRUE or FALSE.'
-            },],
-            model: "gpt-3.5-turbo"
-        })
-        return res.choices[0].message.content === "TRUE"
-    } catch (e) {
-        console.log(e);
-        return null;
-    }
-}
+//     try {
+//         const prompt = 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n Is the students response to the question correct or not? Respond either TRUE or FALSE.'
+//         console.log("getIsQuestionResponseTrueOrFalse called, prompt is: " + prompt)
+//         const res = await openai.chat.completions.create({
+//             messages: [{
+//                 role: 'system',
+//                 content: prompt
+//             },],
+//             model: "gpt-3.5-turbo"
+//         })
+//         const result = res.choices[0].message.content;
+//         if (result === null) throw new Error("getIsQuestionResponseTrueOrFalse returned null, the completion failed.")
+//         console.log("getIsQuestionResponseTrueOrFalse returned: " + result)
+//         return result === "TRUE" || result == "true"
+//     } catch (e) {
+//         console.log("Error in getIsQuestionResponseTrueOrFalse: " + e);
+//         return null;
+//     }
+// }
 export const simplifyToKnowledgePoint = async (messageHistory: IMessage[], subject?: string): Promise<string | null | undefined> => {
     try {
+        const prompt = subject ? 'We are teaching a student together about ' + subject + '.' : '' + 'Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n Simplify their knowledge behind their reply to about 10 words which references the topic of the conversation. It should only include information in their last reply, in exact terms, anything else you add must be to make the result more explicit, with the topic written first then the rest after. It mustnt be vague or general at all, say it with no room for confusion. Send one sentence only. If it is partly correct, only focus on the correct parts. It should be comprehensible on its own. If there is no extractable knowledge, say NULL.'
 
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: subject ? 'We are teaching a student together about ' + subject + '.' : '' + 'Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Simplify their knowledge behind their reply to about 10 words which references the topic of the conversation. If it is partly correct, only focus on the correct parts. It should be comprehensible on its own. If there is no extractable knowledge, say NULL.'
+                content: prompt
             },],
             model: "gpt-3.5-turbo"
         })
-        const K = res.choices[0].message.content;
-        if (K == null) throw new Error("simplifyToKnowledgePoint completion returned null, the completion failed.")
-        if (K === "NULL") return null;
-        return res.choices[0].message.content as string;
+        const pointInSolitude = res.choices[0].message.content;
+        console.log("SimplifyToKnowledgePoint returned: " + pointInSolitude)
+        if (pointInSolitude == null) throw new Error("simplifyToKnowledgePoint completion returned null, the completion failed.")
+        if (pointInSolitude === "NULL") return null;
+        return pointInSolitude as string;
     }
     catch (e) {
         console.log(e);
         return undefined;
     }
 }
-export const getChallengeQuestion = async (subject: string, messageHistory: IMessage[]): Promise<string | null> => {
-    //given what they've learnt about SUBJECT, and the message history MESSAGEHISTORY, quiz them on a question about the subject.
-    try {
-        const res = await openai.chat.completions.create({
-            messages: [{
-                role: 'system',
-                content: 'Given what this student has learnt about ' + subject + ' from the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Ask them a question about the subject. Say the question only and nothing else.'
-            },],
-            model: "gpt-3.5-turbo"
-        })
-        return res.choices[0].message.content
-    } catch (e) {
-        console.log(e);
-        return null;
-    }
-}
+// export const getChallengeQuestion = async (subject: string, messageHistory: IMessage[]): Promise<string | null> => {
+//     //given what they've learnt about SUBJECT, and the message history MESSAGEHISTORY, quiz them on a question about the subject.
+//     try {
+//         const res = await openai.chat.completions.create({
+//             messages: [{
+//                 role: 'system',
+//                 content: 'Given what this student has learnt about ' + subject + ' from the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Ask them a question about the subject. Say the question only and nothing else.'
+//             },],
+//             model: "gpt-3.5-turbo"
+//         })
+//         return res.choices[0].message.content
+//     } catch (e) {
+//         console.log(e);
+//         return null;
+//     }
+// }
 export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ pointInSolitude: string, confidence: number }>, subject?: string, askForSubject?: boolean, askForSubjectIntro?: boolean, userIsWrong?: boolean, splitResponsesLimit?: number)
     : Promise<{ splitResponses: IMessage[], subject?: string, subjectIntro?: string } | null> => {
     try {

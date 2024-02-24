@@ -1,9 +1,10 @@
 'use server'
 import { IKnowledge, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from "@/lib/validation/enforceTypes";
 import OpenAI from "openai";
-import { getChallengeQuestion, getIsQuestion, getIsQuestionResponseTrueOrFalse, getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint, simplifyToSubject } from "./instructionsForRetrievingTypeOfTheirMessage";
+import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint, simplifyToSubject } from "./instructionsForRetrievingTypeOfTheirMessage";
 import { getEmbedding } from "../openai";
 import * as tsnejs from '@aidanconnelly/tsnejs'
+//if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
 import prisma from "@/lib/db/prisma";
 const openai = new OpenAI();
@@ -49,7 +50,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
                 pointInSolitude: Kp,
                 pointInChain: '',
                 source: 'reinforced',
-                TwoDCoOrd: coOrds
+                TwoDCoOrdinates: coOrds
             }
             knowledgePointChain.splice(kpChainI, 0, K);
             if (firstPotentialKnowledgePoint) { incrementKpChainI(0) } else {
@@ -67,7 +68,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         wasRight: false,
     };
 }
-async function getRelatedKnowledgePoints(userId: string, KpInSolitude: string): Promise<IKnowledge[]> {
+export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: string): Promise<IKnowledge[]> {
     try {
         const vK = await getEmbedding(KpInSolitude);
         if (vK == null) throw new Error("vK is null in getRelatedKnowledgePoints");
@@ -79,27 +80,78 @@ async function getRelatedKnowledgePoints(userId: string, KpInSolitude: string): 
         const rVks = queryResponse.matches;
         const rKs = await Promise.all(
             rVks.map(async (rVk) => {
-                const kp = prisma.knowledgePoint.findUnique({
+                const kp = await prisma.knowledgePoint.findUnique({
                     where: {
                         id: rVk.id
                     }
                 })
-                if (!kp) throw new Error("kp is null @getRelatedKnowledgePoints - the related vector knowledge's ID didn't match any knowledge points in the db. Its ID is " + rVk.id);
+                if (kp == null) {
+                    console.log("kp is null @getRelatedKnowledgePoints - the related vector knowledge's ID didn't match any knowledge points in the db. Its ID is " + rVk.id + ". Returning a dummy knowledge point w confidence -1.")
+                    return ({
+                        id: "",
+                        userId: "",
+                        lessonId: "",
+                        pointInSolitude: "",
+                        pointInChain: "",
+                        source: "offered" as "offered" | "reinforced",
+                        TwoDCoOrdinates: [0, 0],
+                        confidence: -1
+                    })
+                }
                 return kp;
             })
         )
         if (!rKs) throw new Error("rKs is null in getRelatedKnowledgePoints");
-        return rKs;
+        return rKs as IKnowledge[];
+    } catch (e) {
+        console.log(e)
+        return [];
     }
     //get the id of them from pinecone
     //find the id of each from prisma
     //return that
 }
-async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: string, messages: IMessage[], rKs: IKnowledge[], threads: IMessage[][], knowledgePointChain: Array<IKnowledge>, indexToInsertNewKnowlegePoint: number, askForSubject?: boolean, askForSubjectIntro?: boolean, wasRight?: boolean, isNonElevatingQ?: boolean, splitResponsesLimit?: number): Promise<{
+export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[], userID: string) {
+    try {
+        const kps = await prisma.$transaction(async (tx) => {
+            await Promise.all(knowledgePointChain.map(async (Kp) => {
+                const em = await getEmbedding(Kp.pointInSolitude);
+                const kp = await tx.knowledgePoint.create({
+                    data: {
+                        lessonId: lessonID,
+                        userId: userID,
+                        source: Kp.source,
+                        pointInSolitude: Kp.pointInSolitude,
+                        pointInChain: "",
+                        TwoDCoOrdinates: Kp.TwoDCoOrdinates,
+                        confidence: Kp.confidence
+                    }
+                })
+                if (!kp) throw new Error("kp is null in saveKnowledgePointsToDBAndPineCone");
+                await knowledgeIndex.upsert([{
+                    id: kp.id,
+                    values: em,
+                    metadata: {
+                        source: Kp.source,
+                        userId: userID
+                    }
+                }])
+
+                return kp;
+            })
+            )
+        })
+        return;
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: string, messages: IMessage[], rKs: IKnowledge[], threads: IMessage[][], knowledgePointChain: Array<IKnowledge>, indexToInsertNewKnowlegePoint: number, askForSubject?: boolean, askForSubjectIntro?: boolean, wasRight?: boolean, isNonElevatingQ?: boolean, splitResponsesLimit?: number, subjects?: string[]): Promise<{
     pushedSplitResponses: IMessage[],
     newKnowledgePointChain: Array<IKnowledge>,
     newThreads: IMessage[][],
-    subject?: string,
+    subjects?: string[],
     subjectIntro?: string,
 }> {
     const gptReply = await getSplitResponses(messages, rKs, undefined, askForSubject, askForSubjectIntro, wasRight ? !wasRight : undefined, splitResponsesLimit);
@@ -114,7 +166,9 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
     console.log("threads is now", threads)
     //mirror in knowledge chain
     const newKs = Promise.all(splitResponses.map(async (sr, i) => {
-        const Kp = await simplifyToKnowledgePoint(messages, subject);
+        if (!subject || !subjects) throw new Error("subject or subjects is null in getNextMessage, should be defined from here onwards.");
+        subjects.push(subject);
+        const Kp = await simplifyToKnowledgePoint(messages, subjects[subjects.length - 1]);
         if (!Kp) throw new Error("Kp is null in getNextMessage");
         const coOrds = await getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp);
         return {
@@ -123,7 +177,7 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
             pointInSolitude: sr.content as string,
             pointInChain: '',
             source: 'offered' as 'offered' | 'reinforced',
-            TwoDCoOrd: coOrds
+            TwoDCoOrdinates: coOrds
         }
     }));
     const KpsToInsertBeforeTarget = await newKs;
@@ -132,7 +186,8 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         pushedSplitResponses: splitResponses,
         newKnowledgePointChain,
         newThreads: threads,
-        subject,
+
+        subjects,
         subjectIntro,
     }
 }
@@ -142,8 +197,9 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         threads,
         subjects,
         action,
-        lessonID, knowledgePointChain, currentKnowledgePointIndex
+        lessonID, knowledgePointChain, currentKnowledgePointIndex, userID
     } = metadata;
+    if (!userID) return { error: "No userID was passed to getNextMessage." }
     let indexToInsertNewKnowlegePoint = currentKnowledgePointIndex;
     function incrementCurrentKnowledgePointIndex() {
         indexToInsertNewKnowlegePoint++;
@@ -161,18 +217,18 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             knowledgePointAdded
         } = howRightRes;
         //get related knowledge points
-        const K = await simplifyToKnowledgePoint(messages);
-        if (K == undefined) {
+        const pointInSolitude = await simplifyToKnowledgePoint(messages);
+        if (pointInSolitude == undefined) {
             return {
                 error: 'Something went wrong. (@simplifyToKP)'
             }
         }
-        if (K == null) {
+        if (pointInSolitude == null) {
             return {
                 error: 'I could not extract any knowledge from your input. Please try again.'
             }
         }
-        const rKs: IKnowledge[] = await getRelatedKnowledgePoints(K);
+        const rKs: IKnowledge[] = await getRelatedKnowledgePoints(userID, pointInSolitude);
         //if rKs.length==0 && !wasRight then return what comes to mind q
         if (rKs.length == 0 && !wasRight) {
             const subjectOfTheirInput = await simplifyToSubject(messages);
@@ -189,7 +245,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     askMessage = "What do you know about " + subjectOfTheirInput + "?";
                     break;
                 case 3:
-                    askMessage = "What do you know about " + subjectOfTheirInput + "?";
+                    askMessage = "What do you think about when" + subjectOfTheirInput + " is mentioned?";
                     break;
             }
             const payload: IMessagesEndpointResponsePayload = {
@@ -212,9 +268,8 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             //use rks to form splitresponses and add to threads & knowledge chain
             const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, knowledgePointAdded ? rKs.concat(knowledgePointAdded) : rKs, threads, knowledgePointChain, indexToInsertNewKnowlegePoint, wasRight, true, true);
             if (!result) throw new Error("result is null in getNextMessage");
-            const { pushedSplitResponses, newKnowledgePointChain, newThreads, subject, subjectIntro } = result;
-            if (!subject || !subjectIntro) throw new Error("subject or subjectIntro is null in getNextMessage");
-            subjects?.push(subject);
+            const { pushedSplitResponses, newKnowledgePointChain, newThreads, subjects, subjectIntro } = result;
+            if (!subjectIntro) throw new Error("subject or subjectIntro is null in getNextMessage");
             if (!subjects) throw new Error("subjects wasn't passed to getNextMessage. It should be.");
             const payload: IMessagesEndpointResponsePayload = {
                 newMessages: [{
@@ -235,42 +290,63 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         }
     }
     //IF THEY UNDERSTAND THE CURRENT THREAD SPLITRESPONSE. knowledgePointChain: like [{confidecne:4...},[{confidence:5...},{confidence:5...}]]
-    if (action == "understood") {
+    else if (action == "understood") {
         const currentKP = knowledgePointChain[currentKnowledgePointIndex];
         currentKP.confidence = 5;
         //remove response from threads
         const tL = threads[threads.length - 1].length;
-        if (tL == 0) { throw new Error("tL is 0 in getNextMessage. Minimum is 1, addressed split response messages/interrogative qs are removed after this point in the backend, not in the client or before."); }
+        if (tL == 0) { throw new Error("tL is 0 in getNextMessage. Minimum is 1, addressed split response messages/interrogative qs are removed after this point in the backend, this should not be done in the client or before."); }
         else if (tL >= 1) {
-            threads[threads.length - 1].unshift();
+            threads[threads.length - 1].shift();
         }
-        if (tL == 1) {
-            //respond w a challenge q
-            if (!subjects) throw new Error("subjects is null in challenge q, should be defined from newMsg or whatComesToMind response onwards.");
-            const challengeQ = await getChallengeQuestion(subjects[subjects?.length - 1], messages); //tests their knowledge on currentkp.pointinsol as they said they just understood it
-            if (!challengeQ) throw new Error("challengeQ is null in getNextMessage");
-            const m = {
-                content: challengeQ,
-                role: 'eli' as 'eli' | 'user',
-                eliResponseType: "ChallengeQ" as "ChallengeQ" | "General" | "WhatComesToMind"
-            }
-            threads[threads.length - 1].push(m)
+        if (tL == 0) {
+            threads.pop();
+            subjects.pop();
+            //POSTPONED: respond w a challenge q
+            // if (!subjects) throw new Error("subjects is null in challenge q, should be defined from newMsg or whatComesToMind response onwards.");
+            // const challengeQ = await getChallengeQuestion(subjects[subjects?.length - 1], messages); //tests their knowledge on currentkp.pointinsol as they said they just understood it
+            // if (!challengeQ) throw new Error("challengeQ is null in getNextMessage");
+            // const m = {
+            //     content: challengeQ,
+            //     role: 'eli' as 'eli' | 'user',
+            //     eliResponseType: "ChallengeQ" as "ChallengeQ" | "General" | "WhatComesToMind"
+            // }
+            // threads[threads.length - 1].push(m)
+        }
+        if (threads.length == 0) {
+            //save all rks to db and pinecone, 
+            saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain, userID);
+            //end lesson
             const payload: IMessagesEndpointResponsePayload = {
-                newMessages: [m],
+                newMessages: [],
                 metadata: {
                     lessonID,
-                    threads,
+                    threads: [],
                     subjects,
-                    knowledgePointChain,
-                    currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
+                    knowledgePointChain: [],
+                    currentKnowledgePointIndex: 0,
+                    action: "endLesson"
                 }
             }
             console.log("payload:", payload);
             return payload;
         }
+        //TODO: REPLACE REST OF PREVIOUS THREAD W KNOWLEDGE IN TERMS OF WHAT THEY JUST LEARNED?
+        const payload: IMessagesEndpointResponsePayload = {
+            newMessages: [threads[threads.length - 1][0]],
+            metadata: {
+                lessonID,
+                threads,
+                subjects,
+                knowledgePointChain,
+                currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
+            }
+        }
+        console.log("payload:", payload);
+        return payload;
     }
     //IF THEY'RE RESPONDING TO A WHAT COMES TO MIND QUESTION (THEY HAVE NO RKS ON THE SUBJECT THEY'RE ASKING ABOUT)
-    if (messages.length == 3 && messages[1].eliResponseType == "WhatComesToMind") {
+    else if (messages.length == 3 && messages[1].eliResponseType == "WhatComesToMind") {
         const theirInput = messages[messages.length - 1].content as string;
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
         if (typeof howRightRes == 'string') {
@@ -282,11 +358,11 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         } = howRightRes;
         //get teaching reply split into paras
         if (threads[threads.length - 1][0].eliResponseType != "WhatComesToMind") throw new Error("Messages and threads are not in sync. (Expected threads[threads.length-1][0].eliResponseType to be 'WhatComesToMind')");
-        threads[threads.length - 1].unshift();
+        threads[threads.length - 1].shift();
         const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, knowledgePointAdded ? [knowledgePointAdded] : [], threads, knowledgePointChain, indexToInsertNewKnowlegePoint, wasRight, true, true, true);
         if (!result) throw new Error("result is null in getNextMessage");
-        const { pushedSplitResponses, newKnowledgePointChain, newThreads, subject, subjectIntro } = result;
-        if (!subject || !subjectIntro) throw new Error("subject or subjectIntro is null in getNextMessage");
+        const { pushedSplitResponses, newKnowledgePointChain, newThreads, subjects, subjectIntro } = result;
+        if (!subjects || !subjectIntro) throw new Error("subjects or subjectIntro is null in getNextMessage");
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [{
                 content: subjectIntro,
@@ -296,7 +372,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             metadata: {
                 lessonID,
                 threads: newThreads,
-                subject: subject,
+                subjects,
                 knowledgePointChain: newKnowledgePointChain,
                 currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
             }
@@ -304,9 +380,8 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         console.log("payload:", payload);
         return payload;
     }
-    if (!subjects) throw new Error("subject is null, should be defined from here onwards.");
-    const isQ = await getIsQuestion(subjects[subjects.length - 1], messages);
-    if (isQ) {
+    else if (!subjects) throw new Error("subject is null, should be defined from here onwards.");
+    else if (await getIsQuestion(subjects[subjects.length - 1], messages)) {
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
         if (typeof howRightRes == 'string') {
             return { error: howRightRes };
@@ -317,16 +392,15 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         } = howRightRes;
         //get related knowledge points
         const K = knowledgePointChain[indexToInsertNewKnowlegePoint];
-        const rKs: IKnowledge[] = await getRelatedKnowledgePoints(K.pointInSolitude);
+        const rKs: IKnowledge[] = await getRelatedKnowledgePoints(userID, K.pointInSolitude);
 
         //CHANGE OF PLAN: use previous rks from this level to form splitresponses and add to threads & knowledge chain. finding rks on every question send would be visually cluttering and expensive
         //use rks to form splitresponses and add to threads & knowledge chain
-        threads[threads.length - 1].unshift();
+        threads[threads.length - 1].shift();
         const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, knowledgePointAdded ? rKs.concat(knowledgePointAdded) : rKs, threads, knowledgePointChain, indexToInsertNewKnowlegePoint, wasRight, true, false, false);
         if (!result) throw new Error("result is null in getNextMessage");
-        const { pushedSplitResponses, newKnowledgePointChain, newThreads, subject, subjectIntro } = result;
-        if (!subject || !subjectIntro) throw new Error("subject or subjectIntro is null in getNextMessage @isQ");
-        subjects.push(subject);
+        const { pushedSplitResponses, newKnowledgePointChain, newThreads, subjects, subjectIntro } = result;
+        if (!subjects || !subjectIntro) throw new Error("subjects or subjectIntro is null in getNextMessage @isQ");
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [newThreads[newThreads.length - 1][0]],
             metadata: {
@@ -340,65 +414,98 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         console.log("payload:", payload);
         return payload;
     }
-    //IF THEY'RE RESPONDING TO A CHALLENGE QUESTION
-    if (threads[threads.length - 1][0].eliResponseType == "ChallengeQ") {
-        threads[threads.length - 1].unshift() //because addressed
-        const wasRight = await getIsQuestionResponseTrueOrFalse(messages);
-        if (wasRight == null) throw new Error("wasRight is null in getNextMessage");
-        if (!wasRight) {
-            console.log("was not right in challenge q");
-            console.log("threads is now", threads)
-            const rKs = knowledgePointChain.slice(0, indexToInsertNewKnowlegePoint + 1);
-            console.log("rKs being used is", rKs)
-            const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, rKs, threads, knowledgePointChain, indexToInsertNewKnowlegePoint, false, false, false, true);
-            if (!result) throw new Error("result is null in getNextMessage");
-            const { pushedSplitResponses, newKnowledgePointChain, newThreads } = result;
-            subjects.pop();
-            const payload: IMessagesEndpointResponsePayload = {
-                newMessages: [newThreads[newThreads.length - 1][0]],
-                metadata: {
-                    lessonID,
-                    threads: newThreads,
-                    subjects,
-                    knowledgePointChain: newKnowledgePointChain,
-                    currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
-                }
-            }
-            console.log("payload:", payload);
-            return payload;
-        } else {
-            if (threads.length == 1) {
-                //save all rks to db and pinecone, 
-                saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain);
-                //end lesson
-                const payload: IMessagesEndpointResponsePayload = {
-                    newMessages: [],
-                    metadata: {
-                        lessonID,
-                        threads: [],
-                        knowledgePointChain: [],
-                        currentKnowledgePointIndex: 0,
-                        action: "endLesson"
-                    }
-                }
-                console.log("payload:", payload);
-                return payload;
-            } else {
-                threads.unshift();
-                //merge rest of messages from new current thread with rKs --future feature
-                const payload: IMessagesEndpointResponsePayload = {
-                    newMessages: [threads[threads.length - 1][0]],
-                    metadata: {
-                        lessonID,
-                        threads,
-                        knowledgePointChain,
-                        currentKnowledgePointIndex: 0
-                    }
-                }
-                console.log("payload:", payload);
-                return payload;
+    //POSTPONED:IF THEY'RE RESPONDING TO A CHALLENGE QUESTION
+    // if (threads[threads.length - 1][0].eliResponseType == "ChallengeQ") {
+    //     threads[threads.length - 1].shift() //because addressed
+    //     const wasRight = await getIsQuestionResponseTrueOrFalse(messages);
+    //     if (wasRight == null) throw new Error("wasRight is null in getNextMessage");
+    //     if (!wasRight) {
+    //         console.log("was not right in challenge q");
+    //         console.log("threads is now", threads)
+    //         const rKs = knowledgePointChain.slice(0, indexToInsertNewKnowlegePoint + 1);
+    //         console.log("rKs being used is", rKs)
+    //         const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, rKs, threads, knowledgePointChain, indexToInsertNewKnowlegePoint, false, false, false, true);
+    //         if (!result) throw new Error("result is null in getNextMessage");
+    //         const { pushedSplitResponses, newKnowledgePointChain, newThreads } = result;
+    //         subjects.pop();
+    //         const payload: IMessagesEndpointResponsePayload = {
+    //             newMessages: [newThreads[newThreads.length - 1][0]],
+    //             metadata: {
+    //                 lessonID,
+    //                 threads: newThreads,
+    //                 subjects,
+    //                 knowledgePointChain: newKnowledgePointChain,
+    //                 currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
+    //             }
+    //         }
+    //         console.log("payload:", payload);
+    //         return payload;
+    //     } else {
+    //         if (threads.length == 1) {
+    //             //save all rks to db and pinecone, 
+    //             saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain);
+    //             //end lesson
+    //             const payload: IMessagesEndpointResponsePayload = {
+    //                 newMessages: [],
+    //                 metadata: {
+    //                     lessonID,
+    //                     threads: [],
+    //                     knowledgePointChain: [],
+    //                     currentKnowledgePointIndex: 0,
+    //                     action: "endLesson"
+    //                 }
+    //             }
+    //             console.log("payload:", payload);
+    //             return payload;
+    //         } else {
+    //             threads.pop();
+    //             subjects.pop();
+    //             //merge rest of messages from new current thread with rKs --future feature
+    //             const payload: IMessagesEndpointResponsePayload = {
+    //                 newMessages: [threads[threads.length - 1][0]],
+    //                 metadata: {
+    //                     lessonID,
+    //                     threads,
+    //                     knowledgePointChain,
+    //                     currentKnowledgePointIndex: 0
+    //                 }
+    //             }
+    //             console.log("payload:", payload);
+    //             return payload;
+    //         }
+    //     }
+
+    // }
+    else {
+        const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
+        if (typeof howRightRes == 'string') {
+            return { error: howRightRes };
+        }
+        const {
+            wasRight,
+            knowledgePointAdded
+        } = howRightRes;
+        //get related knowledge points
+        const rKs = knowledgePointChain;
+
+        //CHANGE OF PLAN: use previous rks from this level to form splitresponses and add to threads & knowledge chain. finding rks on every question send would be visually cluttering and expensive
+        //use rks to form splitresponses and add to threads & knowledge chain
+        threads[threads.length - 1].shift();
+        const result = await getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID, messages, knowledgePointAdded ? rKs.concat(knowledgePointAdded) : rKs, threads, knowledgePointChain, indexToInsertNewKnowlegePoint, wasRight, true, false, true);
+        if (!result) throw new Error("result is null in getNextMessage");
+        const { pushedSplitResponses, newKnowledgePointChain, newThreads, subjects, subjectIntro } = result;
+        if (!subjects || !subjectIntro) throw new Error("subjects or subjectIntro is null in getNextMessage @isQ");
+        const payload: IMessagesEndpointResponsePayload = {
+            newMessages: [newThreads[newThreads.length - 1][0]],
+            metadata: {
+                lessonID,
+                threads: newThreads,
+                subjects,
+                knowledgePointChain: newKnowledgePointChain,
+                currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
             }
         }
-
+        console.log("payload:", payload);
+        return payload;
     }
 }
