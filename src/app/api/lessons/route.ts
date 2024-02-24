@@ -35,10 +35,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
 const knowledgePointsFromLesson = ["test"];
 
 //on end lesson click - discard messages once knowledge points retrieved, create embedding:
-async function getAllEmbeddingForLessonKnowledgePoints(knps: IKnowledge[]) {
-    // return getEmbedding(knowledge);
-    return knps.map(knp => getEmbedding(knp.point));
-}
+// async function getAllEmbeddingForLessonKnowledgePoints(knps: IKnowledge[]) {
+//     // return getEmbedding(knowledge);
+//     return knps.map(knp => getEmbedding(knp.point));
+// }
 export async function POST(req: NextRequest, res: NextResponse) {
     const sess = await getServerSession(authConfig).auth();
     console.log("sess: ", sess)
@@ -48,6 +48,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 
     try {
+        //they've just finished a lesson. save it here.
         const body = await req.json();
         const parseResult = createLessonSchema.safeParse(body);
         if (!parseResult.success) {
@@ -56,35 +57,21 @@ export async function POST(req: NextRequest, res: NextResponse) {
         console.log("Parseresult.data: " + parseResult.data);
         //Posting {lessonID,lessonStatus} to ensure people can't add as many knowledgepoints as they want via this endpoint
         const lessonTheySent: z.infer<typeof createLessonSchema> = parseResult.data;
-        if (!lessonTheySent.id || !lessonTheySent.status) return NextResponse.json({ error: "Lesson id or status not given in request @POST" }, { status: 400 });
-        const lessonFromDB = await getLesson(lessonTheySent.id);
-        if (!lessonFromDB) return NextResponse.json({ error: "Lesson not found with given lesson ID @POST" }, { status: 404 });
-        //the cool stuff
-        const { knowledgePointsFromLesson,
-            status,
-            subject,
-            updatedAt,
-            beganAt,
-            messages,
-        } = lessonTheySent;
-        const embeddings = await Promise.all(await getAllEmbeddingForLessonKnowledgePoints(knowledgePointsFromLesson));
-        const knowledgePointsTransaction = await prisma.$transaction(async (tx) => {
-            const lesson = await tx.lesson.update({
-                where: {
-                    id: id,
-                },
-                data: lesson
-            });
-            for (const embedding of embeddings) {
-                await knowledgeIndex.upsert([{
-                    id: lesson.id,
-                    values: embedding,
-                }])
+        if (!lessonTheySent) return NextResponse.json({ error: "Lesson not correctly given in request @POST" }, { status: 400 });
+        //create new lesson
+        const less = await prisma.lesson.create({
+            data: {
+                userId: userID,
+                subjects: lessonTheySent.subjects,
+                lessonStatus: lessonTheySent.status,
+                beganAt: new Date(lessonTheySent.beganAt),
+                endedAt: new Date(lessonTheySent.updatedAt),
+                messages: { create: lessonTheySent.messages },
+                knowledgePointChain: { create: lessonTheySent.knowledgePointsFromLesson }
             }
-            return lesson;
-        })
+        });
 
-        return NextResponse.json({ message: sess }, { status: 201 });
+        return NextResponse.json({ message: "Lesson_Created" }, { status: 201 });
     }
     catch (error) {
         console.error(error);
