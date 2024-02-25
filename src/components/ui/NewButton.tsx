@@ -33,6 +33,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         textColour,
         noAnimation,
         asChild = false,
+        ...props
     }, ref) => {
         let bgColour = "";
         const [hovered, setHovered] = useState(false);
@@ -66,10 +67,10 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                             <button
                                 style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
                                 onClick={actionOrLink}
-
+                                {...props}
                                 onMouseEnter={() => setHovered(true)}
                                 onMouseLeave={() => setHovered(false)}
-                                className={`${className} ${!noAnimation ? "relative hover:scale-105 transition-transform" : ""} 
+                                className={`${className} ${!noAnimation ? "relative disabled:opacity-50 disabled:hover:scale-100 hover:scale-105 disabled:transition-none transition-transform" : ""} 
                     flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
                     rounded-[10px] whitespace-nowrap`}>
                                 {text} {children}</button></>

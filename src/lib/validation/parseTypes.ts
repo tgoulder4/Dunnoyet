@@ -22,16 +22,23 @@ export const createMessageSchema = z.object({
 //     userId: string;
 // }
 export const createLessonSchema = z.object({
+    id: z.string().optional(),
     userId: z.string(),
+    subjects: z.array(z.string()),
+    messages: z.array(createMessageSchema).optional(),
+    updatedAt: z.string().optional(),
+    knowledgePointsFromLesson: z.array(z.object({
+        lessonId: z.string(), pointInSolitude: z.string(), pointInChain: z.string(), source: z.enum(["reinforced", "offered"]), userId: z.string(), TwoDCoOrdinates: z.array(z.number()), confidence: z.number()
+    })),
+})
+export const putLessonSchema = z.object({
+    id: z.string(),
     subjects: z.array(z.string()),
     messages: z.array(createMessageSchema).optional(),
     knowledgePointsFromLesson: z.array(z.object({
         lessonId: z.string(), pointInSolitude: z.string(), pointInChain: z.string(), source: z.enum(["reinforced", "offered"]), userId: z.string(), TwoDCoOrdinates: z.array(z.number()), confidence: z.number()
     })),
-
-    beganAt: z.date(),
-    updatedAt: z.date(),
-    status: z.enum(["Active", "Completed"]),
+    lessonStatus: z.enum(["Active", "Completed"]),
 })
 // export type IUser = {
 //     id: string;
