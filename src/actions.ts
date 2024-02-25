@@ -15,24 +15,23 @@ export async function getUser(userID?: string,
         lessons?: boolean,
         knowledgePointsUnderstood?: boolean
     }
-): Promise<Pick<IUser, "email" | "tutorName" | "username" | "lessons" | "knowledgePointsUnderstood"> | null> {
+): Promise<IUser | null> {
     try {
         console.log("getUser (frontend,w/o password) called with userID: ", userID, " and choose: ", choose)
-        if (equal(choose, {})) throw new Error("Choose is empty tye, you silly goose!")
         const user = await prisma.user.findUnique({
             where: { id: userID },
             select: {
                 id: true,
-                email: choose?.email || false,
-                tutorName: choose?.tutorName || false,
-                username: choose?.username || false,
-                lessons: choose?.lessons || false,
-                knowledgePoints: choose?.knowledgePointsUnderstood || false
+                email: true,
+                tutorName: true,
+                username: true,
+                lessons: true,
+                knowledgePoints: true
             },
         });
         if (!user) return null;
         console.log("User which getUser returned: ", user)
-        return user as IUser;
+        return user;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);
@@ -79,9 +78,20 @@ export async function createUser(prevState: string | undefined, formData: FormDa
         const credentials = Object.fromEntries(formData.entries());
         // const enteredUsername=credentials.
         console.log("entered credentials: ", credentials);
-        const parsedCredentials = z.object({ username: z.string(), password: z.string().min(6), email: z.string().email() }).safeParse(credentials);
+        const parsedCredentials = z.object({
+            username: z.string(), password: z.string().min(6),
+            confirmPassword: z.string().min(6),
+            email: z.string().email()
+        }).safeParse(credentials);
         if (!parsedCredentials.success) return 'Credentials didn\'t match the required format @createUser';
+        const {
+            username,
+            password,
+            confirmPassword,
+            email
+        } = parsedCredentials.data;
 
+        if (password !== confirmPassword) return 'Passwords do not match';
         //hash the password
 
         const duplicateUser = await checkDuplicateUser(parsedCredentials.data.username, parsedCredentials.data.email);
@@ -124,13 +134,22 @@ export async function getTips(): Promise<ITip[] | null> {
         return null;
     }
 }
-export async function getLessons(userID: string): Promise<ILesson[] | []> {
+export async function getLessons(userID: string): Promise<ILesson[]> {
     console.log("getLessons called, userID: ", userID)
     const lessons = await prisma.lesson.findMany({
         where: {
             userId: userID
         },
+        select: {
+            id: true,
+            subjects: true,
+            messages: true,
+            beganAt: true,
+            endedAt: true,
+            knowledgePointChain: true,
+            lessonStatus: true,
+        }
     })
     console.log("lessons which getLessons returned: ", lessons)
-    return lessons
+    return lessons as ILesson[];
 }

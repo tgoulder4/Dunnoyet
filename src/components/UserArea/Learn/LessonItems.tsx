@@ -9,7 +9,7 @@ import LessonItem from './LessonItem';
 import { ILesson } from '@/lib/validation/enforceTypes';
 import { useSession } from 'next-auth/react';
 
-export default function LessonItems() {
+export default function LessonItems({ tutorialMode }: { tutorialMode: boolean }) {
     const sess = useSession();
     const userID = sess.data?.user?.id!!;
 
@@ -30,8 +30,8 @@ export default function LessonItems() {
             {
                 items === null ? <> <LessonItem loading={true} /> <LessonItem loading={true} /><LessonItem loading={true} /></> : items.length > 0 ?
                     items.map((item) => {
-                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65db5ecd&is=65c8e9cd&hm=0b56bf7134387e07d78439435543eb0c57f5844c665c3d6db46c2bbdf22726e1&" key={item.id} lessonID={item.id} subject={item.subject} currentKnowledgeSummary={item.currentKnowledgeSummary} />
-                    }) : <LessonItem zeroLessons={true} />
+                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65db5ecd&is=65c8e9cd&hm=0b56bf7134387e07d78439435543eb0c57f5844c665c3d6db46c2bbdf22726e1&" key={item.id} lessonID={item.id} subject={item.subjects[item.subjects.length - 1]} currentKnowledgeSummary={item.knowledgePointChain[item.knowledgePointChain.length - 1].pointInSolitude} />
+                    }) : <LessonItem tutorialMode={tutorialMode} zeroLessons={true} />
             }
         </div>
     );

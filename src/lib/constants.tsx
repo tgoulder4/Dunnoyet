@@ -21,6 +21,7 @@ export const colours = {
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",
+    blue: '#9BC9E2',
     accent: "#E4F2ED",
     destructive: "#f75a72",
     destructiveForeground: "#fcfcfc",

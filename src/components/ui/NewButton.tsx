@@ -58,7 +58,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
             <Comp ref={ref}>
                 {
                     typeof actionOrLink === 'string' ?
-                        <Link className={`${className} ${!noAnimation ? "hover:scale-105 transition-transform" : ""} 
+                        <Link className={`${className} ${!noAnimation ? "w-fit hover:scale-105 transition-transform" : ""} 
                     flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
                     rounded-[10px] whitespace-nowrap`}
                             href={actionOrLink}

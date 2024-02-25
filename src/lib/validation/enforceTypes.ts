@@ -52,11 +52,11 @@ export type IUser = {
     name?: string;
     username: string;
     email: string;
-    password: string;
+    password?: string;
     role?: string;
     lessons: ILesson[] | string[];
     tutorName: string;
-    knowledgePointsUnderstood: string[];
+    knowledgePoints: IKnowledge[];
 };
 export type ITip = {
     title: string;
