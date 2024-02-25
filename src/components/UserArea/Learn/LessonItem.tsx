@@ -7,10 +7,10 @@ import React, { useEffect, useState } from 'react'
 function LessonItem({ loading, zeroLessons, subject, currentKnowledgeSummary, lessonID, imageURL, tutorialMode }: { loading?: boolean, zeroLessons?: boolean, tutorialMode?: boolean, subject?: string, currentKnowledgeSummary?: string, lessonID?: string, imageURL?: string }) {
     const [hovered, setHovered] = useState(false);
     return (
-        <Link className='flex flex-col-reverse sm:flex-row  gap-0 w-full sm:h-56' href={`/learn/${zeroLessons ? "new" : lessonID}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+        <Link aria-disabled={zeroLessons} className='flex flex-col-reverse sm:flex-row  gap-0 w-full sm:h-56' href={zeroLessons ? '/learn' : `/learn/${lessonID}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
             borderRadius: '10px',
             border: !loading ? tutorialMode ? '3px dashed rgba(0, 0, 0, 0.60)' : '1px solid rgba(0, 0, 0, 0.60)' : '',
-            background: tutorialMode ? '' : '#FFF',
+            background: tutorialMode || zeroLessons ? '' : '#FFF',
         }}>{
                 loading ? <div className="rounded-[10px] animate-pulse h-full flex-[3] w-full bg-gray-300"></div> :
 
@@ -31,10 +31,15 @@ function LessonItem({ loading, zeroLessons, subject, currentKnowledgeSummary, le
                         {!tutorialMode &&
                             <div className="flex gap-2 items-center">
 
-                                <h2 style={{ color: colours.link, textDecoration: hovered ? 'underline' : 'none', fontWeight: hovered ? 700 : 500 }}>{zeroLessons ? "Begin Learning" : "Continue Lesson"} </h2>
-                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12.95 13H0.422V11.308L10.142 11.398L0.854 1.534L2.276 0.219999L11.312 10.264L11.204 0.471999H12.95V13Z" fill="#19445C" />
-                                </svg>
+                                <h2 style={{ color: colours.link, textDecoration: hovered ? 'underline' : 'none', fontWeight: hovered ? 700 : 500 }}>{zeroLessons ? "" : "Continue Lesson"
+                                } </h2>
+                                {
+                                    !zeroLessons &&
+
+                                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12.95 13H0.422V11.308L10.142 11.398L0.854 1.534L2.276 0.219999L11.312 10.264L11.204 0.471999H12.95V13Z" fill="#19445C" />
+                                    </svg>
+                                }
 
                             </div>
                         }
