@@ -21,7 +21,7 @@ type Props = {};
 
 const UserAuthButton = (props: Props) => {
   const user = useSession().data?.user!!;
-  const imageURL = user.image!!;
+  const imageURL = user.image;
 
   return (
     <NewButton noAnimation style={{ padding: 0 }} className="hidden md:flex  relative aspect-square w-[50px]" buttonVariant="ghost" actionOrLink='/settings'>{

@@ -49,13 +49,12 @@ export type IKnowledge = {
 }
 export type IUser = {
     id: string;
-    name?: string;
+    name: string;
     username: string;
     email: string;
     password?: string;
     role?: string;
     lessons: ILesson[] | string[];
-    tutorName: string;
     knowledgePoints: IKnowledge[];
 };
 export type ITip = {

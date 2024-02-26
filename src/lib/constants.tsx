@@ -29,6 +29,7 @@ export const colours = {
     inputBorder: "#757575",
     link: "#19445C",
     textLegend: "#616161",
+    black: "#131313",
     light: {
         textColour: "#131313",
         backgroundLight: "#f4f4f4"

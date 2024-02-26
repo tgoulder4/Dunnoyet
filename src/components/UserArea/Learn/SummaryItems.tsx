@@ -9,7 +9,7 @@ type Stat = {
 }
 function SummaryItems() {
     const [stats, setStats] = useState([] as Stat[]);
-    const { id, tutorName } = useSession().data?.user!!;
+    const { id } = useSession().data?.user!!;
     useEffect(() => {
         async function main() {
             console.log("SummaryItems calling getUser with id: ", id)
@@ -20,8 +20,8 @@ function SummaryItems() {
                         desc: "Lessons Completed"
                     },
                     {
-                        number: user.knowledgePointsUnderstood.length,
-                        desc: tutorName ? "New concepts learnt with " + tutorName : "New concepts Learned"
+                        number: user.knowledgePoints.length,
+                        desc: "New concepts learnt with Eli"
                     }]);
                 } else {
                     throw new Error("getUser is erronous - existing userID passed to it but it didn't return a user")

@@ -58,7 +58,7 @@ function SignUpForm() {
                     <InputWithLegend ref={passwordRef} idAndName="password" type="password" placeholder="Password" defaultValue='testPassword'>
                     </InputWithLegend>
 
-                    <InputWithLegend required onChange={handleInfoChange} ref={confirmPasswordRef} idAndName="confirmPassword" type="password" placeholder="Confirm Password" />
+                    <InputWithLegend required onChange={handleInfoChange} ref={confirmPasswordRef} idAndName="confirmPassword" defaultValue='testPassword' type="password" placeholder="Confirm Password" />
                     <InputWithLegend required onChange={handleInfoChange} ref={emailRef} idAndName="email" type="email" placeholder="Email" />
 
                     <NewButton type='submit' disabled={!formFulfilled} aria-disabled={!formFulfilled} className='w-full' style={{ paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement, paddingTop: 14, paddingBottom: 14 }} buttonVariant="black" >

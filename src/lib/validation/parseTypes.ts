@@ -47,7 +47,6 @@ export const putLessonSchema = z.object({
 //     email: string;
 //     password: string;
 //     lessons: ILesson[];
-//     tutorName: string;
 //     knowledgePointsUnderstood: string[];
 // };
 export const createUserSchema = z.object({

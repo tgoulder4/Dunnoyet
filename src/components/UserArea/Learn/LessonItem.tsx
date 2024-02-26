@@ -9,7 +9,7 @@ function LessonItem({ loading, zeroLessons, subject, currentKnowledgeSummary, le
     return (
         <Link aria-disabled={zeroLessons} className='flex flex-col-reverse sm:flex-row  gap-0 w-full sm:h-56' href={zeroLessons ? '/learn' : `/learn/${lessonID}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
             borderRadius: '10px',
-            border: !loading ? tutorialMode ? '3px dashed rgba(0, 0, 0, 0.60)' : '1px solid rgba(0, 0, 0, 0.60)' : '',
+            border: !loading ? zeroLessons ? '3px dashed rgba(0, 0, 0, 0.60)' : '1px solid rgba(0, 0, 0, 0.60)' : '',
             background: tutorialMode || zeroLessons ? '' : '#FFF',
         }}>{
                 loading ? <div className="rounded-[10px] animate-pulse h-full flex-[3] w-full bg-gray-300"></div> :

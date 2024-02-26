@@ -11,7 +11,7 @@ export async function getUser(userID?: string,
     choose?: {
         email?: boolean,
         username?: boolean,
-        tutorName?: boolean,
+
         lessons?: boolean,
         knowledgePointsUnderstood?: boolean
     }
@@ -23,7 +23,6 @@ export async function getUser(userID?: string,
             select: {
                 id: true,
                 email: true,
-                tutorName: true,
                 username: true,
                 lessons: true,
                 knowledgePoints: true
@@ -104,7 +103,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 username: credentials.username as string,
                 email: credentials.email as string,
                 password: hashedPassword as string,
-                tutorName: '',
+                name: '',
                 knowledgePoints: {
                     create: undefined
                 }

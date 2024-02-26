@@ -18,7 +18,8 @@ interface buttonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
     className?: string
     textColour?: string
     noAnimation?: boolean
-    asChild?: boolean
+    asChild?: boolean,
+    pings?: boolean
 }
 const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
     ({
@@ -33,6 +34,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         textColour,
         noAnimation,
         asChild = false,
+        pings,
         ...props
     }, ref) => {
         let bgColour = "";
@@ -52,10 +54,9 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         }
         const bgc = new TinyColor(bgColour);
         const Comp = Slot;
-        console.log("Classname", className)
         return (
             // <button>
-            <Comp ref={ref}>
+            <Comp ref={ref} className='relative'>
                 {
                     typeof actionOrLink === 'string' ?
                         <Link className={`${className} ${!noAnimation ? "w-fit hover:scale-105 transition-transform" : ""} 
@@ -63,18 +64,26 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                     rounded-[10px] whitespace-nowrap`}
                             href={actionOrLink}
                             style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
-                            onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>{text} {children}</Link> : <>
-                            <button
-                                style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
-                                onClick={actionOrLink}
-                                {...props}
-                                onMouseEnter={() => setHovered(true)}
-                                onMouseLeave={() => setHovered(false)}
-                                className={`${className} ${!noAnimation ? "relative disabled:opacity-50 disabled:hover:scale-100 hover:scale-105 disabled:transition-none transition-transform" : ""} 
+                            onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>{text} {children}
+                            {pings ?
+                                <div className='w-3/5 h-3/5 absolute z-[-1] rounded-[5px] animate-ping ping bg-black'></div> : <></>}
+                        </Link>
+                        :
+                        <button
+                            style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
+                            onClick={actionOrLink}
+                            {...props}
+                            onMouseEnter={() => setHovered(true)}
+                            onMouseLeave={() => setHovered(false)}
+                            className={`${className} ${!noAnimation ? "relative disabled:opacity-50 disabled:hover:scale-100 hover:scale-105 disabled:transition-none transition-transform" : ""} 
                     flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
                     rounded-[10px] whitespace-nowrap`}>
-                                {text} {children}</button></>
+                            {text} {children}
+                            {pings ?
+                                <div className='w-3/5 h-3/5 absolute z-[-1] rounded-[5px] animate-ping bg-black'></div> : <></>}
+                        </button>
                 }
+
 
             </Comp>
             // </button>

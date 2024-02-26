@@ -1,6 +1,6 @@
 'use server'
 import getServerSession from 'next-auth';
-import { auth } from "@/auth";
+import { auth } from "@/app/api/auth/[...nextAuth]";
 import { createLessonSchema, putLessonSchema } from "@/lib/validation/parseTypes";
 import { NextRequest, NextResponse } from "next/server";
 

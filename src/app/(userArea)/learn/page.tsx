@@ -29,11 +29,10 @@ function page({ params }: { params: { params: string } }) {
     const {
         id,
         name,
-        tutorName
     } = useSession().data?.user!!;
     if (!id) throw new Error("No user ID found")
     useEffect(() => {
-        if (!tutorName) {
+        if (!name) {
             setTutorialMode(true);
         }
         async function main() {
@@ -48,10 +47,10 @@ function page({ params }: { params: { params: string } }) {
         <main className="flex flex-col" style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                 <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize), fontWeight: 300 }}>{name ? "Welcome back, " + name : "Hi there!"}</h1>
-                <div className='relative w-fit'><NewButton buttonVariant='black' actionOrLink={tutorialMode ? () => { setTutorialMode(false) } : '/learn/new'}><Plus className="h-full" color="white" />
+                <div className='relative w-fit'><NewButton pings={tutorialMode} buttonVariant='black' actionOrLink={tutorialMode ? () => { setTutorialMode(false); setChatIsOpen(true) } : '/learn/new'}><Plus className="h-full" color="white" />
                     Learn something new</NewButton>
                     {tutorialMode &&
-                        <div className='z-10 absolute left-[322px] top-[-100%] w-max right-0' >
+                        <div className='transition-opacity z-10 absolute left-[322px] top-[-100%] w-max right-0' >
                             <div style={{ rowGap: 14, backgroundColor: changeColour(colours.blue).darken(8).toString() }} className="relative flex flex-col rounded-[10px] p-[28px] ">
                                 <div className="absolute top-1/5 left-[-45px] z-[9]">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="71" height="80" viewBox="0 0 71 80" fill="none">

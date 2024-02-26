@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/app/api/auth/[...nextAuth]";
 import { getNextMessage } from "@/lib/chat/Eli/eli";
 import { decodeResponseSystemMessage, getSystemMessageForTeachingResponses } from "@/lib/chat/Eli/instructionsForRetrievingTypeOfTheirMessage";
 import openai from "@/lib/chat/openai";
