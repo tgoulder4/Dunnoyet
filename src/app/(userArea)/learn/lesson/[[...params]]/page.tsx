@@ -23,7 +23,7 @@ export default function LessonPage({ params }: { params: { lessonID: string } })
     //     endedAt: Date;
     //     knowledgePointChain: IKnowledge[];
     // }
-    return (<div style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
+    return (<div className='h-full' style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
         <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>Vectors: Arrow Representation</h1>
         <NeuralNetwork />
         <ChatWithEli isOpen={true} setIsOpen={() => { }} lessonID='ABC' lessons={[]} />

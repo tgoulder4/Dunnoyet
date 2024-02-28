@@ -1,8 +1,8 @@
 import React from 'react'
 import { useState } from 'react'
-import { IMessage } from '@/lib/validation/enforceTypes'
+import { IMessage, ILesson } from '@/lib/validation/enforceTypes'
 
-function Conversation() {
+function Conversation({ lesson }: { lesson: ILesson }) {
     const [messages, setMessages] = useState([] as IMessage[] | null)
     return (
         <div>Conversation</div>

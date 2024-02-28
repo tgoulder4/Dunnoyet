@@ -63,7 +63,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                     flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
                     rounded-[10px] whitespace-nowrap`}
                             href={actionOrLink}
-                            style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() || buttonVariant == "ghost" ? "white" : "black" : '#FFF', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
+                            style={{ ...style, color: textColour ? textColour : bgColour !== "rgba(0,0,0,0)" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
                             onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>{text} {children}
                             {pings ?
                                 <div className='w-3/5 h-3/5 absolute z-[-1] rounded-[5px] animate-ping ping bg-black'></div> : <></>}

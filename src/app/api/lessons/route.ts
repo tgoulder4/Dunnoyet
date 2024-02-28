@@ -15,15 +15,17 @@ import { knowledgeIndex } from '@/lib/chat/pinecone';
 
 export async function GET(req: NextRequest, res: NextResponse) {
     try {
-        const body = await req.json();
-        const parseResult = createLessonSchema.safeParse(body);
-        if (!parseResult.success) {
-            return NextResponse.json({ error: parseResult.error.errors }, { status: 400 });
-        }
-        const lesson = parseResult.data;
         const sess = await getServerSession(authConfig).auth();
         if (!sess) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
-        return NextResponse.json({ message: sess }, { status: 201 });
+        const body = await req.json();
+        console.log("body: ", body)
+        if (!body.lessonID) return NextResponse.json({ error: "No lessonID provided in request." }, { status: 400 });
+        const lessonID = body.lessonID;
+        const lesson = await getLesson(lessonID);
+        if (!lesson) {
+            return NextResponse.json({ error: "This lesson wasn't found, or there was an error @getLesson." }, { status: 400 });
+        }
+        return NextResponse.json({ lesson: lesson }, { status: 201 });
     }
     catch (error) {
         console.error(error);

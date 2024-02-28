@@ -102,7 +102,8 @@ function ChatWithEli({
         summaryText: "You'll learn faster than ever before by visualizing your knowledge, creating links between concepts.",
         action: <></>,
         actionOrLink: () => {
-            setTutorialStage(3);
+            setTutorialStage(-1);
+            setSubject("New Question")
         }
     }
     ]
@@ -122,30 +123,60 @@ function ChatWithEli({
         }
     }
         , [lessonID, lessons]);
-    return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
-        <div className='p-8 bg-white rounded-t-[20px] font-bold'>{subject}</div>
-        {
-            isOpen ? <> <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: changeColour(colours.primary).darken(8).toString(), paddingTop: 2 * spacing.gaps.largest }}>{tutorialStage !== -1 ?
-                <div className='h-full w-4/5 flex flex-col  items-center' style={{ rowGap: spacing.gaps.separateElement }}>
+    async function submitUserReply(data: FormData) {
+        //make a POST request to /lesson/new with the user's reply as 'newQuestin' key in the body.
+        try {
+            if (!lessonInProgress) {
 
-                    <div className="flex flex-col items-center" style={{ rowGap: spacing.gaps.groupedElement }}>
-                        {tutorialStages[tutorialStage].glyph}
-                        <h1 className='text-white font-bold text-center' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem' }}>{tutorialStages[tutorialStage].titleText}</h1>
-                        <p className='text-white text-center'>{tutorialStages[tutorialStage].summaryText}</p>
-                    </div>
-                    {tutorialStages[tutorialStage].action}
-                </div> : <Conversation />
+                const newQuestion = data.get('newQuestion');
+                const res = await fetch('/lesson/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newQuestion })
+                });
             }
-            </div>
+        } catch (e) {
+            console.error("Error submitting user reply: ", e)
 
-                <div className="p-8 pb-16 h-max bg-white">
-
-                    <NewButton buttonVariant='black' className='h-14 w-full' actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
-                        //else I want to grab their new question and submit it.
-                        () => setIsOpen(false)}>{tutorialStage !== -1 ? 'Continue' : tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : "Ask question"}</NewButton>
-                </div>
-            </> : <></>
         }
+    }
+    return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
+        <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
+        <form action={tutorialStage !== -1 ? () => { } : submitUserReply}>
+            {
+                isOpen ? <>
+                    <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: changeColour(colours.primary).darken(8).toString(), paddingTop: 2 * spacing.gaps.largest }}>
+                        {tutorialStage == -1 ?
+                            <>
+                                {
+                                    !lessonInProgress ?
+                                        <h1>New question screen </h1>
+                                        : <Conversation lesson={lessonInProgress} />
+                                }
+                            </> :
+                            <>
+                                <div className='h-full w-4/5 flex flex-col  items-center' style={{ rowGap: spacing.gaps.separateElement }}>
+                                    <div className="flex flex-col items-center" style={{ rowGap: spacing.gaps.groupedElement }}>
+                                        {tutorialStages[tutorialStage].glyph}
+                                        <h1 className='text-white font-bold text-center' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem' }}>{tutorialStages[tutorialStage].titleText}</h1>
+                                        <p className='text-white text-center'>{tutorialStages[tutorialStage].summaryText}</p>
+                                    </div>
+                                    {tutorialStages[tutorialStage].action}
+                                </div>
+                            </>
+                        }
+                    </div>
+                    <div className="p-8 pb-16 flex-1 h-max bg-white">
+                        <NewButton type={tutorialStage !== -1 ? 'button' : 'submit'} buttonVariant='black' className='h-14 w-full' actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
+                            //else I want to grab their new question and submit it.
+                            () => setIsOpen(false)}>{tutorialStage !== -1 ? 'Continue' : tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : "Ask question"}</NewButton>
+                    </div></>
+
+                    : <></>
+            }
+        </form>
     </div>
     )
 }
