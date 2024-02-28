@@ -25,12 +25,13 @@ export async function getUser(userID?: string,
                 email: true,
                 username: true,
                 lessons: true,
-                knowledgePoints: true
+                knowledgePoints: true,
+                name: true,
             },
         });
         if (!user) return null;
         console.log("User which getUser returned: ", user)
-        return user;
+        return user as IUser;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);

@@ -9,29 +9,37 @@ type Stat = {
 }
 function SummaryItems() {
     const [stats, setStats] = useState([] as Stat[]);
-    const { id } = useSession().data?.user!!;
-    useEffect(() => {
-        async function main() {
-            console.log("SummaryItems calling getUser with id: ", id)
-            await getUser(id, { lessons: true, knowledgePointsUnderstood: true }).then((user) => {
-                if (user) {
-                    setStats([{
-                        number: user.lessons.length,
-                        desc: "Lessons Completed"
-                    },
-                    {
-                        number: user.knowledgePoints.length,
-                        desc: "New concepts learnt with Eli"
-                    }]);
-                } else {
-                    throw new Error("getUser is erronous - existing userID passed to it but it didn't return a user")
-                }
-            }).catch((error) => {
-                console.error("Catch: Error while fetching user: ", error);
-            });
+    // const { id } = useSession().data?.user!!;
+    const { user } = {
+        user: {
+            id: "65dbe7799c9c2a30ecbe6193",
+            name: "",
+            knowledgePoints: [],
         }
-        main()
-    }, []);
+
+    }
+    // useEffect(() => {
+    //     async function main() {
+    //         console.log("SummaryItems calling getUser with id: ", id)
+    //         await getUser(id, { lessons: true, knowledgePointsUnderstood: true }).then((user) => {
+    //             if (user) {
+    //                 setStats([{
+    //                     number: user.lessons.length,
+    //                     desc: "Lessons Completed"
+    //                 },
+    //                 {
+    //                     number: user.knowledgePoints.length,
+    //                     desc: "New concepts learnt with Eli"
+    //                 }]);
+    //             } else {
+    //                 throw new Error("getUser is erronous - existing userID passed to it but it didn't return a user")
+    //             }
+    //         }).catch((error) => {
+    //             console.error("Catch: Error while fetching user: ", error);
+    //         });
+    //     }
+    //     main()
+    // }, []);
     return (
         <>
             {

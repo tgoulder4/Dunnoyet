@@ -8,7 +8,7 @@ export const responsiveFont = (maxSizeInRem: number) => {
 
 }
 export const colours = {
-    background: "#f4f3fa",
+    background: "#f3f2f7",
     white: "#ebebeb",
     complementary: "#3d3d3d",
     complementary_lighter: "#969696",

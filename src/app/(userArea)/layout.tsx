@@ -18,10 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <CustomSessionProvider>
-      <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-        <MainAreaNavbar style="normal" />
-        {children}
-      </div>
+      {children}
     </CustomSessionProvider>
   );
 }

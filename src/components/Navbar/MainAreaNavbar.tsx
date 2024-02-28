@@ -1,7 +1,10 @@
+'use client'
 import React from 'react'
 import { DunnoyetLogo, changeColour, colours, spacing } from '@/lib/constants'
 import NewButton from '@/components/ui/NewButton'
 import UserAuthButton from '@/components/Navbar/UserAuthButton'
+import { getURL } from 'next/dist/shared/lib/utils'
+import LessonTimer from './LessonTimer'
 
 function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' }) {
     const theme = {
@@ -14,11 +17,16 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' }) {
         }} className="flex flex-row justify-between items-center h-[70px] sticky top-0 z-50">
             <div className="leftSide flex items-center h-full" style={{ columnGap: spacing.gaps.groupedElement }}>
                 <NewButton buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: 'white', withText: false })}</NewButton>
-                <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: changeColour(theme.backgroundColour).darken(8).toString() }}></div>
+                <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? changeColour(theme.backgroundColour).darken(8).toString() : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
                 <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>
-
-                    <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
-                    <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/mind">Mind</NewButton>
+                    {
+                        style == 'lesson' ? <NewButton noAnimation className='text-white' buttonVariant="ghost" actionOrLink={getURL()}>In Lesson:
+                            <LessonTimer />
+                        </NewButton> :
+                            <>
+                                <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
+                                <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/mind">Mind</NewButton></>
+                    }
                 </div>
             </div>
             <div className="rightSide py-[14px] flex h-full" style={{ columnGap: spacing.gaps.separateElement }}>
@@ -40,7 +48,7 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' }) {
                         </NewButton>
 
                         <UserAuthButton /></> : <>
-                        <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/new">
+                        <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink={getURL() + "/end"}>
                             <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2 18.5C1.45 18.5 0.979167 18.3042 0.5875 17.9125C0.195833 17.5208 0 17.05 0 16.5V13.5C0 13.2167 0.0958333 12.9792 0.2875 12.7875C0.479167 12.5958 0.716667 12.5 1 12.5C1.28333 12.5 1.52083 12.5958 1.7125 12.7875C1.90417 12.9792 2 13.2167 2 13.5V16.5H16V2.5H2V5.5C2 5.78333 1.90417 6.02083 1.7125 6.2125C1.52083 6.40417 1.28333 6.5 1 6.5C0.716667 6.5 0.479167 6.40417 0.2875 6.2125C0.0958333 6.02083 0 5.78333 0 5.5V2.5C0 1.95 0.195833 1.47917 0.5875 1.0875C0.979167 0.695833 1.45 0.5 2 0.5H16C16.55 0.5 17.0208 0.695833 17.4125 1.0875C17.8042 1.47917 18 1.95 18 2.5V16.5C18 17.05 17.8042 17.5208 17.4125 17.9125C17.0208 18.3042 16.55 18.5 16 18.5H2ZM8.65 10.5H1C0.716667 10.5 0.479167 10.4042 0.2875 10.2125C0.0958333 10.0208 0 9.78333 0 9.5C0 9.21667 0.0958333 8.97917 0.2875 8.7875C0.479167 8.59583 0.716667 8.5 1 8.5H8.65L6.8 6.65C6.6 6.45 6.50417 6.21667 6.5125 5.95C6.52083 5.68333 6.61667 5.45 6.8 5.25C7 5.05 7.2375 4.94583 7.5125 4.9375C7.7875 4.92917 8.025 5.025 8.225 5.225L11.8 8.8C11.9 8.9 11.9708 9.00833 12.0125 9.125C12.0542 9.24167 12.075 9.36667 12.075 9.5C12.075 9.63333 12.0542 9.75833 12.0125 9.875C11.9708 9.99167 11.9 10.1 11.8 10.2L8.225 13.775C8.025 13.975 7.7875 14.0708 7.5125 14.0625C7.2375 14.0542 7 13.95 6.8 13.75C6.61667 13.55 6.52083 13.3167 6.5125 13.05C6.50417 12.7833 6.6 12.55 6.8 12.35L8.65 10.5Z" fill="black" />
                             </svg>

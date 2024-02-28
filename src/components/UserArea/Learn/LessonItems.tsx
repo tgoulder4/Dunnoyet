@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import NextAuth from 'next-auth/react'
 import getServerSession, { Session } from 'next-auth';
 import { authConfig } from '@/auth.config';
-import { auth } from '@/app/api/auth/[...nextAuth]';
+import { auth } from '@/app/api/auth/[...nextauth]';
 import { getLessons } from '@/actions';
 import { spacing } from '@/lib/constants';
 import LessonItem from './LessonItem';
