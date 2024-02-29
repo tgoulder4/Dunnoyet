@@ -22,8 +22,6 @@ var equal = require('deep-equal');
 //     title: "Dunnoyet - Learn",
 // }
 function page({ params }: { params: { params: string } }) {
-
-    console.log("params", params);
     const [chatIsOpen, setChatIsOpen] = useState(false);
     const [tutorialMode, setTutorialMode] = useState(false);
     const [lessonItems, setLessonItems] = useState(null as ILesson[] | null);
@@ -50,7 +48,7 @@ function page({ params }: { params: { params: string } }) {
             <main className="flex flex-col" style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
                 <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                     <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize), fontWeight: 300 }}>{name ? "Welcome back, " + name : "Hi there!"}</h1>
-                    <div className='relative w-fit'><NewButton pings={tutorialMode} buttonVariant='black' actionOrLink={tutorialMode ? () => { setTutorialMode(false); setChatIsOpen(true) } : '/learn/new'}><Plus className="h-full" color="white" />
+                    <div className='relative w-fit'><NewButton pings={tutorialMode} buttonVariant='black' actionOrLink={tutorialMode ? () => { setTutorialMode(false); setChatIsOpen(true) } : '/learn/lesson/new'}><Plus className="h-full" color="white" />
                         Learn something new</NewButton>
                         {tutorialMode &&
                             <div className='transition-opacity z-10 absolute left-[322px] top-[-100%] w-max right-0' >

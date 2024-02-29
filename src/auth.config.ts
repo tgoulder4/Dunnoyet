@@ -68,6 +68,8 @@ export const authConfig: NextAuthConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isInUserArea = nextUrl.pathname.startsWith("/learn");
+
+            // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
                 if (isLoggedIn) {
                     // console.log("Is logged in, and in user area. AUTHORISED")
@@ -80,6 +82,8 @@ export const authConfig: NextAuthConfig = {
                 console.log("redirecitng to /learn")
                 return Response.redirect(new URL("/learn", nextUrl))
             };
+
+
             // console.log("Not logged in, and not user area. AUTHORISED")
             return true;
         }

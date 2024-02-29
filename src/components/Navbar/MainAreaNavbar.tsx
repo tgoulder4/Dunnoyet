@@ -37,7 +37,7 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' }) {
           </NewButton> */}
                 {
                     style == 'normal' ? <>
-                        <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/new"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/lesson/new"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6.94407 6.92174L6.83669 3.86087V0H9.16331V3.86087L9.02013 6.92174L11.6689 6.74783H16V9.00869H11.6689L9.02013 8.90435L9.16331 11.8957V16H6.83669V11.8957L6.94407 8.90435L3.86577 9.00869H0V6.74783H3.86577L6.94407 6.92174Z" fill="#323232" />
                         </svg> <h2>New Question</h2>
                         </NewButton>

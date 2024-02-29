@@ -105,7 +105,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 }
 //i wanna change all my types into zod schemas
-async function getLesson(lessonID: string): Promise<ILesson | null> {
+export async function getLesson(lessonID: string): Promise<ILesson | null> {
     console.log("getLesson called with lessonID: ", lessonID)
     try {
         const lesson = await prisma.lesson.findUnique({

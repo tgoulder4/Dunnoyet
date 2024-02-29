@@ -11,14 +11,14 @@ import { merriweather } from '@/app/fonts'
 import { Input } from '@/components/ui/input'
 type chatProps = {
     isOpen: boolean,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    lessonID: string,
-    lessons: ILesson[] | null
+    setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>,
+    lessonID?: string,
+    lesson?: ILesson
 }
 function ChatWithEli({
     isOpen,
     setIsOpen,
-    lessonID, lessons
+    lessonID, lesson
 }: chatProps) {
     // const { data: session, update } = useSession();
     // if (!session) return <></>
@@ -27,10 +27,9 @@ function ChatWithEli({
     //     name,
     // } = session?.user!!;
     const { id, name } = { id: "65dbe7799c9c2a30ecbe6193", name: "" }
-    const [lessonInProgress, setLessonInProgress] = useState<ILesson | null>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [tutorialStage, setTutorialStage] = useState(-1);
-    const [subject, setSubject] = useState('');
+    const [subject, setSubject] = useState('New Question');
     const Lesson: ILesson = {
         id: "",
         subjects: [""],
@@ -103,39 +102,42 @@ function ChatWithEli({
         action: <></>,
         actionOrLink: () => {
             setTutorialStage(-1);
+            console.log("TutorialStage set to -1")
             setSubject("New Question")
         }
     }
     ]
     useEffect(() => {
-        if (lessonID == "Tutorial" || lessons == null) {
+        if (lessonID == "Tutorial") {
             setSubject("Welcome");
             setTutorialStage(0);
             nameInputRef.current?.focus();
         }
-        else {
-            const lesson = lessons.find((lesson) => lesson.id === lessonID);
-            if (!lesson) {
-                console.error("Entered LessonID not found in lessons list @chatWithEli. lessonID: ", lessonID, " lessons: ", lessons)
-                return;
-            }
-            setLessonInProgress(lesson);
+        else if (lesson) {
+            setSubject(lesson.subjects[lesson.subjects.length - 1] || "In Lesson");
+
         }
     }
-        , [lessonID, lessons]);
+        , []);
     async function submitUserReply(data: FormData) {
         //make a POST request to /lesson/new with the user's reply as 'newQuestin' key in the body.
+        console.log("Submitting user reply with data ", data.get('newQuestion'))
+        const newQuestion = data.get('newQuestion');
+        if (!newQuestion) {
+            console.error("No new question found in form data")
+            return;
+        };
         try {
-            if (!lessonInProgress) {
-
-                const newQuestion = data.get('newQuestion');
-                const res = await fetch('/lesson/new', {
+            if (!lesson) {
+                console.log("POSTing new question to /lesson/new with newQuestion: ", newQuestion)
+                const res = await fetch('/learn/lesson/new', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ newQuestion })
                 });
+                console.log("Response from /lesson/new: ", res)
             }
         } catch (e) {
             console.error("Error submitting user reply: ", e)
@@ -144,16 +146,17 @@ function ChatWithEli({
     }
     return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
-        <form action={tutorialStage !== -1 ? () => { } : submitUserReply}>
+        <form action={tutorialStage !== -1 ? "" : submitUserReply}>
             {
                 isOpen ? <>
                     <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: changeColour(colours.primary).darken(8).toString(), paddingTop: 2 * spacing.gaps.largest }}>
                         {tutorialStage == -1 ?
                             <>
                                 {
-                                    !lessonInProgress ?
-                                        <h1>New question screen </h1>
-                                        : <Conversation lesson={lessonInProgress} />
+                                    !lesson ?
+                                        <h1>New question screen <Input id="newQuestion" name="newQuestion" className='h-14 w-full' placeholder="Ask a question..." />
+                                        </h1>
+                                        : <Conversation lesson={lesson} />
                                 }
                             </> :
                             <>
@@ -171,7 +174,7 @@ function ChatWithEli({
                     <div className="p-8 pb-16 flex-1 h-max bg-white">
                         <NewButton type={tutorialStage !== -1 ? 'button' : 'submit'} buttonVariant='black' className='h-14 w-full' actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
                             //else I want to grab their new question and submit it.
-                            () => setIsOpen(false)}>{tutorialStage !== -1 ? 'Continue' : tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : "Ask question"}</NewButton>
+                            () => { }}>{tutorialStage !== -1 ? 'Continue' : tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : "Ask question"}</NewButton>
                     </div></>
 
                     : <></>
