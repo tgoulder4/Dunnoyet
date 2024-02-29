@@ -111,12 +111,12 @@ function ChatWithEli({
     ]
     useEffect(() => {
         if (lessonID == "Tutorial") {
-            setSubject("Welcome");
+            setSubject("Eli - Welcome");
             setTutorialStage(0);
             nameInputRef.current?.focus();
         }
         else if (lesson) {
-            setSubject(lesson.subjects[lesson.subjects.length - 1] || "In Lesson");
+            setSubject("Eli - " + lesson.subjects[lesson.subjects.length - 1] || "In Lesson");
 
         }
     }
