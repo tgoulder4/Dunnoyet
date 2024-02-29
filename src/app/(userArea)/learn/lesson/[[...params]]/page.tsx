@@ -16,5 +16,6 @@ export default async function LessonLoader({ params }: { params: any }) {
     if (!lessonID) throw new Error("LessonID was undefined. params was: " + JSON.stringify(params) + " and passedParams was: " + JSON.stringify(passedParams));
     const lesson = await getLesson(lessonID);
     if (!lesson) redirect('/learn');
-    return (<Lesson lesson={lesson} />)
+    if (!lesson.)
+        return (<Lesson initialLessonState={lesson} />)
 }

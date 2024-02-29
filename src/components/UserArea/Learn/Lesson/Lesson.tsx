@@ -7,12 +7,12 @@ import { responsiveFont, sizing, spacing } from '@/lib/constants'
 import { colours, changeColour } from '@/lib/constants'
 import { getNextMessage } from '@/lib/chat/Eli/eli'
 var equal = require('deep-equal');
-export default function LessonPage({ lessonState }: { lessonState: ILessonState }) {
-    if (!lessonState) throw new Error("No lesson state found, couldn't load lesson page")
-    const currentSubject = lessonState.metadata.subjects[lessonState.metadata.subjects.length - 1];
+export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
+    if (!initialLessonState) throw new Error("No initial lesson state found, couldn't load lesson page")
+    const currentSubject = initialLessonState.metadata.subjects[initialLessonState.metadata.subjects.length - 1];
     const {
         messages, metadata
-    } = lessonState;
+    } = initialLessonState;
     const {
         knowledgePointChain,
     } = metadata;
