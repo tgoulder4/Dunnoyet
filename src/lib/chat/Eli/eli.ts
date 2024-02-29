@@ -36,7 +36,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         //if they're at least partly right, add their knowledge to chain
         const Kp = await simplifyToKnowledgePoint(messages);
         if (Kp == undefined) {
-            return 'Something went wrong. (@simplifyToKP)'
+            return 'SIMPLIFIEDKPUNDEFINED'
         }
 
         if (Kp == null) {
@@ -201,7 +201,12 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         subjectIntro,
     }
 }
-export async function getNextMessage(payload: IMessagesEndpointSendPayload): Promise<IMessagesEndpointResponsePayload> {
+export const errorCodes = {
+    userIDUndefined: "INTERNAL: The user's ID was undefined.",
+    notEnoughExtractableKnowledge: "There wasn't enough extractable knowledge from your reply. Show me what you know!",
+    SimplifiedKnowledgePointIsUndefined: "INTERNAL: The simplified knowledge point is undefined.",
+}
+export async function getNextMessage(payload: IMessagesEndpointSendPayload): Promise<IMessagesEndpointResponsePayload | string> {
     const { messages, metadata } = payload;
     const {
         threads,
@@ -209,7 +214,9 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         action,
         lessonID, knowledgePointChain, currentKnowledgePointIndex, userID
     } = metadata;
-    if (!userID) return { error: "No userID was passed to getNextMessage." }
+    if (!userID) {
+        return errorCodes.userIDUndefined
+    }
     let indexToInsertNewKnowlegePoint = currentKnowledgePointIndex;
     function incrementCurrentKnowledgePointIndex() {
         indexToInsertNewKnowlegePoint++;
@@ -219,8 +226,12 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const theirInput = messages[messages.length - 1].content as string;
         //they could have attached knowledge to this msg
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
+
         if (typeof howRightRes == 'string') {
-            return { error: howRightRes };
+            if (howRightRes == 'SIMPLIFIEDKPUNDEFINED') {
+                return errorCodes.SimplifiedKnowledgePointIsUndefined;
+            }
+            return errorCodes.notEnoughExtractableKnowledge;
         }
         const {
             wasRight,
@@ -229,14 +240,10 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         //get related knowledge points
         const pointInSolitude = await simplifyToKnowledgePoint(messages);
         if (pointInSolitude == undefined) {
-            return {
-                error: 'Something went wrong. (@simplifyToKP)'
-            }
+            return errorCodes.SimplifiedKnowledgePointIsUndefined
         }
         if (pointInSolitude == null) {
-            return {
-                error: 'I could not extract any knowledge from your input. Please try again.'
-            }
+            return errorCodes.notEnoughExtractableKnowledge;
         }
         const rKs: IKnowledge[] = await getRelatedKnowledgePoints(userID, pointInSolitude);
         //if rKs.length==0 && !wasRight then return what comes to mind q
@@ -360,7 +367,10 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const theirInput = messages[messages.length - 1].content as string;
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
         if (typeof howRightRes == 'string') {
-            return { error: howRightRes };
+            if (howRightRes == 'SIMPLIFIEDKPUNDEFINED') {
+                return errorCodes.SimplifiedKnowledgePointIsUndefined;
+            }
+            return errorCodes.notEnoughExtractableKnowledge;
         }
         const {
             wasRight,
@@ -394,7 +404,10 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
     else if (await getIsQuestion(subjects[subjects.length - 1], messages)) {
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
         if (typeof howRightRes == 'string') {
-            return { error: howRightRes };
+            if (howRightRes == 'SIMPLIFIEDKPUNDEFINED') {
+                return errorCodes.SimplifiedKnowledgePointIsUndefined;
+            }
+            return errorCodes.notEnoughExtractableKnowledge;
         }
         const {
             wasRight,
@@ -489,7 +502,10 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
     else {
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
         if (typeof howRightRes == 'string') {
-            return { error: howRightRes };
+            if (howRightRes == 'SIMPLIFIEDKPUNDEFINED') {
+                return errorCodes.SimplifiedKnowledgePointIsUndefined;
+            }
+            return errorCodes.notEnoughExtractableKnowledge;
         }
         const {
             wasRight,

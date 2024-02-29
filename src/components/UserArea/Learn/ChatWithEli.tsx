@@ -9,16 +9,18 @@ import NewButton from '@/components/ui/NewButton'
 import { changeColour, colours, sizing, spacing } from '@/lib/constants'
 import { merriweather } from '@/app/fonts'
 import { Input } from '@/components/ui/input'
+import { IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
 type chatProps = {
     isOpen: boolean,
     setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>,
     lessonID?: string,
     lesson?: ILesson
+    updateState?: (formData: FormData) => Promise<void>
 }
 function ChatWithEli({
     isOpen,
     setIsOpen,
-    lessonID, lesson
+    lessonID, lesson, updateState
 }: chatProps) {
     // const { data: session, update } = useSession();
     // if (!session) return <></>
@@ -119,7 +121,7 @@ function ChatWithEli({
         }
     }
         , []);
-    async function submitUserReply(data: FormData) {
+    async function submitUserQuestion(data: FormData) {
         //make a POST request to /lesson/new with the user's reply as 'newQuestin' key in the body.
         console.log("Submitting user reply with data ", data.get('newQuestion'))
         const newQuestion = data.get('newQuestion');
@@ -146,7 +148,7 @@ function ChatWithEli({
     }
     return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
-        <form action={tutorialStage !== -1 ? "" : submitUserReply}>
+        <form action={tutorialStage !== -1 ? "" : updateState ? updateState : submitUserQuestion}>
             {
                 isOpen ? <>
                     <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: changeColour(colours.primary).darken(8).toString(), paddingTop: 2 * spacing.gaps.largest }}>

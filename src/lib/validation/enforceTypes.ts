@@ -2,11 +2,12 @@
 export type IMessagesEndpointResponsePayload = {
     newMessages: IMessage[];
     metadata: IMetadata;
-} | { error: string }
+}
 export type IMessagesEndpointSendPayload = {
     messages: IMessage[];
     metadata: IMetadata;
 }
+export type ILessonState = IMessagesEndpointSendPayload;
 export type IMetadata = {
     lessonID: string;
     userID?: string;

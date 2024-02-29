@@ -9,7 +9,7 @@ function LessonLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className={` flex flex-col h-full`} style={{ backgroundColor: colours.background, fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
+        <div className={` flex flex-col h-full`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
             <MainAreaNavbar style="lesson" />
             {children}
         </div>
