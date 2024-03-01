@@ -10,7 +10,7 @@ import { authConfig } from "@/auth.config";
 import { z } from 'zod';
 import { getLessons } from '@/actions';
 import prisma from '@/lib/db/prisma';
-import { IKnowledge, ILesson, IMessage } from '@/lib/validation/enforceTypes';
+import { IKnowledge, ILesson, ILessonState, IMessage } from '@/lib/validation/enforceTypes';
 import { knowledgeIndex } from '@/lib/chat/pinecone';
 
 export async function GET(req: NextRequest, res: NextResponse) {

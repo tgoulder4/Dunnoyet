@@ -6,13 +6,14 @@ import ChatWithEli from '@/components/UserArea/Learn/ChatWithEli'
 import { responsiveFont, sizing, spacing } from '@/lib/constants'
 import { colours, changeColour } from '@/lib/constants'
 import { getNextMessage } from '@/lib/chat/Eli/eli'
+import NeuralNetwork from './NeuralNetwork'
 var equal = require('deep-equal');
 export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
-    if (!initialLessonState) throw new Error("No initial lesson state found, couldn't load lesson page")
+    const [lessonState, setLessonState] = useState<ILessonState>(initialLessonState);
     const currentSubject = initialLessonState.metadata.subjects[initialLessonState.metadata.subjects.length - 1];
     const {
         messages, metadata
-    } = initialLessonState;
+    } = lessonState;
     const {
         knowledgePointChain,
     } = metadata;
@@ -30,18 +31,15 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
         const nextState: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
         let error = "";
         if (typeof nextState === "string") { error = nextState } else {
-            const { newMessages } = nextState;
+            const { newMessages, metadata } = nextState;
+            setLessonState({ messages: [...lessonState.messages, ...newMessages], metadata });
         };
 
     }
     return (<>
         <div className='h-full flex flex-col' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
-            <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
-                <div className='w-full h-full rounded-[20px] border-2' style={{ borderColor: colours.complementary_lighter, backgroundColor: changeColour(colours.complementary_lightest).lighten(5).toString() }}>
-                    <canvas></canvas>
-                </div>
-            </div>
+            <NeuralNetwork knowledgePoints={lessonState.metadata.knowledgePointChain} />
         </div>
         <ChatWithEli isOpen={true} messages={messages} updateState={updateState} />
     </>

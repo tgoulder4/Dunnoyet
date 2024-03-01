@@ -7,13 +7,16 @@ export type IMessagesEndpointSendPayload = {
     messages: IMessage[];
     metadata: IMetadata;
 }
-export type ILessonState = IMessagesEndpointSendPayload;
+export type ILessonState = {
+    messages: IMessage[];
+    metadata: IMetadata;
+}
 export type IMetadata = {
+    userID: string;
     lessonID: string;
-    userID?: string;
     threads: IMessage[][];
     subjects: string[];
-    action?: "understood" | 'endLesson',
+    action?: "UNDERSTOOD" | 'ENDLESSON',
     knowledgePointChain: Array<IKnowledge>;
     currentKnowledgePointIndex: number;
 }
@@ -26,6 +29,7 @@ export type IMessage = {
 export type ISplitResponse = { text: string, active: boolean };
 export type ILesson = {
     id: string;
+    userID?: string;
     subjects: string[];
     messages?: IMessage[];
     beganAt: Date;

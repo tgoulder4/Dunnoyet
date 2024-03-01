@@ -143,7 +143,6 @@ export async function getLessons(userID: string): Promise<ILesson[]> {
         select: {
             id: true,
             subjects: true,
-            messages: true,
             beganAt: true,
             endedAt: true,
             knowledgePointChain: true,

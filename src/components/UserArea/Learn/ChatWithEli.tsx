@@ -15,12 +15,13 @@ type chatProps = {
     setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>,
     lessonID?: string,
     lesson?: ILesson
-    updateState?: (formData: FormData) => Promise<void>
+    updateState?: (formData: FormData) => Promise<void | null>,
+    messages: IMessage[]
 }
 function ChatWithEli({
     isOpen,
     setIsOpen,
-    lessonID, lesson, updateState
+    lessonID, lesson, updateState, messages
 }: chatProps) {
     // const { data: session, update } = useSession();
     // if (!session) return <></>
@@ -158,7 +159,7 @@ function ChatWithEli({
                                     !lesson ?
                                         <h1>New question screen <Input id="newQuestion" name="newQuestion" className='h-14 w-full' placeholder="Ask a question..." />
                                         </h1>
-                                        : <Conversation lesson={lesson} />
+                                        : <Conversation messages={messages} />
                                 }
                             </> :
                             <>
