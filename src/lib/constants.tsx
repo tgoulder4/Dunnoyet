@@ -30,6 +30,8 @@ export const colours = {
     link: "#19445C",
     textLegend: "#616161",
     black: "#131313",
+    interrogativeMessage: '#0A1B1E',
+    systemEventMessage: '#3F2962',
     light: {
         textColour: "#131313",
         backgroundLight: "#f4f4f4"

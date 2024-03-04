@@ -1,13 +1,23 @@
 'use client'
-import { ILesson, ILessonState, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
+import { IKnowledge, ILesson, ILessonState, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
 import React, { useState } from 'react'
 import { merriweather } from '@/app/fonts'
-import ChatWithEli from '@/components/UserArea/Learn/ChatWithEli'
+import ChatWithEli from '@/components/UserArea/Learn/Chat/ChatWithEli'
 import { responsiveFont, sizing, spacing } from '@/lib/constants'
 import { colours, changeColour } from '@/lib/constants'
 import { getNextMessage } from '@/lib/chat/Eli/eli'
 import NeuralNetwork from './NeuralNetwork'
-var equal = require('deep-equal');
+import { UMAP } from 'umap-js';
+const umap = new UMAP({
+    nComponents: 2,
+    nEpochs: 400,
+    nNeighbors: 1,
+});
+function getTwoDCoOrdinatesOfEmbeddings(ems: number[][]) {
+    const TwoDCoOrds = umap.fit(ems);
+    console.log("TwoDCoOrds: ", TwoDCoOrds)
+    return TwoDCoOrds;
+}
 export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
     const [lessonState, setLessonState] = useState<ILessonState>(initialLessonState);
     const currentSubject = initialLessonState.metadata.subjects[initialLessonState.metadata.subjects.length - 1];
@@ -36,10 +46,15 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
         };
 
     }
+    const ems = knowledgePointChain.map(kp => kp.vectorEmbedding);
+    const twoDCoOrds = getTwoDCoOrdinatesOfEmbeddings(ems);
+    const knowledgePointsWithTwoDCoOrds: IKnowledge[] = knowledgePointChain.map((kp, index) => {
+        return { ...kp, TwoDCoOrdinates: twoDCoOrds[index] };
+    })
     return (<>
         <div className='h-full flex flex-col' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
-            <NeuralNetwork knowledgePoints={lessonState.metadata.knowledgePointChain} />
+            <NeuralNetwork knowledgePoints={knowledgePointsWithTwoDCoOrds} />
         </div>
         <ChatWithEli isOpen={true} messages={messages} updateState={updateState} />
     </>

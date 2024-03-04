@@ -13,7 +13,7 @@ import { prismaClient } from '@/lib/db/prisma'
 import LessonItems from '@/components/UserArea/Learn/LessonItems'
 import { useSession } from 'next-auth/react'
 import SummaryItems from '@/components/UserArea/Learn/SummaryItems'
-import ChatWithEli from '../../../components/UserArea/Learn/ChatWithEli'
+import ChatWithEli from '../../../components/UserArea/Learn/Chat/ChatWithEli'
 import { getLessons } from '@/actions'
 import { ILesson } from '@/lib/validation/enforceTypes'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
@@ -75,7 +75,7 @@ function page({ params }: { params: { params: string } }) {
                         <SummaryItems />
                     </div>
                 </div>
-                <ChatWithEli lessons={lessonItems} lessonID={"Tutorial"} setIsOpen={setChatIsOpen} isOpen={chatIsOpen} />
+                <ChatWithEli type={tutorialMode ? 'Tutorial' : 'NewQ'} setIsOpen={setChatIsOpen} isOpen={chatIsOpen} />
             </main>
         </div>
     )

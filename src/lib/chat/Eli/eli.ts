@@ -3,31 +3,9 @@ import { IKnowledge, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpoi
 import OpenAI from "openai";
 import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint, simplifyToSubject } from "./instructionsForRetrievingTypeOfTheirMessage";
 import { getEmbedding } from "../openai";
-const tsnejs = require('@aidanconnelly/tsnejs')
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
 import prisma from "../../../lib/db/prisma";
-const openai = new OpenAI();
-const opt = {
-    epsilon: 10,    // epsilon is learning rate (10 = default)
-    perplexity: 30, // roughly how many neighbors each point influences (30 = default)
-    dim: 2 // dimensionality of the embedding (2 = default)
-};
-const tsne = new tsnejs.tSNE(opt); // create a tSNE instance
-async function getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp: string): Promise<[number, number]> {
-    try {
-        const em = await getEmbedding(Kp);
-        const dists = em;
-        tsne.initDataDist(dists);
-        [...Array(100)].forEach((_, i) => tsne.step());
-        const TwoDCoOrds = tsne.getSolution();
-        //const 2d = tSNE(em);
-        return TwoDCoOrds;
-    } catch (err) {
-        console.log(err + " in getTwoDCoOrdinatesOfKnowledgePointInSolitude, returning [0,0]");
-        return [0, 0];
-    }
-}
 //handles rerouting of knowledge chains
 async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: string, knowledgePointChain: Array<IKnowledge[] | IKnowledge>, messages: IMessage[], incrementKpChainI: (setTovalue?: number) => void, kpChainI: number, firstPotentialKnowledgePoint?: boolean): Promise<{ wasRight: boolean, knowledgePointAdded?: IKnowledge } | string> {
     const howRight = await howRightIsTheUser(messages);
@@ -42,23 +20,21 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         if (Kp == null) {
             return 'I could not extract any knowledge from your input. Please try again.'
         }
-        if (Kp) {
-            const coOrds = await getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp);
-            K = {
-                confidence: 4,
-                lessonId: lessonID,
-                pointInSolitude: Kp,
-                pointInChain: '',
-                source: 'reinforced',
-                TwoDCoOrdinates: coOrds
-            }
-            knowledgePointChain.splice(kpChainI, 0, K);
-            if (firstPotentialKnowledgePoint) { incrementKpChainI(0) } else {
-                incrementKpChainI();
-            }
-        } else {
-            console.log("Kp is null in getNextMessage");
+        const embedding = await getEmbedding(Kp);
+        K = {
+            confidence: 4,
+            lessonId: lessonID,
+            pointInSolitude: Kp,
+            pointInChain: '',
+            source: 'reinforced',
+            vectorEmbedding: embedding,
+            TwoDCoOrdinates: []
         }
+        knowledgePointChain.splice(kpChainI, 0, K);
+        if (firstPotentialKnowledgePoint) { incrementKpChainI(0) } else {
+            incrementKpChainI();
+        }
+
         return {
             wasRight: true,
             knowledgePointAdded: K
@@ -111,7 +87,7 @@ export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: st
     //find the id of each from prisma
     //return that
 }
-export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[], userID: string) {
+export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[], userID: string, metadataId: string) {
     try {
         console.log("savekNowledgePointsToDBAndPineCone called")
         const _kps = await Promise.all(knowledgePointChain.map(async (Kp) => {
@@ -120,6 +96,7 @@ export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowl
                 console.log("embedding formed: ", em, "for KpSol: ", Kp.pointInSolitude)
                 const K = await tx.knowledgePoint.create({
                     data: {
+                        metadataId: metadataId,
                         lessonId: lessonID,
                         userId: userID,
                         source: Kp.source,
@@ -180,14 +157,14 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         subjects.push(subject);
         const Kp = await simplifyToKnowledgePoint(messages, subjects[subjects.length - 1]);
         if (!Kp) throw new Error("Kp is null in getNextMessage");
-        const coOrds = await getTwoDCoOrdinatesOfKnowledgePointInSolitude(Kp);
         return {
             confidence: (i == 0) ? 4 : 2,
             lessonId: lessonID,
             pointInSolitude: sr.content as string,
             pointInChain: '',
             source: 'offered' as 'offered' | 'reinforced',
-            TwoDCoOrdinates: coOrds
+            TwoDCoOrdinates: [],
+            vectorEmbedding: await getEmbedding(Kp)
         }
     }));
     const KpsToInsertBeforeTarget = await newKs;
@@ -196,12 +173,11 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         pushedSplitResponses: splitResponses,
         newKnowledgePointChain,
         newThreads: threads,
-
         subjects,
         subjectIntro,
     }
 }
-export const errorCodes = {
+const errorCodes = {
     userIDUndefined: "INTERNAL: The user's ID was undefined.",
     notEnoughExtractableKnowledge: "There wasn't enough extractable knowledge from your reply. Show me what you know!",
     SimplifiedKnowledgePointIsUndefined: "INTERNAL: The simplified knowledge point is undefined.",
@@ -212,10 +188,13 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         threads,
         subjects,
         action,
-        lessonID, knowledgePointChain, currentKnowledgePointIndex, userID
+        lessonID, knowledgePointChain, currentKnowledgePointIndex, userID, metadataId
     } = metadata;
     if (!userID) {
-        return errorCodes.userIDUndefined
+        throw new Error("userID is undefined. @getNextMessage")
+    }
+    if (!metadataId) {
+        throw new Error("metadataId is undefined. @getNextMessage")
     }
     let indexToInsertNewKnowlegePoint = currentKnowledgePointIndex;
     function incrementCurrentKnowledgePointIndex() {
@@ -239,12 +218,8 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         } = howRightRes;
         //get related knowledge points
         const pointInSolitude = await simplifyToKnowledgePoint(messages);
-        if (pointInSolitude == undefined) {
-            return errorCodes.SimplifiedKnowledgePointIsUndefined
-        }
-        if (pointInSolitude == null) {
-            return errorCodes.notEnoughExtractableKnowledge;
-        }
+        if (pointInSolitude == undefined) throw new Error("pointInSolitude response from GPT is undefined @getNextMessage");
+        if (pointInSolitude == null) return errorCodes.notEnoughExtractableKnowledge;
         const rKs: IKnowledge[] = await getRelatedKnowledgePoints(userID, pointInSolitude);
         //if rKs.length==0 && !wasRight then return what comes to mind q
         if (rKs.length == 0 && !wasRight) {
@@ -272,6 +247,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     eliResponseType: "WhatComesToMind"
                 }],
                 metadata: {
+                    userID,
                     lessonID,
                     threads,
                     subjects,
@@ -295,6 +271,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     eliResponseType: 'SubjectIntroduction'
                 }, newThreads[newThreads.length - 1][0]],
                 metadata: {
+                    userID,
                     lessonID,
                     threads: newThreads,
                     subjects,
@@ -307,7 +284,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         }
     }
     //IF THEY UNDERSTAND THE CURRENT THREAD SPLITRESPONSE. knowledgePointChain: like [{confidecne:4...},[{confidence:5...},{confidence:5...}]]
-    else if (action == "understood") {
+    else if (action == "UNDERSTOOD") {
         const currentKP = knowledgePointChain[currentKnowledgePointIndex];
         currentKP.confidence = 5;
         //remove response from threads
@@ -332,17 +309,18 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         }
         if (threads.length == 0) {
             //save all rks to db and pinecone, 
-            saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain, userID);
+            saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain, userID, metadataId);
             //end lesson
             const payload: IMessagesEndpointResponsePayload = {
                 newMessages: [],
                 metadata: {
+                    userID,
                     lessonID,
                     threads: [],
                     subjects,
                     knowledgePointChain: [],
                     currentKnowledgePointIndex: 0,
-                    action: "endLesson"
+                    action: "ENDLESSON"
                 }
             }
             console.log("payload:", payload);
@@ -352,6 +330,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [threads[threads.length - 1][0]],
             metadata: {
+                userID,
                 lessonID,
                 threads,
                 subjects,
@@ -390,6 +369,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                 eliResponseType: 'SubjectIntroduction'
             }, newThreads[newThreads.length - 1][0]],
             metadata: {
+                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,
@@ -427,6 +407,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [newThreads[newThreads.length - 1][0]],
             metadata: {
+                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,
@@ -524,6 +505,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [newThreads[newThreads.length - 1][0]],
             metadata: {
+                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,

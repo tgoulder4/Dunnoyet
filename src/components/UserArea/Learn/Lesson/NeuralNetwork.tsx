@@ -2,8 +2,9 @@ import React from 'react'
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
 import { IKnowledge } from '@/lib/validation/enforceTypes'
-
 function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
+    //for each kp to above fn
+
     return (
         <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
             <div className='w-full h-full rounded-[20px] border-2' style={{ borderColor: colours.complementary_lighter, backgroundColor: changeColour(colours.complementary_lightest).lighten(5).toString() }}>

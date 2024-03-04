@@ -12,6 +12,7 @@ export type ILessonState = {
     metadata: IMetadata;
 }
 export type IMetadata = {
+    metadataId?: string;
     userID: string;
     lessonID: string;
     threads: IMessage[][];
@@ -48,7 +49,7 @@ export type IKnowledge = {
     pointInSolitude: string,
     pointInChain: string,
     TwoDCoOrdinates: number[],
-    vectorEmbedding?: number[],
+    vectorEmbedding: number[],
     //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
     confidence: number
 }

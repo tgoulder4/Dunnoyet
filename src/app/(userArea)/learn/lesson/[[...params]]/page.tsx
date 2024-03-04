@@ -2,7 +2,7 @@
 import { getLesson } from '@/app/api/lessons/route'
 import { merriweather } from '@/app/fonts'
 import { auth } from '@/auth'
-import ChatWithEli from '@/components/UserArea/Learn/ChatWithEli'
+import ChatWithEli from '@/components/UserArea/Learn/Chat/ChatWithEli'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson'
 import { responsiveFont, sizing, spacing } from '@/lib/constants'
 import prisma from '@/lib/db/prisma'

@@ -1,4 +1,3 @@
-'use server'
 import 'dotenv/config'
 import OpenAI from "openai";
 // console.log("Process.env: ", process.env)

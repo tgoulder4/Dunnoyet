@@ -10,18 +10,20 @@ import { changeColour, colours, sizing, spacing } from '@/lib/constants'
 import { merriweather } from '@/app/fonts'
 import { Input } from '@/components/ui/input'
 import { IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
+import { redirect } from 'next/navigation'
 type chatProps = {
     isOpen: boolean,
     setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>,
     lessonID?: string,
     lesson?: ILesson
     updateState?: (formData: FormData) => Promise<void | null>,
-    messages: IMessage[]
+    messages?: IMessage[]
+    type: 'Tutorial' | 'Lesson' | 'NewQ'
 }
 function ChatWithEli({
     isOpen,
     setIsOpen,
-    lessonID, lesson, updateState, messages
+    lessonID, lesson, updateState, messages, type
 }: chatProps) {
     // const { data: session, update } = useSession();
     // if (!session) return <></>
@@ -33,6 +35,7 @@ function ChatWithEli({
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [tutorialStage, setTutorialStage] = useState(-1);
     const [subject, setSubject] = useState('New Question');
+    if (type == "Lesson" && !messages) throw new Error("No messages found for lesson chat")
     const Lesson: ILesson = {
         id: "",
         subjects: [""],
@@ -59,6 +62,7 @@ function ChatWithEli({
             pointInSolitude: "",
             pointInChain: "",
             TwoDCoOrdinates: [0, 0],
+            vectorEmbedding: [0, 0],
             confidence: 0
         }]
     }
@@ -130,22 +134,21 @@ function ChatWithEli({
             console.error("No new question found in form data")
             return;
         };
-        try {
-            if (!lesson) {
-                console.log("POSTing new question to /lesson/new with newQuestion: ", newQuestion)
-                const res = await fetch('/learn/lesson/new', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ newQuestion })
-                });
-                console.log("Response from /lesson/new: ", res)
-            }
-        } catch (e) {
-            console.error("Error submitting user reply: ", e)
-
+        if (!lesson) {
+            console.log("POSTing new question to /lesson/new with newQuestion: ", newQuestion)
+            const res = await fetch('/learn/lesson/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newQuestion })
+            });
+            const response = await res.json();
+            const url = response.message.url;
+            console.log("AResponse from /lesson/new: ", url);
+            redirect(url)
         }
+
     }
     return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
@@ -159,7 +162,7 @@ function ChatWithEli({
                                     !lesson ?
                                         <h1>New question screen <Input id="newQuestion" name="newQuestion" className='h-14 w-full' placeholder="Ask a question..." />
                                         </h1>
-                                        : <Conversation messages={messages} />
+                                        : <Conversation messages={messages!} />
                                 }
                             </> :
                             <>
