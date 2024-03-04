@@ -9,7 +9,6 @@ import NewButton from "@/components/ui/NewButton";
 import AuthProvider from "@/components/auth/context/CustomSessionProvider";
 import { SessionProvider } from "next-auth/react";
 import CustomSessionProvider from "@/components/auth/context/CustomSessionProvider";
-import MainAreaNavbar from "@/components/Navbar/MainAreaNavbar";
 
 export default function RootLayout({
   children,

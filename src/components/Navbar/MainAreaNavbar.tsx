@@ -10,6 +10,7 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' }) {
     const theme = {
         backgroundColour: style == 'normal' ? colours.primary : '#000',
     }
+    console.log("rendering MainAreaNavbar with style: ", style)
     return (
         <nav style={{
             // borderTopWidth: 1, borderTopColor: changeColour(colours.primary).darken(8).toString(), 

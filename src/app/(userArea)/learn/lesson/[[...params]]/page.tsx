@@ -9,14 +9,22 @@ import prisma from '@/lib/db/prisma'
 import { IKnowledge, ILesson, ILessonState, IMessage, IMetadata } from '@/lib/validation/enforceTypes'
 import { redirect } from 'next/navigation'
 import React from 'react'
+import { useSearchParams } from 'next/navigation'
 var equal = require('deep-equal');
 async function getLessonState(lessonID: string, userID: string): Promise<ILessonState | null> {
     console.log("getLessonState called with lessonID: ", lessonID)
     try {
+        const lesson = await prisma.lesson.findFirst({
+            where: {
+                id: lessonID,
+                userId: userID
+            }
+        })
+        if (!lesson) throw new Error("Prisma didn't return a lesson @getLessonState")
         const result = await prisma.lessonState.findFirst({
             //also get the lesson from this and check if the lesson's userID matches the userID
             where: {
-                id: lessonID,
+                id: lesson.stateId,
                 Lesson: {
                     userId: userID
                 }
@@ -28,38 +36,29 @@ async function getLessonState(lessonID: string, userID: string): Promise<ILesson
                     }
                 },
                 messages: true,
-                Lesson: true,
 
             }
         })
+        console.log("lesson loader found lesson state: ", result)
         if (!result) throw new Error("Prisma didn't return a lesson state @getLessonState")
-        const { messages, metadata, Lesson } = result;
+        const { messages, metadata } = result;
         if (!messages) throw new Error("Prisma didn't return messages @getLessonState")
         if (!metadata) throw new Error("Prisma didn't return metadata @getLessonState")
-        if (!Lesson) throw new Error("Prisma didn't return lesson @getLessonState")
-        const messagesForLessonState: IMessage[] = messages.map(message => {
-            return {
-                content: message.content,
-                eliResponseType: message.eliResponseType || undefined,
-                role: message.role
-            }
-        });
         //threads is 2D so we need to parse it from JSON (prisma doesn't support 2D arrays so it stores it as a JSON)
-        const threadsForLessonState: IMessage[][] = JSON.parse(metadata.threads as string);
-        console.log("threadsForLessonState: ", threadsForLessonState)
 
         const metadataForLessonState: IMetadata = {
             knowledgePointChain: metadata.knowledgePointChain,
             subjects: metadata.subjects,
             currentKnowledgePointIndex: metadata.currentKnowledgePointIndex,
-            threads: threadsForLessonState,
-            userID: Lesson.userId,
-            lessonID: Lesson.id,
+            threads: metadata.threads as IMessage[][],
+            userID: lesson.userId,
+            lessonID: lesson.id,
         }
         const lessonState: ILessonState = {
-            messages: messagesForLessonState,
+            messages: messages as IMessage[],
             metadata: metadataForLessonState
         }
+        console.log("[getLessonState] returning lessonState: ", lessonState)
         return lessonState;
     }
     catch (error) {

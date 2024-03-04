@@ -144,8 +144,11 @@ function ChatWithEli({
                 body: JSON.stringify({ newQuestion })
             });
             const response = await res.json();
-            const url = response.message.url;
-            console.log("AResponse from /lesson/new: ", url);
+            console.log("Response from /lesson/new: ")
+            console.dir(response, { depth: null });
+            if (!response.message.lesson || !response.message.state) throw new Error("Either lesson (given by ID) or state (given by ID) wasn't given in response message prop from /lesson/new")
+            const url = '/learn/lesson/' + response.message.lesson + '?state=' + response.message.state
+            console.log("Redirecting to ", url)
             redirect(url)
         }
 
