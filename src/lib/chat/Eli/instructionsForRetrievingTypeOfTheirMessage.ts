@@ -117,9 +117,21 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
     : Promise<{ splitResponses: IMessage[], subject?: string, subjectIntro?: string } | null> => {
     try {
         if (!rKs) throw new Error("rKs is null in getSplitResponses. Eli can't reply in terms of their knowledge without related knowledge points.");
-        const prompt = `your name is Eli.` + subject ? ` you’re teaching a student named tye about` + subject : "" + `. The answers you provide must contain EXACT TERMS from their related knowledge:` + rKs.map(rk => "Point:" + rk.pointInSolitude + ", Confidence: " + rk.confidence).join("\n\n") + '. Reply to their latest response in these messages: ' + messages.map(msg => msg.role + ": " + msg.content).join('\n') +
-            `If you reference their knowledge, lazily wrap the areas you used it in with square brackets. Each sentence should be separated by a new line. Don't provide a summary or ask if they'd like to learn anything else. Form at most` + splitResponsesLimit ? splitResponsesLimit : '5' + ` sentences, and be kind. After answering 'what comes to mind', kindly respond in terms of this.`
-                + askForSubject || askForSubjectIntro ? ' Put MAIN: around your reply. ' : '' + askForSubject ? 'After your response, put "SUBJECT: " and then the subject of the conversation.' : '' + askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying the subject of the conversation changed to (that subject) as it is closest to their current knowledge.' : '' + userIsWrong ? ' Their response is wrong. Please correct them and remember to reference their related knowledge points.' : ''
+        const prompt = (
+            'your name is Eli.' +
+            (subject ? ' you’re teaching a student about ' + subject : "") +
+            '. The answers you provide must contain EXACT TERMS from their related knowledge: ' +
+            rKs.map(rk => "Point: " + rk.pointInSolitude + ", Confidence: " + rk.confidence).join("\n\n") +
+            '. Reply to their latest response in these messages: ' +
+            messages.map(msg => msg.role + ": " + msg.content).join('\n') +
+            'If you reference their knowledge, lazily wrap the areas you used it in with square brackets. Each sentence should be separated by a new line. Dont provide a summary or ask if theyd like to learn anything else. Form at most ' +
+            (splitResponsesLimit ? splitResponsesLimit : '5') +
+            ' sentences, and be kind. After answering "what comes to mind", kindly respond in terms of this.' +
+            (askForSubject || askForSubjectIntro ? ' Put MAIN: around your reply. ' : '') +
+            (askForSubject ? 'After your response, put "SUBJECT: " and then the subject of the conversation.' : '') +
+            (askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying the subject of the conversation changed to (that subject) as it is closest to their current knowledge.' : '') +
+            (userIsWrong ? ' Their response is wrong. Please correct them and remember to reference their related knowledge points.' : '')
+        );
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
@@ -127,8 +139,8 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
             },],
             model: "gpt-3.5-turbo"
         })
-        const fullReply = askForSubject || askForSubjectIntro ? res.choices[0].message.content?.match(/MAIN: ([^\n]+)/)?.[0] : res.choices[0].message.content;
-        if (!fullReply) throw new Error("fullReply is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and the prompt was: " + prompt);
+        const fullReply = askForSubject || askForSubjectIntro ? res.choices[0].message.content?.match(/(?<=MAIN: *\n?)[\s\S]*?(?=\nSUBJECT:|\nSUBJECTINTRO:)/g)?.[0] : res.choices[0].message.content;
+        if (!fullReply) throw new Error("fullReply is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and fullReply is " + fullReply);
         //split splitResponses into paras by newline
         const splitResponses = fullReply.split('\n');
         const retrievedSubject = res.choices[0].message.content?.match(/SUBJECT: ([^\n]+)/)?.[0];
@@ -136,7 +148,7 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
         const subjectIntro = res.choices[0].message.content?.match(/SUBJECTINTRO: ([^\n]+)/)?.[0];
         if (!subjectIntro && askForSubjectIntro) throw new Error("subjectIntro is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and the prompt was: " + prompt);
         const srs: IMessage[] = splitResponses.map((sr, i) => ({
-            content: { text: sr, active: i == 0 },
+            splitResponse: { text: sr, active: i == 0 },
             role: 'eli' as 'user' | 'eli',
             eliResponseType: "General" as "General" | "WhatComesToMind" | "ChallengeQ",
         }));
@@ -147,14 +159,16 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
     }
 }
 export const simplifyToSubject = async (messageHistory: IMessage[]): Promise<string | null> => {
+    console.log("simplifyToSubject called")
     try {
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Simplify the subject of their reply to maximum 3 words.'
+                content: 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Simplify the subject of their reply to maximum 3 words which make sense on their own.'
             },],
             model: "gpt-3.5-turbo"
         })
+        console.log("simplifyToSubject returned: " + res.choices[0].message.content)
         return res.choices[0].message.content
     }
     catch (e) {

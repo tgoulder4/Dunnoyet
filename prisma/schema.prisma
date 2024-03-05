@@ -40,6 +40,7 @@ model knowledgePoint {
   confidence      Int       @map("_confidence")
   meta            metadata? @relation("MetadataToKnowledgePoint", fields: [metadataId], references: [id])
   metadataId      String?   @db.ObjectId
+  // linksTo         String[]
 
   @@map("knowledgePoints")
 }
@@ -51,7 +52,6 @@ enum kpSource {
 
 model Lesson {
   id                  String           @id @default(auto()) @map("_id") @db.ObjectId
-  subjects            String[]
   ls                  lessonState      @relation("LessonToLessonState", fields: [stateId], references: [id])
   stateId             String           @unique @db.ObjectId
   beganAt             DateTime         @default(now())
@@ -76,11 +76,10 @@ model lessonState {
 }
 
 model metadata {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  lessonState lessonState? @relation("LessonStateToMetadata")
-  threads     Json[]       @db.Json
-  subjects    String[]
-
+  id                         String           @id @default(auto()) @map("_id") @db.ObjectId
+  lessonState                lessonState?     @relation("LessonStateToMetadata")
+  threads                    Json[]           @db.Json
+  subjects                   String[]
   knowledgePointChain        knowledgePoint[] @relation("MetadataToKnowledgePoint")
   currentKnowledgePointIndex Int
 }
@@ -89,12 +88,23 @@ model Message {
   id              String           @id @default(auto()) @map("_id") @db.ObjectId
   role            role
   rk              String[]
-  content         String
+  content         String? // Make content optional
+  splitResponse   SplitResponse?   @relation(fields: [splitResponseId], references: [id])
+  splitResponseId String?          @unique @db.ObjectId
   eliResponseType eliResponseType?
   ls              lessonState      @relation("LessonStateToMessage", fields: [lessonStateId], references: [id])
   lessonStateId   String           @db.ObjectId
 
   @@map("messages")
+}
+
+model SplitResponse {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  text    String
+  active  Boolean
+  message Message?
+
+  @@map("split_responses")
 }
 
 enum eliResponseType {

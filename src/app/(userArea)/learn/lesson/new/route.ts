@@ -5,6 +5,7 @@ import { auth } from '@/auth';
 import { getEmbedding } from "@/lib/chat/openai";
 import { redirect } from "next/navigation";
 import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
+import { getNextMessage } from '@/lib/chat/Eli/eli';
 
 async function POST(req: NextRequest) {
     //create a new lesson, get the lessonID from that lesson then redirect to /learn/lesson/[lessonID]
@@ -14,20 +15,36 @@ async function POST(req: NextRequest) {
         if (!sess || !sess.user) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
         const userId = sess.user.id;
         if (!userId) return NextResponse.json({ error: "No user ID found." }, { status: 401 });
-        const { newQuestion } = await req.json();
-        const em = await getEmbedding(newQuestion);
-        const twoDCoOrds = await getTwoDCoOrdinatesOfEmbeddings([em]);
+        const { newQuestion }: { newQuestion: string } = await req.json();
         //make a new message as the newQuestion
         //create a new lesson, and a new lesson state. the lesson state's messages will be the new message
         console.log("Entered prisma create lesson transaction with Q: ", newQuestion);
+        //if newMessages content is of type splitResponse, change 'content' key to 'splitResponse'
+        const res = await getNextMessage({
+            messages: [{ content: newQuestion, role: "user" }],
+            metadata: {
+                metadataId: "65dbe7799c9c2a30ecbe6100",
+                lessonID: "65dbe7799c9c2a30ecbe6193",
+                threads: [],
+                subjects: [],
+                knowledgePointChain: [],
+                currentKnowledgePointIndex: 0,
+            }
+        });
+        if (typeof res === "string") return NextResponse.json({ error: res }, { status: 500 });
+        const {
+            newMessages, metadata
+        } = res;
+        console.log("Response from getNextMessage: ", res)
         const lessAndState = await prisma.$transaction(async (tx) => {
             const lessonState = await tx.lessonState.create({
                 data: {
                     messages: {
-                        create: {
+                        create: [{
                             content: newQuestion,
                             role: "user"
-                        }
+                        },
+                        ...newMessages]
                     },
                     metadataId: "65dbe7799c9c2a30ecbe6100",
                     // metadata: 
@@ -57,28 +74,27 @@ async function POST(req: NextRequest) {
                 data: {
                     stateId: lessonState.id,
                     userId: userId,
-                    subjects: [],
+
                 }
             });
             console.log("lesson created: ", lesson);
             //connect the knowledge point's ID to this lesson just made
-            const metadata = await tx.metadata.create({
+            const createdMetadata = await tx.metadata.create({
                 data: {
                     knowledgePointChain: {
-                        create: {
-                            source: "offered",
-                            userId: userId,
-                            lessonId: lesson.id,
-                            pointInSolitude: newQuestion,
-                            pointInChain: newQuestion,
-                            TwoDCoOrdinates: twoDCoOrds[0],
-                            vectorEmbedding: em,
-                            confidence: 5
-                        }
+                        create: [
+                            ...metadata.knowledgePointChain.map((k) => {
+                                return {
+                                    ...k,
+                                    userId: userId,
+                                    lessonId: lesson.id
+                                }
+                            })
+                        ]
                     },
-                    subjects: [],
-                    currentKnowledgePointIndex: 0,
-                    threads: [],
+                    subjects: metadata.subjects,
+                    currentKnowledgePointIndex: metadata.currentKnowledgePointIndex,
+                    threads: metadata.threads,
                 }
             });
             console.log("metadata created: ", metadata)
@@ -86,7 +102,7 @@ async function POST(req: NextRequest) {
             const newLessonState = await tx.lessonState.update({
                 where: { id: lessonState.id },
                 data: {
-                    metadataId: metadata.id
+                    metadataId: createdMetadata.id
                 }
             });
             console.log("LessonState updated to ", newLessonState);
@@ -101,3 +117,13 @@ async function POST(req: NextRequest) {
     }
 }
 export { POST as POST }
+
+//SUMMARY
+// lesson/new now calls getNextMessage to return newMessages[] and metadata
+// then it creates a new lesson and a new lessonState
+// then it creates a new metadata
+// then it updates the lessonState to have the new metadata
+// then it returns the lesson and lessonState IDs
+//but I want the newMessages to be returned within chatWithEli
+//so just push these messages to the lesson state, the lesson state ID is passed as url params anyway.
+//then within chatwithEli retrieve the lesson state. Maybe pass the question as well for faster percieved response time.

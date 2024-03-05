@@ -9,7 +9,7 @@ function Conversation({ messages }: { messages: IMessage[] }) {
     return (
         <div>{
             messages.map((message, index) =>
-                message.role === "user" ? <UserMessage text={message.content as string} key={index} /> : <EliMessage splitResponse={message.content as ISplitResponse} text={message.content as string} eliResponseType={message.eliResponseType as "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction'} key={index} />
+                message.role === "user" ? <UserMessage text={message.content as string} key={index} /> : <EliMessage splitResponse={message.splitResponse} text={message.content as string} eliResponseType={message.eliResponseType as "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction'} key={index} />
             )
         }</div>
     )

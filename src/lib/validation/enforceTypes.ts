@@ -13,16 +13,17 @@ export type ILessonState = {
 }
 export type IMetadata = {
     metadataId?: string;
-    userID: string;
     lessonID: string;
     threads: IMessage[][];
     subjects: string[];
     action?: "UNDERSTOOD" | 'ENDLESSON',
     knowledgePointChain: Array<IKnowledge>;
     currentKnowledgePointIndex: number;
+    lessonState?: ILessonState;
 }
 export type IMessage = {
-    content: string | ISplitResponse;
+    content?: string;
+    splitResponse?: ISplitResponse;
     eliResponseType?: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction';
     role: "user" | "eli";
     placeHolderText?: string;
@@ -31,7 +32,6 @@ export type ISplitResponse = { text: string, active: boolean };
 export type ILesson = {
     id: string;
     userID?: string;
-    subjects: string[];
     messages?: IMessage[];
     beganAt: Date;
     lessonStatus: "Active" | "Completed";
@@ -52,6 +52,10 @@ export type IKnowledge = {
     vectorEmbedding: number[],
     //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
     confidence: number
+    // linksTo: {
+    //     kId: string,
+    //     type: 'confirmedByUnderstood' | 'hypothetical',
+    // }[],
 }
 export type IUser = {
     id: string;

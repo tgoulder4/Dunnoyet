@@ -142,13 +142,12 @@ export async function getLessons(userID: string): Promise<ILesson[]> {
         },
         select: {
             id: true,
-            subjects: true,
             beganAt: true,
             endedAt: true,
             knowledgePointChain: true,
             lessonStatus: true,
         }
     })
-    console.log("lessons which getLessons returned: ", lessons)
+    console.log("getLessons returned ", lessons.length, " lessons")
     return lessons as ILesson[];
 }

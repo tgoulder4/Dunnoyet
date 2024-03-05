@@ -1,4 +1,5 @@
 'use server'
+import getServerSession from 'next-auth';
 import { IKnowledge, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from "@/lib/validation/enforceTypes";
 import OpenAI from "openai";
 import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledgePoint, simplifyToSubject } from "./instructionsForRetrievingTypeOfTheirMessage";
@@ -6,9 +7,11 @@ import { getEmbedding } from "../openai";
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
 import prisma from "../../../lib/db/prisma";
+import { authConfig } from '@/auth.config';
 //handles rerouting of knowledge chains
 async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: string, knowledgePointChain: Array<IKnowledge[] | IKnowledge>, messages: IMessage[], incrementKpChainI: (setTovalue?: number) => void, kpChainI: number, firstPotentialKnowledgePoint?: boolean): Promise<{ wasRight: boolean, knowledgePointAdded?: IKnowledge } | string> {
     const howRight = await howRightIsTheUser(messages);
+    console.log("@getNextMessage @getHowRightTheUserIsAnd... - How right the user is: ", howRight)
     let K: IKnowledge | undefined = undefined;
     if (howRight !== 'NOT') {
         //if they're at least partly right, add their knowledge to chain
@@ -34,7 +37,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         if (firstPotentialKnowledgePoint) { incrementKpChainI(0) } else {
             incrementKpChainI();
         }
-
+        console.log("knoweldge point added to KpChain: ", K)
         return {
             wasRight: true,
             knowledgePointAdded: K
@@ -63,16 +66,7 @@ export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: st
                 })
                 if (kp == null) {
                     console.log("kp is null @getRelatedKnowledgePoints - the related vector knowledge's ID didn't match any knowledge points in the db. Its ID is " + rVk.id + ". Returning a dummy knowledge point w confidence -1.")
-                    return ({
-                        id: "",
-                        userId: "",
-                        lessonId: "",
-                        pointInSolitude: "",
-                        pointInChain: "",
-                        source: "offered" as "offered" | "reinforced",
-                        TwoDCoOrdinates: [0, 0],
-                        confidence: -1
-                    })
+                    return null;
                 }
                 return kp;
             })
@@ -188,8 +182,12 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         threads,
         subjects,
         action,
-        lessonID, knowledgePointChain, currentKnowledgePointIndex, userID, metadataId
+        lessonID, knowledgePointChain, currentKnowledgePointIndex, metadataId
     } = metadata;
+    console.log("getNextMessage called with payload: ", payload)
+    const sess = await getServerSession(authConfig).auth();
+    if (!sess) return errorCodes.userIDUndefined;
+    const userID = sess.user?.id;
     if (!userID) {
         throw new Error("userID is undefined. @getNextMessage")
     }
@@ -202,6 +200,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
     }
     //CASE NEW QUESTION
     if (messages.length == 1) {
+        console.log("messages.length == 1, assuming their input is a new question. @getNextMessage")
         const theirInput = messages[messages.length - 1].content as string;
         //they could have attached knowledge to this msg
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
@@ -237,7 +236,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     askMessage = "What do you know about " + subjectOfTheirInput + "?";
                     break;
                 case 3:
-                    askMessage = "What do you think about when" + subjectOfTheirInput + " is mentioned?";
+                    askMessage = "What do you think about when " + subjectOfTheirInput + " is mentioned?";
                     break;
             }
             const payload: IMessagesEndpointResponsePayload = {
@@ -247,7 +246,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     eliResponseType: "WhatComesToMind"
                 }],
                 metadata: {
-                    userID,
                     lessonID,
                     threads,
                     subjects,
@@ -271,7 +269,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     eliResponseType: 'SubjectIntroduction'
                 }, newThreads[newThreads.length - 1][0]],
                 metadata: {
-                    userID,
                     lessonID,
                     threads: newThreads,
                     subjects,
@@ -314,7 +311,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             const payload: IMessagesEndpointResponsePayload = {
                 newMessages: [],
                 metadata: {
-                    userID,
                     lessonID,
                     threads: [],
                     subjects,
@@ -330,7 +326,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [threads[threads.length - 1][0]],
             metadata: {
-                userID,
                 lessonID,
                 threads,
                 subjects,
@@ -369,7 +364,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                 eliResponseType: 'SubjectIntroduction'
             }, newThreads[newThreads.length - 1][0]],
             metadata: {
-                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,
@@ -407,7 +401,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [newThreads[newThreads.length - 1][0]],
             metadata: {
-                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,
@@ -505,7 +498,6 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [newThreads[newThreads.length - 1][0]],
             metadata: {
-                userID,
                 lessonID,
                 threads: newThreads,
                 subjects,

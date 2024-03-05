@@ -50,8 +50,8 @@ async function getLessonState(lessonID: string, userID: string): Promise<ILesson
             knowledgePointChain: metadata.knowledgePointChain,
             subjects: metadata.subjects,
             currentKnowledgePointIndex: metadata.currentKnowledgePointIndex,
+            //convert threads from JSON to 2D array
             threads: metadata.threads as IMessage[][],
-            userID: lesson.userId,
             lessonID: lesson.id,
         }
         const lessonState: ILessonState = {

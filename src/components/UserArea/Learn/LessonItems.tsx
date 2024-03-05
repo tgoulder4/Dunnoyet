@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import NextAuth from 'next-auth/react'
 import getServerSession, { Session } from 'next-auth';
 import { authConfig } from '@/auth.config';
-import { auth } from '@/app/api/auth/[...nextauth]';
 import { getLessons } from '@/actions';
 import { spacing } from '@/lib/constants';
 import LessonItem from './LessonItem';
@@ -21,7 +20,7 @@ export default function LessonItems({ tutorialMode, lessons }: { tutorialMode: b
             {
                 lessons === null ? <> <LessonItem loading={true} /> <LessonItem loading={true} /><LessonItem loading={true} /></> : lessons.length > 0 ?
                     lessons.map((item) => {
-                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65db5ecd&is=65c8e9cd&hm=0b56bf7134387e07d78439435543eb0c57f5844c665c3d6db46c2bbdf22726e1&" key={item.id} lessonID={item.id} subject={item.subjects[item.subjects.length - 1] || item.messages?.[0].content as string || "Couldn't load title."} currentKnowledgeSummary={item.knowledgePointChain[item.knowledgePointChain.length - 1]?.pointInSolitude || "Couldn't load description."} />
+                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65db5ecd&is=65c8e9cd&hm=0b56bf7134387e07d78439435543eb0c57f5844c665c3d6db46c2bbdf22726e1&" key={item.id} lessonID={item.id} subject={'TOFIX' || item.messages?.[0].content as string || "Couldn't load title."} currentKnowledgeSummary={item.knowledgePointChain[item.knowledgePointChain.length - 1]?.pointInSolitude || "Couldn't load description."} />
                     }) : <LessonItem tutorialMode={tutorialMode} zeroLessons={true} />
             }
         </div>
