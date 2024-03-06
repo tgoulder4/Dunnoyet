@@ -1,4 +1,4 @@
-import { howRightIsTheUser, simplifyToKnowledgePoint } from './../instructionsForRetrievingTypeOfTheirMessage';
+import { howRightIsTheUser, simplifyToKnowledgePointInSolitude } from './../instructionsForRetrievingTypeOfTheirMessage';
 import { expect, jest, test } from '@jest/globals';
 import { IMessage } from '@/lib/validation/enforceTypes';
 import { getEmbedding } from '../../openai';
@@ -94,10 +94,10 @@ describe("Prompt tests", () => {
     it("CRIT:PASSING", () => { })
     test("simplifyToKnowlegePoint", async () => {
         //please test one at once to save on expenses
-        // const pointInSolitude = await simplifyToKnowledgePoint(getMessageHistory(1, 3));
+        // const pointInSolitude = await simplifyToKnowledgePointInSolitude(getMessageHistory(1, 3));
         // console.log("pointInSolitude: ", pointInSolitude)
         // expect(pointInSolitude).toBeTruthy()
-        // simplifyToKnowledgePoint(getMessageHistory(1, 3)).then((result) => { expect(result).toBeTruthy() })
+        // simplifyToKnowledgePointInSolitude(getMessageHistory(1, 3)).then((result) => { expect(result).toBeTruthy() })
     })
     it("CRIT: failing so feature challengeq is postponed", () => { })
     test("getIsQuestionResponseTrueOrFalse", async () => {

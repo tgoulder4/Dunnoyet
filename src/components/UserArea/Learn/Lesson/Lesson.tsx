@@ -54,7 +54,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
             <NeuralNetwork knowledgePoints={knowledgePointChain} />
         </div>
-        <ChatWithEli isOpen={true} type='Lesson' messages={messages} updateState={updateState} />
+        <ChatWithEli isOpen={true} type='Lesson' lessonState={lessonState} updateState={updateState} />
     </>
     )
 }

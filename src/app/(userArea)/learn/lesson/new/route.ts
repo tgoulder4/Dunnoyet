@@ -36,6 +36,16 @@ async function POST(req: NextRequest) {
             newMessages, metadata
         } = res;
         console.log("Response from getNextMessage: ", res)
+
+        //some responses could be a splitResponse, which is a model so we must create it. this produces the correct invocation of the prisma create method
+        const newMsgsForLessonState = newMessages.map(nm => {
+            if (nm.hasOwnProperty('splitResponse')) {
+                return { splitResponse: { create: { active: nm.splitResponse?.active, text: nm.splitResponse?.text } }, role: nm.role, }
+            }
+            else {
+                return { content: nm.content, role: nm.role }
+            }
+        })
         const lessAndState = await prisma.$transaction(async (tx) => {
             const lessonState = await tx.lessonState.create({
                 data: {
@@ -44,7 +54,7 @@ async function POST(req: NextRequest) {
                             content: newQuestion,
                             role: "user"
                         },
-                        ...newMessages]
+                        ...newMsgsForLessonState]
                     },
                     metadataId: "65dbe7799c9c2a30ecbe6100",
                     // metadata: 

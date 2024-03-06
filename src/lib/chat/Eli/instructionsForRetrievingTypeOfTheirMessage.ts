@@ -21,7 +21,7 @@ export const getTeachingResponse = (subject: string, rKs: IKnowledge[], messageH
 export const howRightIsTheUser = async (messageHistory: IMessage[], subject?: string,)
     : Promise<'FULLY' | 'PARTLY' | 'NOT' | null> => {
     try {
-        const prompt = subject ? 'We are teaching a student together about ' + subject + "." : '' + 'Given your knowledge and the chat history: "' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n" How right is the student in their latest response? respond either "FULLY" if theyre fully right, respond "PARTLY" if theyre partly right, and if theyre completely wrong, respond "NOT". if they dont say any anything that shows what they know, say NOT.'
+        const prompt = (subject ? 'We are teaching a student together about ' + subject + "." : '') + 'Given your knowledge and the chat history: "' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n" How right is the student in their latest response? respond either "FULLY" if theyre fully right, respond "PARTLY" if theyre partly right, and if theyre completely wrong, respond "NOT". if they dont say any anything that shows what they know already about that subject, say NOT. if their question is open and there isnt enough detail in it, return NOT.'
         console.log("HowRightIsTheUserCalled, prompt is " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{
@@ -75,10 +75,10 @@ export const getIsQuestion = async (subject: string, messageHistory: IMessage[])
 //         return null;
 //     }
 // }
-export const simplifyToKnowledgePoint = async (messageHistory: IMessage[], subject?: string): Promise<string | null | undefined> => {
+export const simplifyToKnowledgePointInSolitude = async (messageHistory: IMessage[], subject?: string): Promise<string | null | undefined> => {
     try {
-        const prompt = subject ? 'We are teaching a student together about ' + subject + '.' : '' + 'Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + m.content + "'" : "Student: '" + m.content + "'").join('\n') + '\n Simplify their knowledge behind their reply to about 10 words which references the topic of the conversation. It should only include information in their last reply, in exact terms, anything else you add must be to make the result more explicit, with the topic written first then the rest after. It mustnt be vague or general at all, say it with no room for confusion. Send one sentence only. If it is partly correct, only focus on the correct parts. It should be comprehensible on its own. If there is no extractable knowledge, say NULL.'
-
+        const prompt = (subject ? 'We are teaching a student together about ' + subject + '.' : '') + 'Given the chat history: ' + (messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + (m.content || m.splitResponse?.text) + "'" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify their knowledge behind their reply to 10 words. It should only include information in their last reply, in exact explicit terms. It mustnt be vague or general at all, say it with no room for confusion. Send one sentence only. If it is partly correct, only focus on the correct parts. It should be comprehensible on its own. If there is no extractable knowledge, say NULL.'
+        console.log("simplifyToKnowledgePointInSolitude called, prompt is: " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
@@ -87,8 +87,8 @@ export const simplifyToKnowledgePoint = async (messageHistory: IMessage[], subje
             model: "gpt-3.5-turbo"
         })
         const pointInSolitude = res.choices[0].message.content;
-        console.log("SimplifyToKnowledgePoint returned: " + pointInSolitude)
-        if (pointInSolitude == null) throw new Error("simplifyToKnowledgePoint completion returned null, the completion failed.")
+        console.log("simplifyToKnowledgePointInSolitude returned: " + pointInSolitude, " if this is 'NULL', they didn't have any knowledge to extract.")
+        if (pointInSolitude === null) throw new Error("simplifyToKnowledgePointInSolitude completion returned null, the completion failed.")
         if (pointInSolitude === "NULL") return null;
         return pointInSolitude as string;
     }
@@ -117,6 +117,7 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
     : Promise<{ splitResponses: IMessage[], subject?: string, subjectIntro?: string } | null> => {
     try {
         if (!rKs) throw new Error("rKs is null in getSplitResponses. Eli can't reply in terms of their knowledge without related knowledge points.");
+        console.log("Getting split responses in terms of passed related knowledge: ", rKs)
         const prompt = (
             'your name is Eli.' +
             (subject ? ' you’re teaching a student about ' + subject : "") +
@@ -129,7 +130,7 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
             ' sentences, and be kind. After answering "what comes to mind", kindly respond in terms of this.' +
             (askForSubject || askForSubjectIntro ? ' Put MAIN: around your reply. ' : '') +
             (askForSubject ? 'After your response, put "SUBJECT: " and then the subject of the conversation.' : '') +
-            (askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying the subject of the conversation changed to (that subject) as it is closest to their current knowledge.' : '') +
+            (askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying something like: as you know about (explicit relevant knowledge), the subject of the lesson changed to it, ill connect the gap between this and (their question).' : '') +
             (userIsWrong ? ' Their response is wrong. Please correct them and remember to reference their related knowledge points.' : '')
         );
         const res = await openai.chat.completions.create({
@@ -143,15 +144,17 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
         if (!fullReply) throw new Error("fullReply is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and fullReply is " + fullReply);
         //split splitResponses into paras by newline
         const splitResponses = fullReply.split('\n');
-        const retrievedSubject = res.choices[0].message.content?.match(/SUBJECT: ([^\n]+)/)?.[0];
+        const retrievedSubject = res.choices[0].message.content?.match(/(?<=SUBJECT: *\n?)[\s\S]*?(?=\nSUBJECTINTRO:)/g)?.[0];
         if (!retrievedSubject && askForSubject) throw new Error("retrievedSubject is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and the prompt was: " + prompt);
-        const subjectIntro = res.choices[0].message.content?.match(/SUBJECTINTRO: ([^\n]+)/)?.[0];
+        const subjectIntro = res.choices[0].message.content?.match(/(?<=SUBJECTINTRO:\n?)[\s\S]*/g)?.[0];
+        console.log("res text: \n" + res.choices[0].message.content)
         if (!subjectIntro && askForSubjectIntro) throw new Error("subjectIntro is null in getSplitResponses. The response was: " + res.choices[0].message.content + " and the prompt was: " + prompt);
         const srs: IMessage[] = splitResponses.map((sr, i) => ({
             splitResponse: { text: sr, active: i == 0 },
             role: 'eli' as 'user' | 'eli',
             eliResponseType: "General" as "General" | "WhatComesToMind" | "ChallengeQ",
         }));
+        console.log("getSplitResponses returned: " + srs)
         return { splitResponses: srs, subject: retrievedSubject, subjectIntro }
     } catch (e) {
         console.log(e);
@@ -164,7 +167,7 @@ export const simplifyToSubject = async (messageHistory: IMessage[]): Promise<str
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together. Given the chat history: ' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n') + '\n Simplify the subject of their reply to maximum 3 words which make sense on their own.'
+                content: 'We are teaching a student together. Given the chat history: ' + (messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify the subject of their reply to maximum 3 words which make sense on their own.'
             },],
             model: "gpt-3.5-turbo"
         })

@@ -24,6 +24,8 @@ export const colours = {
     blue: '#9BC9E2',
     accent: "#E4F2ED",
     destructive: "#f75a72",
+    error: "#f75a72",
+    success: "#4caf50",
     destructiveForeground: "#fcfcfc",
     border: "#e8e8ed",
     inputBorder: "#757575",

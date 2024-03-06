@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react'
 
-function Message({ children, style }: { children: ReactNode, style: React.CSSProperties }) {
+function Message({ children, style, className }: { children: ReactNode, style: React.CSSProperties, className?: string }) {
     return (
-        <div className='p-4 rounded-[10px]' style={style}>
+        <div className={`${className} p-[20px] rounded-[20px]`} style={style}>
             {children}
         </div>
     )

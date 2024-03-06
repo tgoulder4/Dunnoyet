@@ -55,7 +55,6 @@ model Lesson {
   ls                  lessonState      @relation("LessonToLessonState", fields: [stateId], references: [id])
   stateId             String           @unique @db.ObjectId
   beganAt             DateTime         @default(now())
-  endedAt             DateTime         @default(now())
   lessonStatus        String           @default("Active")
   user                User             @relation(fields: [userId], references: [id])
   userId              String           @db.ObjectId
@@ -78,7 +77,7 @@ model lessonState {
 model metadata {
   id                         String           @id @default(auto()) @map("_id") @db.ObjectId
   lessonState                lessonState?     @relation("LessonStateToMetadata")
-  threads                    Json[]           @db.Json
+  threads                    Json[]
   subjects                   String[]
   knowledgePointChain        knowledgePoint[] @relation("MetadataToKnowledgePoint")
   currentKnowledgePointIndex Int

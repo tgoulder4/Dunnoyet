@@ -35,7 +35,6 @@ export type ILesson = {
     messages?: IMessage[];
     beganAt: Date;
     lessonStatus: "Active" | "Completed";
-    endedAt: Date;
     knowledgePointChain: IKnowledge[];
 }
 /**

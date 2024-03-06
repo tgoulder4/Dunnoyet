@@ -1,6 +1,6 @@
 'use client'
 import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/learn/pineconeActions'
-import { IMessage } from '@/lib/validation/enforceTypes'
+import { ILessonState, IMessage } from '@/lib/validation/enforceTypes'
 import React, { ReactNode, createRef, use, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation'
 import { useSession } from 'next-auth/react'
@@ -17,13 +17,13 @@ type chatProps = {
     lessonID?: string,
     initialSubject?: string,
     updateState?: (formData: FormData) => Promise<void | null>,
-    messages?: IMessage[]
+    lessonState?: ILessonState,
     type: 'Tutorial' | 'Lesson' | 'NewQ'
 }
 function ChatWithEli({
     isOpen,
     setIsOpen,
-    lessonID, initialSubject, updateState, messages, type
+    lessonID, initialSubject, updateState, lessonState, type
 }: chatProps) {
     // const { data: session, update } = useSession();
     // if (!session) return <></>
@@ -32,10 +32,15 @@ function ChatWithEli({
     //     name,
     // } = session?.user!!;
     const { id, name } = { id: "65dbe7799c9c2a30ecbe6193", name: "" }
+
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [tutorialStage, setTutorialStage] = useState(-1);
-    const [subject, setSubject] = useState('New Question');
-    if (type == "Lesson" && !messages) throw new Error("No messages found for lesson chat")
+    const [subject, setSubject] = useState(lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1] || 'New Question');
+    const [responseFromserver, setResponseFromServer] = useState(null as null | {
+        type: 'error' | 'success',
+        message: string
+    });
+    if (type == "Lesson" && !lessonState) throw new Error("No lesson state found @ChatWithEli")
     // const Lesson: ILesson = {
     //     id: "",
     //     subjects: [""],
@@ -66,6 +71,7 @@ function ChatWithEli({
     //         confidence: 0
     //     }]
     // }
+
     const tutorialStages: { glyph: ReactNode, titleText: string, summaryText: string, action: ReactNode, actionOrLink: () => void | string }[] = [{
         glyph: <svg width="114" height="95" viewBox="0 0 114 95" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21.6559 78.9398C19.8399 77.9417 18.4325 76.6034 17.4337 74.9248C16.4349 73.2462 15.9355 71.3634 15.9355 69.2765V43.1447L2.86021 35.9312C1.86141 35.3868 1.13501 34.7063 0.681004 33.8897C0.227001 33.0731 0 32.1657 0 31.1676C0 30.1695 0.227001 29.2622 0.681004 28.4456C1.13501 27.6289 1.86141 26.9484 2.86021 26.404L48.8961 1.36103C49.7133 0.907354 50.5532 0.567096 51.4158 0.340258C52.2784 0.113419 53.1637 0 54.0717 0C54.9797 0 55.865 0.113419 56.7276 0.340258C57.5902 0.567096 58.4301 0.907354 59.2473 1.36103L111.14 29.6705C112.048 30.1242 112.751 30.782 113.251 31.644C113.75 32.506 114 33.436 114 34.4341V69.2765C114 70.819 113.478 72.112 112.434 73.1554C111.389 74.1989 110.096 74.7206 108.552 74.7206C107.008 74.7206 105.714 74.1989 104.67 73.1554C103.626 72.112 103.104 70.819 103.104 69.2765V37.1562L92.2079 43.1447V69.2765C92.2079 71.3634 91.7085 73.2462 90.7097 74.9248C89.7109 76.6034 88.3035 77.9417 86.4874 78.9398L59.2473 93.639C58.4301 94.0926 57.5902 94.4329 56.7276 94.6597C55.865 94.8866 54.9797 95 54.0717 95C53.1637 95 52.2784 94.8866 51.4158 94.6597C50.5532 94.4329 49.7133 94.0926 48.8961 93.639L21.6559 78.9398ZM54.0717 51.3109L91.3907 31.1676L54.0717 11.0244L16.7527 31.1676L54.0717 51.3109ZM54.0717 84.1117L81.3118 69.4126V48.861L59.3835 60.9742C58.5663 61.4279 57.7037 61.7681 56.7957 61.995C55.8877 62.2218 54.9797 62.3352 54.0717 62.3352C53.1637 62.3352 52.2557 62.2218 51.3477 61.995C50.4397 61.7681 49.5771 61.4279 48.7599 60.9742L26.8315 48.861V69.4126L54.0717 84.1117Z" fill="white" />
@@ -143,6 +149,11 @@ function ChatWithEli({
             body: JSON.stringify({ newQuestion })
         });
         const response = await res.json();
+        if (response.error) {
+            console.error("Error from /lesson/new: ", response.error)
+            setResponseFromServer({ type: 'error', message: response.error })
+            return;
+        }
         console.log("Response from /lesson/new: ")
         console.dir(response, { depth: null });
         if (!response.message.lesson || !response.message.state) throw new Error("Either lesson (given by ID) or state (given by ID) wasn't given in response message prop from /lesson/new")
@@ -156,8 +167,8 @@ function ChatWithEli({
             {
                 isOpen ? <>
                     <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: type !== 'Lesson' ? changeColour(colours.primary).darken(8).toString() : colours.complementary_lightest, paddingTop: 2 * spacing.gaps.largest }}>
-                        {type == "NewQ" && <h1>New question screen <Input id="newQuestion" name="newQuestion" className='h-14 w-full' placeholder="Ask a question..." /></h1>}
-                        {type == "Lesson" && <Conversation messages={messages!} />}
+                        {type == "NewQ" && <h1>New question screen <Input responseFromserver={responseFromserver} id="newQuestion" name="newQuestion" className='h-14 w-full' placeholder="Ask a question..." /></h1>}
+                        {type == "Lesson" && <Conversation messages={lessonState?.messages!} />}
 
                         {
                             type == "Tutorial" &&

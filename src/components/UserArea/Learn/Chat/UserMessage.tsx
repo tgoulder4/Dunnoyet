@@ -1,12 +1,14 @@
 import React from 'react'
 import Message from './Message'
-import { changeColour, colours } from '@/lib/constants'
+import { changeColour, colours, spacing } from '@/lib/constants'
 
 function UserMessage({ text }: { text: string }) {
     return (
-        <Message style={{ borderBottomRightRadius: 0, backgroundColor: changeColour(colours.primary).darken(8).toString() }}>
-            <p>{text}</p>
-        </Message>
+        <div className="w-full flex items-end justify-end">
+            <Message className='w-full md:w-2/3' style={{ marginBottom: spacing.gaps.groupedElement, borderBottomRightRadius: 0, backgroundColor: changeColour(colours.primary).darken(8).toString() }}>
+                <p className='text-white'>{text}</p>
+            </Message>
+        </div>
     )
 }
 
