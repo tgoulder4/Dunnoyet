@@ -12,6 +12,7 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 
 export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
     const [lessonState, setLessonState] = useState<ILessonState>(initialLessonState);
+    console.log("LessonState: ", lessonState)
     const currentSubject = initialLessonState.metadata.subjects[initialLessonState.metadata.subjects.length - 1];
     const {
         messages, metadata
@@ -24,25 +25,37 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
     // const knowledgePointsWithTwoDCoOrds: IKnowledge[] = knowledgePointChain.map((kp, index) => {
     //     return { ...kp, TwoDCoOrdinates: twoDCoOrds[index] };
     // })
-    async function updateState(formData: FormData) {
-        //update state
-        console.log("UpdateState called with formData: ", formData)
-        const theirReply = formData.get("userInput") as string;
-        if (!theirReply) {
-            console.error("No user input found in form data");
-            return null;
-        };
-        const payload: IMessagesEndpointSendPayload = {
-            messages: [...messages, { content: theirReply, role: "user" }],
-            metadata
-        }
-        const nextState: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
-        let error = "";
-        if (typeof nextState === "string") { error = nextState } else {
-            console.log("nextState: ", nextState)
-            const { newMessages, metadata } = nextState;
-            setLessonState({ messages: [...lessonState.messages, ...newMessages], metadata });
-        };
+    async function updateState(formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload) {
+        try {
+            console.log("UpdateState called")
+            console.log("UpdateState called with formData: ", formData)
+            if (!formData && !explicitState) throw new Error("No form data was provided to updateState");
+            const theirReply = formData!.get("userInput") as string;
+            if (!theirReply) {
+                console.error("No user input found in form data");
+                return null;
+            };
+            if (explicitState) {
+                console.log("Setting lesson state to explicitState: ", explicitState)
+                setLessonState({
+                    messages: [...messages, { content: theirReply, role: "user" }, ...explicitState.newMessages],
+                    metadata: explicitState.metadata
+                });
+                return;
+            }
+            //update state
+            const payload: IMessagesEndpointSendPayload = {
+                messages: [...messages, { content: theirReply, role: "user" }],
+                metadata
+            }
+            const nextState: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
+            let error = "";
+            if (typeof nextState === "string") { error = nextState } else {
+                console.log("nextState: ", nextState)
+                const { newMessages, metadata } = nextState;
+                setLessonState({ messages: [...lessonState.messages, ...newMessages], metadata });
+            };
+        } catch (e) { console.error(e) }
 
     }
     console.log("knowledgePointChain (passing to neural network): ", knowledgePointChain)
@@ -50,11 +63,11 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
     console.dir(knowledgePointChain, { depth: null })
     return (<>
         <MainAreaNavbar style='lesson' />
-        <div className='h-full flex flex-col' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
+        <div className='h-full flex flex-col bg-white' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
             <NeuralNetwork knowledgePoints={knowledgePointChain} />
         </div>
-        <ChatWithEli isOpen={true} type='Lesson' lessonState={lessonState} updateState={updateState} />
+        <ChatWithEli isOpen={true} type={lessonState.messages.length > 0 ? 'Lesson' : 'NewQ'} lessonState={lessonState} updateState={updateState} />
     </>
     )
 }

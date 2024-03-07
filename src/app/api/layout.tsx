@@ -1,3 +1,4 @@
+'use client'
 import "../globals.css";
 import { DunnoyetLogo, colours, sizing, spacing } from '@/lib/constants'
 import React from 'react'

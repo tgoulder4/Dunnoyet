@@ -6,6 +6,7 @@ import EliMessage from './EliMsg'
 
 function Conversation({ messages }: { messages: IMessage[] }) {
     if (!messages) throw new Error("No messages passed to Conversation")
+    console.log("MSGS PASSED TO CONVERSATION: ", messages)
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     return (
         <div className='px-[28px] w-full'>{

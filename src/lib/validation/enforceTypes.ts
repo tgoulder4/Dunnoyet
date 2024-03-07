@@ -21,6 +21,13 @@ export type IMetadata = {
     currentKnowledgePointIndex: number;
     lessonState?: ILessonState;
 }
+export type INode = {
+    knowledgePointID: string,
+    confidence: number,
+    pointInSolitude: string,
+    pointInChain: string,
+    TwoDCoOrdinates: number[],
+}
 export type IMessage = {
     content?: string;
     splitResponse?: ISplitResponse;

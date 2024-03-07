@@ -34,6 +34,15 @@ export const colours = {
     black: "#131313",
     interrogativeMessage: '#0A1B1E',
     systemEventMessage: '#3F2962',
+    lessonNodes: {
+        //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint aka force correct their knowledge to a position
+        confidence5: "#315D35",
+        confidence4: "#8F8F8F",
+        confidence3: "#8B6326",
+        confidence2: "#D2D2D2",
+        confidence1: '#4D1B8C',
+        background: '#F6F6F6',
+    },
     light: {
         textColour: "#131313",
         backgroundLight: "#f4f4f4"

@@ -31,6 +31,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         //if they're at least partly right, add their knowledge to chain
         console.log("They were at least partly right - getting embedding of their knowledge point in solitude...")
         const embedding = await getEmbedding(Kp);
+        const twoDCoOrds = getTwoDCoOrdinatesOfEmbeddings([embedding]);
         K = {
             confidence: 5,
             lessonId: lessonID,
@@ -38,7 +39,7 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
             pointInChain: '',
             source: 'reinforced',
             vectorEmbedding: embedding,
-            TwoDCoOrdinates: []
+            TwoDCoOrdinates: twoDCoOrds[0]
         }
         console.log("inserting knowledge point into knowledge chain at index: ", kpChainI)
         if (firstPotentialKnowledgePoint) incrementKpChainI(0)
@@ -172,7 +173,7 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         console.log("threads is now", threads)
     }
     if (!subjects) throw new Error("subjects is falsy, can't simplify split responses to knowlege points without subjects. @getNextMessage");
-    const newKs = [];
+    let newKs = [];
     //now, add all future messages' potential knowledge points to the knowledge chain
     for (let i = 0; i < splitResponses.length; i++) {
         console.log(`simplifying split response ${i} to knowledge point in solitude...`);
@@ -187,25 +188,27 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         }
 
         // Get the vector embedding asynchronously
-        const vectorEmbedding = await getEmbedding(srPointInSol);
-
+        console.log("getting embedding of srPointInSol: ", srPointInSol)
+        const embedding = await getEmbedding(srPointInSol);
+        const twoDCoOrds = getTwoDCoOrdinatesOfEmbeddings([embedding]);
         // Return the new knowledge point object
+        console.log("Pushing new knowledge point to knowledge chain...")
         newKs.push({
             confidence: i === 0 ? 4 : 2, // 5=wellKnown, 4=currentlyTeaching, 3=failedTest, 2=target, 1=makeNewKnowledgeAnchorPoint
             lessonId: lessonID,
             pointInSolitude: srPointInSol as string,
             pointInChain: '',
             source: 'offered' as 'offered' | 'reinforced',
-            TwoDCoOrdinates: [],
-            vectorEmbedding: vectorEmbedding
+            TwoDCoOrdinates: twoDCoOrds[0],
+            vectorEmbedding: embedding
         });
+        if (i == splitResponses.length - 1) console.log("1. FINISHED PUSHING NEW KNOWLEDGE POINTS TO KNOWLEDGE CHAIN. newKs IS NOW: ", newKs)
     }
-
-    const KpsToInsertBeforeTarget = newKs;
-    const newKnowledgePointChain = knowledgePointChain.splice(indexToInsertNewKnowlegePoint, 0, ...KpsToInsertBeforeTarget);
+    console.log("2. MOVING ON FROM PUSHING NEW KNOWLEDGE POINTS TO KNOWLEDGE CHAIN")
+    knowledgePointChain.splice(indexToInsertNewKnowlegePoint, 0, ...newKs);
     return {
         pushedSplitResponses: splitResponses,
-        newKnowledgePointChain,
+        newKnowledgePointChain: knowledgePointChain,
         newThreads: threads,
         subjects,
         subjectIntro,

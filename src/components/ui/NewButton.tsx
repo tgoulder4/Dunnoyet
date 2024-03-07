@@ -56,7 +56,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
         const Comp = Slot;
         return (
             // <button>
-            <Comp ref={ref} className='relative'>
+            <Comp ref={ref} className='relative' title={tooltip}>
                 {
                     typeof actionOrLink === 'string' ?
                         <Link className={`${className} ${!noAnimation ? "w-fit hover:scale-105 transition-transform" : ""} 

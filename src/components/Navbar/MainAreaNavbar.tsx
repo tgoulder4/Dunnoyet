@@ -29,8 +29,8 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' | 'authOrAdmin'
                         <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? changeColour(theme.backgroundColour).darken(8).toString() : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
                         <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>
                             {
-                                style == 'lesson' ? <NewButton noAnimation className='text-white' buttonVariant="ghost" actionOrLink={getURL()}>In Lesson:
-                                    <LessonTimer />
+                                style == 'lesson' ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
+                                    In Lesson: <LessonTimer />
                                 </NewButton> :
                                     <>
                                         <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
