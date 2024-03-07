@@ -11,23 +11,25 @@ import { authConfig } from '@/auth.config';
 import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
 //handles rerouting of knowledge chains
 async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: string, knowledgePointChain: Array<IKnowledge[] | IKnowledge>, messages: IMessage[], incrementKpChainI: (setTovalue?: number) => void, kpChainI: number, firstPotentialKnowledgePoint?: boolean): Promise<{ wasRight: boolean, knowledgePointAdded?: IKnowledge } | string> {
-    const howRight = await howRightIsTheUser(messages);
-    console.log("@getNextMessage @getHowRightTheUserIsAnd... - How right the user is: ", howRight)
     let K: IKnowledge | undefined = undefined;
+    console.log("@getHowRightTheUserIsAnd... calling simplifyToKnowledgePointInSolitude")
+    const Kp = await simplifyToKnowledgePointInSolitude(messages.slice(-5));
+    console.log("last message in last 5 messages: ", messages.slice(-5), " was simplified to: ", Kp)
+    if (Kp === undefined) {
+        console.log("Kp is undefined @getHowRightTheUserIsAnd... - the simplified knowledge point is undefined meaning an error occurred.")
+        return 'There was an error @simplifyKnowledgePoint (kp is undefined). Check the server logs for more info.';
+    }
+
+    if (Kp === null) {
+        console.log("Not enough extractable knowledge from their input. @getHowRightTheUserIsAnd...")
+        return 'I could not extract any knowledge from your input. Please explain what you know and how you know it.';
+    }
+    const howRight = await howRightIsTheUser(messages);
+    if (howRight == null) throw new Error("howRight is null @getHowRightTheUserIsAnd...");
+    console.log("@getNextMessage @getHowRightTheUserIsAnd... - How right the user is: ", howRight)
     if (howRight !== 'NOT') {
         //if they're at least partly right, add their knowledge to chain
-        console.log("@getHowRightTheUserIsAnd... - they were right, calling simplifyToKnowledgePointInSolitude")
-        const Kp = await simplifyToKnowledgePointInSolitude(messages);
-        if (Kp === undefined) {
-            console.log("Kp is undefined @getHowRightTheUserIsAnd... - the simplified knowledge point is undefined meaning an error occurred.")
-            return 'There was an error @simplifyKnowledgePoint (kp is undefined). Check the server logs for more info.';
-        }
-
-        if (Kp === null) {
-            console.log("Not enough extractable knowledge from their input. @getHowRightTheUserIsAnd...")
-            return 'I could not extract any knowledge from your input. Please explain what you know and how you know it.';
-        }
-        console.log("getting embedding of their knowledge point in solitude...")
+        console.log("They were at least partly right - getting embedding of their knowledge point in solitude...")
         const embedding = await getEmbedding(Kp);
         K = {
             confidence: 5,
@@ -145,7 +147,8 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
 } | string> {
     console.log("getting split responses...")
     const gptReply = await getSplitResponses(messages, rKs, undefined, askForSubject, askForSubjectIntro, wasRight ? !wasRight : undefined, splitResponsesLimit);
-    console.log("getSplitResponses returned: ", gptReply)
+    console.log("getSplitResponses returned: ")
+    console.dir(gptReply, { depth: null })
     if (!gptReply) throw new Error("gptReply is null in getNextMessage");
     const { splitResponses, subject, subjectIntro } = gptReply;
     if (!subject) throw new Error("gptReply subject is null in getNextMessage @getSplitResponsesAndAddToKnowledgePointChainAndThreads.");
@@ -155,9 +158,8 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
     };
     console.log("@getSplitResponsesAndAddToK... - calling simplifyToKnowledgePointInSolitude")
     const pointInSolitude = await simplifyToKnowledgePointInSolitude(messages, subjects[subjects.length - 1]);
-    console.log("Their input was simplified to kpInSolitude: ", pointInSolitude)
+    console.log("@getSplitResponsesAndAddToKnowledgePoin... Their input was simplified to kpInSolitude: ", pointInSolitude)
     if (pointInSolitude === undefined) throw new Error("pointInSolitude response from GPT is undefined @getNextMessage");
-
     if (pointInSolitude === null) return errorCodes.notEnoughExtractableKnowledge;
     subjects.push(subject);
     console.log("subjects is now: ", subjects, " after adding: ", subject)
@@ -170,23 +172,36 @@ async function getSplitResponsesAndAddToKnowledgePointChainAndThreads(lessonID: 
         console.log("threads is now", threads)
     }
     if (!subjects) throw new Error("subjects is falsy, can't simplify split responses to knowlege points without subjects. @getNextMessage");
-    //mirror in knowledge chain
-    const newKs = await Promise.all(splitResponses.map(async (sr, i) => {
-        //if it's a new question 
-        const srPointInSol = await simplifyToKnowledgePointInSolitude([...messages, ...splitResponses.slice(i + 1)], subjects![subjects!.length - 1]);
-        console.log("This splitResponse was simplified to kpInSolitude: ", pointInSolitude, " ")
-        if (srPointInSol === undefined || srPointInSol === null) throw new Error("pointInSolitude response from GPT is undefined or null, generated srs should always yield a knowlege point. @getNextMessage");
-        return {
-            confidence: (i == 0) ? 4 : 2, //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
+    const newKs = [];
+    //now, add all future messages' potential knowledge points to the knowledge chain
+    for (let i = 0; i < splitResponses.length; i++) {
+        console.log(`simplifying split response ${i} to knowledge point in solitude...`);
+        const sr = splitResponses[i];
+        // Simplify to Knowledge Point in Solitude
+        const srPointInSol = await simplifyToKnowledgePointInSolitude([sr], subjects![subjects!.length - 1]);
+        console.log(`The splitResponse ${sr.splitResponse?.text} was simplified to kpInSolitude:`, srPointInSol);
+
+        // Check if srPointInSol is undefined or null
+        if (srPointInSol === undefined || srPointInSol === null) {
+            throw new Error("sr pointInSolitude response is undefined or null, generated srs should always yield a knowledge point. @getNextMessage");
+        }
+
+        // Get the vector embedding asynchronously
+        const vectorEmbedding = await getEmbedding(srPointInSol);
+
+        // Return the new knowledge point object
+        newKs.push({
+            confidence: i === 0 ? 4 : 2, // 5=wellKnown, 4=currentlyTeaching, 3=failedTest, 2=target, 1=makeNewKnowledgeAnchorPoint
             lessonId: lessonID,
             pointInSolitude: srPointInSol as string,
             pointInChain: '',
             source: 'offered' as 'offered' | 'reinforced',
             TwoDCoOrdinates: [],
-            vectorEmbedding: await getEmbedding(srPointInSol)
-        }
-    }));
-    const KpsToInsertBeforeTarget = await newKs;
+            vectorEmbedding: vectorEmbedding
+        });
+    }
+
+    const KpsToInsertBeforeTarget = newKs;
     const newKnowledgePointChain = knowledgePointChain.splice(indexToInsertNewKnowlegePoint, 0, ...KpsToInsertBeforeTarget);
     return {
         pushedSplitResponses: splitResponses,
@@ -230,7 +245,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         //they could have attached knowledge to this msg
         console.log("getting how right the user is and if right add to knowledge chain")
         const howRightRes = await getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID, knowledgePointChain, messages, incrementCurrentKnowledgePointIndex, indexToInsertNewKnowlegePoint);
-
+        console.log("howRightRes: ", howRightRes)
         if (typeof howRightRes == 'string') {
             return howRightRes;
         }
@@ -279,7 +294,8 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
                 }
             }
-            console.log("payload:", payload);
+            console.log("payload:")
+            console.dir(payload, { depth: null })
             return payload;
         } else {
             //use rks to form splitresponses and add to threads & knowledge chain
@@ -305,7 +321,8 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                     currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
                 }
             }
-            console.log("payload:", payload);
+            console.log("payload:");
+            console.dir(payload, { depth: null })
             return payload;
         }
     }

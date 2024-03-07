@@ -6,6 +6,7 @@ import { getEmbedding } from "@/lib/chat/openai";
 import { redirect } from "next/navigation";
 import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
 import { getNextMessage } from '@/lib/chat/Eli/eli';
+import { randomBytes } from 'crypto';
 
 async function POST(req: NextRequest) {
     //create a new lesson, get the lessonID from that lesson then redirect to /learn/lesson/[lessonID]
@@ -35,48 +36,29 @@ async function POST(req: NextRequest) {
         const {
             newMessages, metadata
         } = res;
-        console.log("Response from getNextMessage: ", res)
 
         //some responses could be a splitResponse, which is a model so we must create it. this produces the correct invocation of the prisma create method
-        const newMsgsForLessonState = newMessages.map(nm => {
-            if (nm.hasOwnProperty('splitResponse')) {
-                return { splitResponse: { create: { active: nm.splitResponse?.active, text: nm.splitResponse?.text } }, role: nm.role, }
-            }
-            else {
-                return { content: nm.content, role: nm.role }
-            }
-        })
+        const firstSrMsg = newMessages.filter(nm => nm.splitResponse)[0];
+        if (!firstSrMsg || !firstSrMsg.splitResponse) return NextResponse.json({ error: "Couldn't add the firstSrMsg to lessonState as it was falsy." }, { status: 500 });
         const lessAndState = await prisma.$transaction(async (tx) => {
+            const createdSplitResponse = await tx.splitResponse.create({
+                data: {
+                    id: randomBytes(12).toString('hex'),
+                    text: firstSrMsg!.splitResponse!.text,
+                    active: firstSrMsg!.splitResponse!.active
+                }
+            });
+
             const lessonState = await tx.lessonState.create({
                 data: {
                     messages: {
-                        create: [{
+                        create: {
                             content: newQuestion,
+                            //generate a 12 byte ID for the message
                             role: "user"
                         },
-                        ...newMsgsForLessonState]
                     },
-                    metadataId: "65dbe7799c9c2a30ecbe6100",
-                    // metadata: 
-                    // {
-                    //     create: {
-                    //         knowledgePointChain: {
-                    //             create: {
-                    //                 source: "offered",
-                    //                 userId: userId,
-                    //                 lessonId: "65dbe7799c9c2a30ecbe6193",
-                    //                 pointInSolitude: newQuestion,
-                    //                 pointInChain: newQuestion,
-                    //                 TwoDCoOrdinates: [],
-                    //                 vectorEmbedding: em,
-                    //                 confidence: 5
-                    //             }
-                    //         },
-                    //         subjects: [],
-                    //         currentKnowledgePointIndex: 0,
-                    //         threads: [],
-                    //     }
-                    // }
+                    metadataId: "65dbe7799c9c2a30ecbe6100", //will be overwritten with a real metadata ID in a few lines
                 }
             });
             console.log("TEMP: lessonState created: ", lessonState);

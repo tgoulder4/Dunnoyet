@@ -20,7 +20,7 @@ export default function LessonItems({ tutorialMode, lessons }: { tutorialMode: b
             {
                 lessons === null ? <> <LessonItem loading={true} /> <LessonItem loading={true} /><LessonItem loading={true} /></> : lessons.length > 0 ?
                     lessons.map((item) => {
-                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65db5ecd&is=65c8e9cd&hm=0b56bf7134387e07d78439435543eb0c57f5844c665c3d6db46c2bbdf22726e1&" key={item.id} lessonID={item.id} subject={'TOFIX' || item.messages?.[0].content as string || "Couldn't load title."} currentKnowledgeSummary={item.knowledgePointChain[item.knowledgePointChain.length - 1]?.pointInSolitude || "Couldn't load description."} />
+                        return <LessonItem imageURL="https://cdn.discordapp.com/attachments/917525824956158012/1206262827254546452/image.png?ex=65f70e4d&is=65e4994d&hm=b5ed7bc6840ebdb6be4af51302a2c31dd640e223a8b73e9ac8aeaa39c083a507&" key={item.id} lessonID={item.id} subject={'TOFIX' || item.messages?.[0].content as string || "Couldn't load title."} currentKnowledgeSummary={item.knowledgePointChain[item.knowledgePointChain.length - 1]?.pointInSolitude || "Couldn't load description."} />
                     }) : <LessonItem tutorialMode={tutorialMode} zeroLessons={true} />
             }
         </div>
