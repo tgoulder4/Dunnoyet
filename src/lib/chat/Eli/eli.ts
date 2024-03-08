@@ -56,6 +56,21 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
         wasRight: false,
     };
 }
+export async function getAllReinforcedKnowledgePoints(userID: string): Promise<IKnowledge[] | null> {
+    //get every reinforced knowledge point from mongo
+    try {
+        const allReinforcedKPs = await prisma.knowledgePoint.findMany({
+            where: {
+                source: 'reinforced',
+                userId: userID
+            }
+        })
+        return allReinforcedKPs;
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
 export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: string): Promise<IKnowledge[] | null> {
     try {
         const vK = await getEmbedding(KpInSolitude);

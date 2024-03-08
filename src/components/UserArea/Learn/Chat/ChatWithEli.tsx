@@ -122,7 +122,7 @@ function ChatWithEli({
         </svg>
         ,
         titleText: "Learn at Lightspeed",
-        summaryText: "You'll learn faster than ever before by visualizing your knowledge, creating links between concepts.",
+        summaryText: "You'll learn faster than ever before by visualizing your knowledge and creating links between concepts.",
         action: <></>,
         actionOrLink: () => {
             console.log("End of tutorial, redirecting to /learn/lesson/new");
@@ -435,7 +435,7 @@ function ChatWithEli({
                         {_type == "NewQ" && <>
                             <div className="w-full px-8 pt-9 flex items-center justify-center">
                                 <Message className='w-full h-48 ' style={{ marginBottom: spacing.gaps.groupedElement, borderBottomRightRadius: 0, backgroundColor: changeColour(colours.primary).darken(2).toString() }}>
-                                    <textarea ref={textAreaRef} placeholder='Ask a question...' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem', fontWeight: 600 }} id="userInput" name="userInput" className='resize-none text-start bg-transparent active:border-transparent border-opacity-5 border-black !placeholder-[#0F291B] text-white flex w-full rounded-md border-2 border-input px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50'></textarea>
+                                    <textarea ref={textAreaRef} placeholder='Ask a question...' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem', fontWeight: 600 }} id="userInput" name="userInput" className='resize-none text-start bg-transparent active:border-input focus:border-4 focus:border-input  border-transparent !placeholder-[#0F291B] text-white flex w-full rounded-md border-2 px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50'></textarea>
                                 </Message>
                             </div>
                         </>}

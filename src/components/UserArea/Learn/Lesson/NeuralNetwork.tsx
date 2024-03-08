@@ -1,21 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
 import { IKnowledge } from '@/lib/validation/enforceTypes'
 import { getEmbedding } from '@/lib/chat/openai'
 import { getTwoDCoOrdinatesOfEmbeddings } from './network'
+import { getAllReinforcedKnowledgePoints, getRelatedKnowledgePoints } from '@/lib/chat/Eli/eli'
+import { useSession } from 'next-auth/react'
 
 function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     //for each kp to above fn
-
+    const sess = useSession().data!.user!;
+    const {
+        id: userId,
+    } = sess;
     console.log("[neuralNetwork] knowledgePoints: ", knowledgePoints)
     console.log("rendering NeuralNetwork with knowledgePoints: ", knowledgePoints)
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
-    const offset = useRef({ x: 0, y: 0 });
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [scale, setScale] = useState(1); // Initial zoom scale
-    const drawBackground = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
-        //draw loads of small dots of colour complementary
+    const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
+    const [boundaries, setBoundaries] = useState(null as null | { minX: number, maxX: number, minY: number, maxY: number });
+    // Function to calculate boundaries
+    const calculateBoundaries = (points: IKnowledge[]) => {
+        const xValues = points.map(point => point.TwoDCoOrdinates[0]);
+        const yValues = points.map(point => point.TwoDCoOrdinates[1]);
+        const minX = Math.min(...xValues);
+        const maxX = Math.max(...xValues);
+        const minY = Math.min(...yValues);
+        const maxY = Math.max(...yValues);
+        return { minX, maxX, minY, maxY };
+    };
+    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
         const width = ctx.canvas.width;
         const height = ctx.canvas.height;
         const dotSize = 4;
@@ -28,10 +46,18 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.fill();
             }
         }
-    }
-    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        drawBackground(ctx, offsetX, offsetY);
+        //DRAW PAST KNOWLEDGE POINTS
+        if (allKnowledgePoints) {
+            allKnowledgePoints.forEach((point, i) => {
+                ctx.beginPath();
+                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0] + offsetX, allKnowledgePoints[i].TwoDCoOrdinates[1] + offsetY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        //DRAW THE KNOWLDGE POINTS FROM CHAIN
         knowledgePoints.forEach((point, i) => {
             ctx.beginPath();
             ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0] + offsetX, knowledgePoints[i].TwoDCoOrdinates[1] + offsetY, 5, 0, 2 * Math.PI);
@@ -67,7 +93,15 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             ctx.closePath();
 
         });
-    };
+    };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
+    useEffect(() => {
+        async function main() {
+            const allKp = await getAllReinforcedKnowledgePoints(userId!);
+            console.log("Setting allKnowledgePoints to: ", allKp)
+            setAllKnowledgePoints(allKp);
+        }
+        main()
+    }, [])
     useEffect(() => {
         console.log("useEffect called")
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -80,8 +114,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.height = rect.height * dpr;
 
         // offset values to move the canvas around
-        let offsetX = offset.current.x;
-        let offsetY = offset.current.y;
+        let offsetX = offset.x;
+        let offsetY = offset.y;
 
         const onMouseDown = (e: MouseEvent) => {
             drag.current.isDragging = true;
@@ -98,8 +132,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
 
         const onMouseUp = () => {
             drag.current.isDragging = false;
-            offset.current.x = offsetX;
-            offset.current.y = offsetY;
+            setOffset({ x: offsetX, y: offsetY });
         };
         const onWheel = (e: WheelEvent) => {
             e.preventDefault(); // Prevent the page from scrolling
@@ -112,7 +145,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
 
-        draw(ctx); // Initial draw
+        draw(ctx, offset.x, offset.y); // Initial draw
 
         // Clean up to prevent memory leaks
         return () => {
@@ -121,7 +154,19 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [knowledgePoints, scale]);
+    }, [offset, scale, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
+    const adjustView = (ctx: CanvasRenderingContext2D, offsetX: number, offsetY: number) => {
+        const width = ctx.canvas.width;
+        const height = ctx.canvas.height;
+        const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
+        const adjustedScale = Math.min(width / (maxX - minX), height / (maxY - minY));
+    }
+
+    useEffect(() => {
+        if (knowledgePoints.length > 0) {
+            // 
+        }
+    }, [knowledgePoints.length]); // Dependency on the length of knowledgePoints
     return (
         <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
             <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
