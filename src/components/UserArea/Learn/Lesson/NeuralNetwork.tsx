@@ -18,6 +18,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
+    console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scale = useRef(1);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
@@ -30,10 +31,26 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const maxY = Math.max(...yValues);
         return { minX, maxX, minY, maxY };
     };
+    const adjustView = (ctx: CanvasRenderingContext2D, offsetX: number, offsetY: number) => {
+        const width = ctx.canvas.width;
+        const height = ctx.canvas.height;
+        const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
+        const adjustedScale = Math.min(width / (maxX - minX), height / (maxY - minY));
+        const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+        return { adjustedScale, center };
+    }
     const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0, scale = 1) => {
-        // Reset the transformation matrix to default before clearing
-        // ctx.setTransform(1, 0, 0, 1, 0, 0); // Resets to the default state
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clears everything
+
+        // Store the current transformation matrix
+        ctx.save();
+
+
+        // Use the identity matrix while clearing the canvas
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        // Restore the transform
+        ctx.restore();
 
         // Reapply the transformations needed for your drawing
         // ctx.translate(offset.current.x, offset.current.y);
@@ -122,42 +139,49 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         let offsetX = offset.current.x;
         let offsetY = offset.current.y;
         const onMouseDown = (e: MouseEvent) => {
+            console.log("Offset: ", offset.current.x, offset.current.y)
             drag.current.isDragging = true;
-            drag.current.startX = e.clientX - offsetX;
-            drag.current.startY = e.clientY - offsetY;
+            // Store the initial click position relative to the viewport
+            drag.current.startX = e.clientX;
+            drag.current.startY = e.clientY;
         };
 
         const onMouseMove = (e: MouseEvent) => {
             if (!drag.current.isDragging) return;
 
-            const newOffsetX = e.clientX - drag.current.startX;
-            const newOffsetY = e.clientY - drag.current.startY;
+            // Calculate the delta between the current mouse position and the initial click position
+            const dx = e.clientX - drag.current.startX;
+            const dy = e.clientY - drag.current.startY;
 
-            // Here, you can adjust the limits based on your requirements.
-            // For example, to prevent dragging the canvas too far from its original position:
+            // Update the drag start position to the current position
+            drag.current.startX = e.clientX;
+            drag.current.startY = e.clientY;
+
+            // Calculate potential new offsets by adding deltas
+            const potentialOffsetX = offset.current.x + dx;
+            const potentialOffsetY = offset.current.y + dy;
+
+            // Define maximum and minimum offsets
             const maxOffset = 50;
             const minOffset = -50; // Assuming you also want to limit dragging in the opposite direction
 
-            // Applying limits
-            const limitedOffsetX = Math.min(Math.max(newOffsetX, minOffset), maxOffset);
-            const limitedOffsetY = Math.min(Math.max(newOffsetY, minOffset), maxOffset);
-
-            // Update offsets within the allowed range
-            offset.current.x = limitedOffsetX;
-            offset.current.y = limitedOffsetY;
+            // Apply limits to the new offsets
+            offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
+            offset.current.y = Math.min(Math.max(potentialOffsetY, minOffset), maxOffset);
 
             draw(ctx, offset.current.x, offset.current.y, scale.current);
         };
 
         const onMouseUp = () => {
             drag.current.isDragging = false;
-
+            console.log("Offset: ", offset.current.x, offset.current.y)
             // setOffset({ x: offsetX, y: offsetY });
         };
         const onWheel = (e: WheelEvent) => {
-            e.preventDefault(); // Prevent the page from scrolling
+            e.preventDefault();
             const zoomFactor = 0.1;
-            scale.current = e.deltaY < 0 ? scale.current * (1 + zoomFactor) : scale.current * (1 - zoomFactor);
+            const direction = e.deltaY < 0 ? 1 : -1;
+            scale.current = (1 + zoomFactor * direction);
             console.log("Scale: ", scale.current)
             ctx.scale(scale.current, scale.current);
             draw(ctx, offset.current.x, offset.current.y, scale.current);
@@ -178,15 +202,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [offset, scale.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
-    const adjustView = (ctx: CanvasRenderingContext2D, offsetX: number, offsetY: number) => {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
-        const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
-        const adjustedScale = Math.min(width / (maxX - minX), height / (maxY - minY));
-        const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
-        return { adjustedScale, center };
-    }
+    }, [offset.current, scale.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
 
     return (
         <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
