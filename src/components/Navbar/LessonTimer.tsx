@@ -1,19 +1,21 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-
+import { useStopwatch } from 'react-timer-hook';
 function LessonTimer() {
-    const [seconds, setSeconds] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setSeconds(seconds => seconds + 1);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+    const {
+        totalSeconds,
+        seconds,
+        minutes,
+        hours,
+        days,
+        isRunning,
+        start,
+        pause,
+        reset,
+    } = useStopwatch({ autoStart: true });
 
     return (
-        <div>{seconds}</div>
+        <div>{hours.toString().length == 1 ? '0' : ''}{hours}:{minutes.toString().length == 1 ? '0' : ''}{minutes}:{seconds.toString().length == 1 ? '0' : ''}{seconds}</div>
     );
 }
 

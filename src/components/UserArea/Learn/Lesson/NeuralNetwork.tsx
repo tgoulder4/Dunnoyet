@@ -17,10 +17,9 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     console.log("rendering NeuralNetwork with knowledgePoints: ", knowledgePoints)
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
-    const [scale, setScale] = useState(1); // Initial zoom scale
+    const offset = useRef({ x: 0, y: 0 });
+    const scale = useRef(1);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
-    const [boundaries, setBoundaries] = useState(null as null | { minX: number, maxX: number, minY: number, maxY: number });
     // Function to calculate boundaries
     const calculateBoundaries = (points: IKnowledge[]) => {
         const xValues = points.map(point => point.TwoDCoOrdinates[0]);
@@ -31,8 +30,14 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const maxY = Math.max(...yValues);
         return { minX, maxX, minY, maxY };
     };
-    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0, scale = 1) => {
+        // Reset the transformation matrix to default before clearing
+        // ctx.setTransform(1, 0, 0, 1, 0, 0); // Resets to the default state
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clears everything
+
+        // Reapply the transformations needed for your drawing
+        // ctx.translate(offset.current.x, offset.current.y);
+
         //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
         const width = ctx.canvas.width;
         const height = ctx.canvas.height;
@@ -114,9 +119,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.height = rect.height * dpr;
 
         // offset values to move the canvas around
-        let offsetX = offset.x;
-        let offsetY = offset.y;
-
+        let offsetX = offset.current.x;
+        let offsetY = offset.current.y;
         const onMouseDown = (e: MouseEvent) => {
             drag.current.isDragging = true;
             drag.current.startX = e.clientX - offsetX;
@@ -125,27 +129,47 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
 
         const onMouseMove = (e: MouseEvent) => {
             if (!drag.current.isDragging) return;
-            offsetX = e.clientX - drag.current.startX;
-            offsetY = e.clientY - drag.current.startY;
-            draw(ctx, offsetX, offsetY);
+
+            const newOffsetX = e.clientX - drag.current.startX;
+            const newOffsetY = e.clientY - drag.current.startY;
+
+            // Here, you can adjust the limits based on your requirements.
+            // For example, to prevent dragging the canvas too far from its original position:
+            const maxOffset = 50;
+            const minOffset = -50; // Assuming you also want to limit dragging in the opposite direction
+
+            // Applying limits
+            const limitedOffsetX = Math.min(Math.max(newOffsetX, minOffset), maxOffset);
+            const limitedOffsetY = Math.min(Math.max(newOffsetY, minOffset), maxOffset);
+
+            // Update offsets within the allowed range
+            offset.current.x = limitedOffsetX;
+            offset.current.y = limitedOffsetY;
+
+            draw(ctx, offset.current.x, offset.current.y, scale.current);
         };
 
         const onMouseUp = () => {
             drag.current.isDragging = false;
-            setOffset({ x: offsetX, y: offsetY });
+
+            // setOffset({ x: offsetX, y: offsetY });
         };
         const onWheel = (e: WheelEvent) => {
             e.preventDefault(); // Prevent the page from scrolling
             const zoomFactor = 0.1;
-            const newScale = e.deltaY < 0 ? scale * (1 + zoomFactor) : scale * (1 - zoomFactor);
-            setScale(newScale);
+            scale.current = e.deltaY < 0 ? scale.current * (1 + zoomFactor) : scale.current * (1 - zoomFactor);
+            console.log("Scale: ", scale.current)
+            ctx.scale(scale.current, scale.current);
+            draw(ctx, offset.current.x, offset.current.y, scale.current);
+            // setScale(newScale);
         };
         canvas.addEventListener('mousedown', onMouseDown);
         canvas.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
 
-        draw(ctx, offset.x, offset.y); // Initial draw
+        draw(ctx, offset.current.x, offset.current.y, scale.current); // Initial draw
+
 
         // Clean up to prevent memory leaks
         return () => {
@@ -154,19 +178,16 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [offset, scale, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
+    }, [offset, scale.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
     const adjustView = (ctx: CanvasRenderingContext2D, offsetX: number, offsetY: number) => {
         const width = ctx.canvas.width;
         const height = ctx.canvas.height;
         const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
         const adjustedScale = Math.min(width / (maxX - minX), height / (maxY - minY));
+        const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+        return { adjustedScale, center };
     }
 
-    useEffect(() => {
-        if (knowledgePoints.length > 0) {
-            // 
-        }
-    }, [knowledgePoints.length]); // Dependency on the length of knowledgePoints
     return (
         <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
             <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>

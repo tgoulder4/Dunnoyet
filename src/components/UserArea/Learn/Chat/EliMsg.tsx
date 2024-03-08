@@ -10,22 +10,22 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
     const [showCTA, setShowCTA] = useState(true);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
-        setLoadingNextMessage(true);
-        setDisableInput(true);
-        setUpdatingState(true);
+        // setLoadingNextMessage(true);
+        // setDisableInput(true);
+        // setUpdatingState(true);
         if (type == "understand") {
             updateState(undefined, undefined, 'UNDERSTOOD')!.then(() => {
                 setShowCTA(false);
-                setLoadingNextMessage(false);
-                setDisableInput(false);
-                setUpdatingState(false);
+                // setLoadingNextMessage(false);
+                // setDisableInput(false);
+                // setUpdatingState(false);
             });
         } else {
-            setNewMessageControlIndex(prev => prev + 1);
             setShowCTA(false);
-            setLoadingNextMessage(false);
-            setDisableInput(false);
-            setUpdatingState(false);
+            setNewMessageControlIndex(prev => prev + 1);
+            // setLoadingNextMessage(false);
+            // setDisableInput(false);
+            // setUpdatingState(false);
         }
     }
     useEffect(() => {
