@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Message from './Message'
 import { changeColour, colours, spacing } from '@/lib/constants'
 import NewButton from '@/components/ui/NewButton'
 import { Loader2 } from 'lucide-react';
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
+import { randomBytes } from 'crypto';
 
 function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>> }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
@@ -18,6 +19,9 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
             setLoadingNextMessage(false);
         }
     }
+    useEffect(() => {
+        // console.log("Passed splitResponses: ", splitResponses)
+    }, [])
     return (
         <div className={`w-full flex items-start justify-start ${eliResponseType !== "SubjectIntroduction" ? " pr-0 md:pr-8" : ""}`}>
             <Message className='w-full md:w-max' style={{ paddingBottom: eliResponseType == "SubjectIntroduction" ? 40 : 20, borderBottomLeftRadius: 0, borderBottomRightRadius: eliResponseType == "SubjectIntroduction" ? 0 : 20, width: eliResponseType == 'SubjectIntroduction' ? '100%' : '2/3', backgroundColor: eliResponseType == "WhatComesToMind" || eliResponseType == 'ChallengeQ' ? colours.interrogativeMessage : eliResponseType == 'SubjectIntroduction' ? colours.systemEventMessage : colours.complementary_lightest }}>
@@ -25,7 +29,7 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
                     {eliResponseType == "SubjectIntroduction" && <h3 className='font-[900] text-white'>Bridging the gap</h3>}
                     {
                         splitResponses ? splitResponses?.map(sr =>
-                            <p className='w-4/5' style={{ color: sr.active ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
+                            <p key={randomBytes(12).toString()} className='w-4/5' style={{ color: sr.active ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
                         ) : <p className='w-4/5' style={{ color: '#FFF', fontWeight: 500 }}>{text}</p>
                     }
                 </article>

@@ -128,6 +128,7 @@ function ChatWithEli({
     ]
     useEffect(() => {
         textAreaRef.current?.focus();
+
         if (lessonID == "Tutorial") {
             setSubject("Eli - Welcome");
             setTutorialStage(0);

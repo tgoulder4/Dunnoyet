@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SummaryItem from './SummaryItem'
 import { getUser } from '@/actions'
 import { useSession } from 'next-auth/react'
+import { randomBytes } from 'crypto';
 var equal = require('deep-equal');
 type Stat = {
     number: number,
@@ -43,9 +44,10 @@ function SummaryItems() {
     return (
         <>
             {
+
                 equal(stats, {}) ? <SummaryItem loading={true} /> :
                     stats.map((stat: Stat) => {
-                        return <SummaryItem key={Math.floor(Math.random() * 1000)} number={stat.number} desc={stat.desc} />
+                        return <SummaryItem key={randomBytes(12).toString()} number={stat.number} desc={stat.desc} />
                     })
             }
         </>
