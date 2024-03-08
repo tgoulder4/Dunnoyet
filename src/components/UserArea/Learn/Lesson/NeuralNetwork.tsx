@@ -27,7 +27,7 @@ function getColourFromConfidence(confidence: number) {
 let pulsateOpacity = 1;
 let pulsateDirection = true; // true for increasing, false for decreasing
 const updatePulsateOpacity = () => {
-    const speed = 0.05; // Speed of pulsating effect
+    const speed = 0.005; // Speed of pulsating effect
     if (pulsateDirection) {
         pulsateOpacity += speed;
         if (pulsateOpacity >= 1) {
@@ -53,6 +53,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
+    const requestAnimationRef = useRef<any>(0);
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scaleMultiplier = useRef(0.7);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
@@ -74,6 +75,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
         return { centerOffsetX, centerOffsetY, overallScale };
     };
+
     // Function to adjust view
     const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
 
@@ -196,6 +198,25 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             ctx.globalAlpha = 1;
         }
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
+    // Animation loop function
+    const animate = () => {
+        const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas not found');
+        if (knowledgePoints.length > 0) {
+            updatePulsateOpacity(); // Update the opacity for pulsating effect
+            if (ctx) {
+                draw(ctx, offset.current.x, offset.current.y); // Redraw with updated pulsate opacity
+
+            }
+            requestAnimationRef.current = requestAnimationFrame(animate);
+        };
+    };
+    // Start the animation loop
+    useEffect(() => {
+        requestAnimationRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(requestAnimationRef.current);
+    }, [knowledgePoints]); // Rerun the effect when knowledgePoints change
     useEffect(() => {
         async function main() {
             const allKp = await getAllReinforcedKnowledgePoints(userId!);
@@ -299,5 +320,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         </div>
     )
 }
+
 
 export default NeuralNetwork
