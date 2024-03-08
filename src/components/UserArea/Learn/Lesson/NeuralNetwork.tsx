@@ -19,7 +19,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
     console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
-    const scaleMultiplier = useRef(1);
+    const scaleMultiplier = useRef(0.7);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
     const calculateBoundaries = (points: IKnowledge[]) => {
@@ -31,13 +31,19 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const maxY = Math.max(...yValues);
         return { minX, maxX, minY, maxY };
     };
-    const adjustView = (ctx: CanvasRenderingContext2D, offsetX: number, offsetY: number) => {
+    // Function to adjust view
+    const adjustView = (ctx: CanvasRenderingContext2D) => {
         const width = ctx.canvas.width;
         const height = ctx.canvas.height;
         const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
-        const adjustedScale = Math.min(width / (maxX - minX), height / (maxY - minY));
-        const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
-        return { adjustedScale, center };
+        //return an x and y offset amount which together with [SOME ALGORITHM] will encapsulate all the points
+        const xRange = maxX - minX;
+        const yRange = maxY - minY;
+        const centerX = xRange / 2;
+        const centerY = yRange / 2;
+        const overallScale = Math.max(width / xRange, height / yRange);
+        return { overallScale, centerX, centerY };
+
     }
     const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
 
@@ -55,9 +61,30 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
 
         // Apply limits to the new offsets
-        const newOffsetx = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
-        const newOffsety = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
-        ctx.setTransform(scaleMultiplier.current, 0, 0, scaleMultiplier.current, newOffsetx, newOffsety);
+        let limitedOffsetX = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
+        let limitedOffsetY = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
+
+        // Calculate center to scale as the middle of the currently rendere
+        const centerX = (ctx.canvas.width) / 2;
+        const centerY = (ctx.canvas.height) / 2;
+        //draw a red dot to show the center of scaling
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.closePath();
+
+
+        // NEW: Move to the center of the canvas
+        ctx.translate(centerX, centerY);
+
+
+        ctx.scale(scaleMultiplier.current, scaleMultiplier.current);
+
+        //NEW: move back from the center
+        ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
+
+
         // Restore the transform
         // ctx.restore();
 
@@ -89,41 +116,46 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         }
 
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
-        knowledgePoints.forEach((point, i) => {
-            ctx.beginPath();
-            ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0], knowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
-            ctx.fillStyle = point.confidence == 5 ? colours.primary : point.confidence == 4 ? colours.complementary : colours.complementary;
-            let pointBackgroundColour = "";
-            switch (point.confidence) {
-                //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint 
-                case 5:
-                    pointBackgroundColour = colours.lessonNodes.confidence5
-                    break;
-                case 4:
-                    pointBackgroundColour = colours.lessonNodes.confidence4;
-                    break;
-                case 3:
-                    pointBackgroundColour = colours.lessonNodes.confidence3;
-                    break;
-                case 2:
-                    pointBackgroundColour = colours.lessonNodes.confidence2;
-                    break;
-                case 1:
-                    pointBackgroundColour = colours.lessonNodes.confidence1;
-                    break;
-                default:
-                    pointBackgroundColour = colours.complementary;
-                    break;
-            }
-            ctx.fillStyle = pointBackgroundColour; // Apply the color here
-            ctx.fill();
+        if (knowledgePoints.length > 0) {
+            knowledgePoints.forEach((point, i) => {
+                ctx.beginPath();
+                ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0], knowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
+                ctx.fillStyle = point.confidence == 5 ? colours.primary : point.confidence == 4 ? colours.complementary : colours.complementary;
+                let pointBackgroundColour = "";
+                switch (point.confidence) {
+                    //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint 
+                    case 5:
+                        pointBackgroundColour = colours.lessonNodes.confidence5
+                        break;
+                    case 4:
+                        pointBackgroundColour = colours.lessonNodes.confidence4;
+                        break;
+                    case 3:
+                        pointBackgroundColour = colours.lessonNodes.confidence3;
+                        break;
+                    case 2:
+                        pointBackgroundColour = colours.lessonNodes.confidence2;
+                        break;
+                    case 1:
+                        pointBackgroundColour = colours.lessonNodes.confidence1;
+                        break;
+                    default:
+                        pointBackgroundColour = colours.complementary;
+                        break;
+                }
+                ctx.fillStyle = pointBackgroundColour; // Apply the color here
+                ctx.fill();
 
-            //on hover, show the point's info
-            // ctx.font = "20px Arial";
-            // ctx.fillText(point.pointInSolitude, point.TwoDCoOrdinates[0] + offsetX, point.TwoDCoOrdinates[1] + offsetY);
-            ctx.closePath();
+                //on hover, show the point's info
+                // ctx.font = "20px Arial";
+                // ctx.fillText(point.pointInSolitude, point.TwoDCoOrdinates[0] + offsetX, point.TwoDCoOrdinates[1] + offsetY);
+                ctx.closePath();
 
-        });
+            });
+
+
+
+        }
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     useEffect(() => {
         async function main() {
@@ -156,8 +188,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             if (!drag.current.isDragging) return;
 
             // Calculate the delta between the current mouse position and the initial click position
-            const dx = e.clientX - drag.current.startX;
-            const dy = e.clientY - drag.current.startY;
+            const dx = (e.clientX - drag.current.startX) / scaleMultiplier.current;
+            const dy = (e.clientY - drag.current.startY) / scaleMultiplier.current;
 
             // Update the drag start position to the current position
             drag.current.startX = e.clientX;
@@ -172,8 +204,10 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
 
             // Apply limits to the new offsets
-            offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
-            offset.current.y = Math.min(Math.max(potentialOffsetY, minOffset), maxOffset);
+            // offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
+            // offset.current.y = Math.min(Math.max(potentialOffsetY, minOffset), maxOffset);
+            offset.current.x += dx;
+            offset.current.y += dy;
 
             draw(ctx, offset.current.x, offset.current.y);
         };
@@ -196,7 +230,12 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
-
+        if (knowledgePoints.length > 0) {
+            const { overallScale, centerX, centerY } = adjustView(ctx);
+            scaleMultiplier.current = overallScale;
+            offset.current.x = centerX;
+            offset.current.y = centerY;
+        }
         draw(ctx, offset.current.x, offset.current.y); // Initial draw
 
 
