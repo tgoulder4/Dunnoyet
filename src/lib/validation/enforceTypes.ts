@@ -8,7 +8,8 @@ export type IMessagesEndpointSendPayload = {
     metadata: IMetadata;
 }
 export type ILessonState = {
-    messages: IMessage[];
+    oldMessages: IMessage[];
+    newMessages: IMessage[];
     metadata: IMetadata;
 }
 export type IMetadata = {

@@ -17,7 +17,8 @@ export default async function LessonLoader({ params }: { params: any }) {
     const userID = sess.user?.id;
     if (!userID) throw new Error("UNAUTHORIZED @LessonLoader2");
     return (<Lesson initialLessonState={{
-        messages: [],
+        oldMessages: [],
+        newMessages: [],
         metadata: {
             metadataId: "0",
             lessonID: "0",

@@ -126,7 +126,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
             <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
-                <div className="hidden animate-pulse"></div>
+                <div className="hidden bg-opacity-50 animate-pulse"></div>
                 <canvas className='w-full h-full overflow-hidden' id="canvas" ref={canvasRef}>
                     {/* <line x1="0" y1="0" x2="200" y2="100" className="w-1 bg-red-500" /> */}
                 </canvas>

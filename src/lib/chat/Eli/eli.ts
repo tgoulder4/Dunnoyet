@@ -339,7 +339,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         else if (tL >= 1) {
             threads[threads.length - 1].shift();
         }
-        if (tL == 0) {
+        if (threads[threads.length - 1].length == 0) {
             threads.pop();
             subjects.pop();
             //POSTPONED: respond w a challenge q
@@ -352,6 +352,9 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             //     eliResponseType: "ChallengeQ" as "ChallengeQ" | "General" | "WhatComesToMind"
             // }
             // threads[threads.length - 1].push(m)
+        } else {
+            if (!threads[threads.length - 1][0].splitResponse) throw new Error("threads[threads.length-1][0].splitResponse is null in getNextMessage - couldn't set the next split response to active");
+            threads[threads.length - 1][0].splitResponse!.active = true;
         }
         if (threads.length == 0) {
             //save all rks to db and pinecone, 
@@ -374,12 +377,13 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         //TODO: REPLACE REST OF PREVIOUS THREAD W KNOWLEDGE IN TERMS OF WHAT THEY JUST LEARNED?
         const payload: IMessagesEndpointResponsePayload = {
             newMessages: [threads[threads.length - 1][0]],
+            //remove action property from metadata
             metadata: {
                 lessonID,
                 threads,
                 subjects,
                 knowledgePointChain,
-                currentKnowledgePointIndex: indexToInsertNewKnowlegePoint
+                currentKnowledgePointIndex: indexToInsertNewKnowlegePoint,
             }
         }
         console.log("payload:", payload);

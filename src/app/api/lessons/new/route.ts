@@ -106,7 +106,7 @@ async function POST(req: NextRequest) {
         // console.log("Lesson and state created: ", lessAndState);
         return NextResponse.json({
             // lessonId: lessAndState.less.id, 
-            newStatePayload: res
+            res
         }, { status: 201 })
     } catch (error) {
         console.error("Error creating the lesson: ", error);

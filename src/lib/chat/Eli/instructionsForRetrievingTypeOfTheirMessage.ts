@@ -121,7 +121,7 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
         const prompt = (
             'your name is Eli.' +
             (subject ? ' you’re teaching a student about ' + subject : "") +
-            '. The answers you provide must contain EXACT TERMS from their related knowledge: ' +
+            '. The answers you provide must contain EXACT TERMS of a very small subtopic of your choice picked from their related knowledge: ' +
             rKs.map((rk, i) => rk.pointInSolitude + (i !== rKs.length - 1 ? ", " : "")).join("\n\n") +
             '. Reply to their latest response in these messages: ' +
             messages.map(msg => msg.role + ": " + (msg.content || msg.splitResponse?.text)).join('\n') +
@@ -130,7 +130,7 @@ export const getSplitResponses = async (messages: IMessage[], rKs?: Array<{ poin
             ' sentences, and be kind. After answering "what comes to mind", kindly respond in terms of this.' +
             (askForSubject || askForSubjectIntro ? ' Put MAIN: around your reply. ' : '') +
             (askForSubject ? 'After your response, put "SUBJECT: " and then the subject of the conversation.' : '') +
-            (askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying something like: as you know about (explicit relevant knowledge. this must reference a super super small subtopic in exact terms with no room for confusion, mustnt be a general topic), we"ll talk about how that relates to (topic of question).' : '') +
+            (askForSubjectIntro ? 'After your response, put "SUBJECTINTRO: " and then a brief introduction saying something like: as you know about (the small subtopic you used), we"ll talk about that.' : '') +
             (userIsWrong ? ' Their response is wrong. Please correct them and remember to reference their related knowledge points.' : '')
         );
         const res = await openai.chat.completions.create({
