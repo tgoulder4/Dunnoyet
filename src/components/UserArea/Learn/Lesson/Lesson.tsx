@@ -64,14 +64,6 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                                     [
                                         {
                                             splitResponse: {
-                                                text: '[Wave-particle duality] is a fundamental concept in quantum mechanics.',
-                                                active: false
-                                            },
-                                            role: 'eli',
-                                            eliResponseType: 'General'
-                                        },
-                                        {
-                                            splitResponse: {
                                                 text: 'This means that electrons can behave like particles in some situations and like waves in others.',
                                                 active: false
                                             },
@@ -104,7 +96,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                                         pointInSolitude: 'Electrons exhibit wave-like behavior due to wave-particle duality.',
                                         pointInChain: '',
                                         source: 'offered',
-                                        TwoDCoOrdinates: [63.142, 31.1415],
+                                        TwoDCoOrdinates: [192.142, 31.1415],
                                         vectorEmbedding: [
                                             -0.022827767, 0.0018153265, -0.037418827, 0.05640204,
                                             0.018287312, 0.054166034, -0.0005283413, 0.050606683,

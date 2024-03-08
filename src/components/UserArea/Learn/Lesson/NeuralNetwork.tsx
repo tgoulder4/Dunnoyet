@@ -6,25 +6,60 @@ import { getEmbedding } from '@/lib/chat/openai'
 import { getTwoDCoOrdinatesOfEmbeddings } from './network'
 import { getAllReinforcedKnowledgePoints, getRelatedKnowledgePoints } from '@/lib/chat/Eli/eli'
 import { useSession } from 'next-auth/react'
-
+// Helper function to get color based on confidence, reused from previous message
+function getColourFromConfidence(confidence: number) {
+    switch (confidence) {
+        case 5:
+            return colours.lessonNodes.confidence5;
+        case 4:
+            return colours.lessonNodes.confidence4;
+        case 3:
+            return colours.lessonNodes.confidence3;
+        case 2:
+            return colours.lessonNodes.confidence2;
+        case 1:
+            return colours.lessonNodes.confidence1;
+        default:
+            return colours.complementary;
+    }
+}
+// Function to calculate the opacity for pulsating effect
+let pulsateOpacity = 1;
+let pulsateDirection = true; // true for increasing, false for decreasing
+const updatePulsateOpacity = () => {
+    const speed = 0.05; // Speed of pulsating effect
+    if (pulsateDirection) {
+        pulsateOpacity += speed;
+        if (pulsateOpacity >= 1) {
+            pulsateOpacity = 1;
+            pulsateDirection = false;
+        }
+    } else {
+        pulsateOpacity -= speed;
+        if (pulsateOpacity <= 0.1) {
+            pulsateOpacity = 0.1;
+            pulsateDirection = true;
+        }
+    }
+};
 function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     //for each kp to above fn
     const sess = useSession().data!.user!;
     const {
         id: userId,
     } = sess;
-    console.log("[neuralNetwork] knowledgePoints: ", knowledgePoints)
-    console.log("rendering NeuralNetwork with knowledgePoints: ", knowledgePoints)
+    // console.log("[neuralNetwork] knowledgePoints: ", knowledgePoints)
+    // console.log("rendering NeuralNetwork with knowledgePoints: ", knowledgePoints)
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
-    console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
+    // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scaleMultiplier = useRef(0.7);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
     const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
         const xValues = points.map(point => point.TwoDCoOrdinates[0]);
-        console.log("xValues: ", xValues)
+        // console.log("xValues: ", xValues)
         const yValues = points.map(point => point.TwoDCoOrdinates[1]);
         const minX = Math.min(...xValues);
         const maxX = Math.max(...xValues);
@@ -33,7 +68,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const xRange = maxX - minX;
         const yRange = maxY - minY;
         console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-        const overallScale = 2.5;
+        const overallScale = Math.max(ctx.canvas.width / xRange, ctx.canvas.height / yRange) * 0.15;
         const centerOffsetX = minX + (xRange / 2);
         const centerOffsetY = minY + (yRange / 2);
         console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
@@ -121,44 +156,44 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.closePath();
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
         if (knowledgePoints.length > 0) {
-            knowledgePoints.forEach((point, i) => {
-                ctx.beginPath();
-                ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0] + centerX, knowledgePoints[i].TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = point.confidence == 5 ? colours.primary : point.confidence == 4 ? colours.complementary : colours.complementary;
-                let pointBackgroundColour = "";
-                switch (point.confidence) {
-                    //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint 
-                    case 5:
-                        pointBackgroundColour = colours.lessonNodes.confidence5
-                        break;
-                    case 4:
-                        pointBackgroundColour = colours.lessonNodes.confidence4;
-                        break;
-                    case 3:
-                        pointBackgroundColour = colours.lessonNodes.confidence3;
-                        break;
-                    case 2:
-                        pointBackgroundColour = colours.lessonNodes.confidence2;
-                        break;
-                    case 1:
-                        pointBackgroundColour = colours.lessonNodes.confidence1;
-                        break;
-                    default:
-                        pointBackgroundColour = colours.complementary;
-                        break;
+            for (let i = 0; i < knowledgePoints.length - 1; i++) { // Stop at the second to last element
+                const point = knowledgePoints[i];
+                const nextPoint = knowledgePoints[i + 1];
+                // Draw line from current point to next
+                // Special handling for pulsating lines between confidence 5 and 4
+                if (point.confidence === 5 && nextPoint.confidence === 4) {
+                    updatePulsateOpacity();
+                    ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
+                } else {
+                    ctx.globalAlpha = 1; // No pulsating effect, fully opaque
                 }
-                ctx.fillStyle = pointBackgroundColour; // Apply the color here
+                ctx.beginPath();
+                ctx.moveTo(point.TwoDCoOrdinates[0] + centerX, point.TwoDCoOrdinates[1] + centerY); // Start at current point
+                ctx.lineTo(nextPoint.TwoDCoOrdinates[0] + centerX, nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
+                ctx.strokeStyle = getColourFromConfidence(nextPoint.confidence); // Use the helper function to get the color
+                ctx.stroke();
+                ctx.globalAlpha = 1; // Reset global alpha if you've changed it
+                // Now draw the current point
+                ctx.beginPath();
+                ctx.arc(point.TwoDCoOrdinates[0] + centerX, point.TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = getColourFromConfidence(point.confidence); // Use the helper function to get the color
                 ctx.fill();
+                ctx.closePath();
 
                 //on hover, show the point's info
                 // ctx.font = "20px Arial";
                 // ctx.fillText(point.pointInSolitude, point.TwoDCoOrdinates[0] + offsetX, point.TwoDCoOrdinates[1] + offsetY);
-                ctx.closePath();
 
-            });
-
-
-
+            }
+            // Draw the last point (since it's not covered in the loop)
+            const lastPoint = knowledgePoints[knowledgePoints.length - 1];
+            ctx.beginPath();
+            ctx.arc(lastPoint.TwoDCoOrdinates[0] + centerX, lastPoint.TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = getColourFromConfidence(lastPoint.confidence); // Use the helper function to get the color
+            ctx.fill();
+            ctx.closePath();
+            // Reset global alpha if you've changed it
+            ctx.globalAlpha = 1;
         }
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     useEffect(() => {
@@ -236,8 +271,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.addEventListener('wheel', onWheel);
         if (knowledgePoints.length > 0) {
             const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
-            offset.current.x = centerOffsetX * scaleMultiplier.current;
-            offset.current.y = centerOffsetY * scaleMultiplier.current;
+            offset.current.x = -centerOffsetX;
+            offset.current.y = -centerOffsetY;
             scaleMultiplier.current = overallScale;
         }
         draw(ctx, offset.current.x, offset.current.y); // Initial draw
