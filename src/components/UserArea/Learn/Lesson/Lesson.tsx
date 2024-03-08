@@ -271,7 +271,6 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                     }, 1000);
                 })
 
-
                 let error = "";
                 if (typeof nextState === "string") { error = nextState } else {
                     console.log("nextState: ", nextState)
@@ -315,7 +314,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
     console.dir(knowledgePointChain, { depth: null })
     return (<>
         <MainAreaNavbar style='lesson' />
-        <div className='h-full flex flex-col bg-white' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest }}>
+        <div className='h-full flex flex-col bg-white' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest, paddingBottom: spacing.padding.largest }}>
             <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
             <NeuralNetwork knowledgePoints={knowledgePointChain} />
         </div>

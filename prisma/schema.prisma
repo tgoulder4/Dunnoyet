@@ -65,11 +65,12 @@ model Lesson {
 }
 
 model lessonState {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  messages   Message[] @relation("LessonStateToMessage")
-  metadata   metadata  @relation("LessonStateToMetadata", fields: [metadataId], references: [id])
-  metadataId String    @unique @db.ObjectId
-  Lesson     Lesson?   @relation("LessonToLessonState")
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  newMessages Message[] @relation("LessonStateToMessage")
+  oldMessages Message[] @relation("LessonStateToOldMessage")
+  metadata    metadata  @relation("LessonStateToMetadata", fields: [metadataId], references: [id])
+  metadataId  String    @unique @db.ObjectId
+  Lesson      Lesson?   @relation("LessonToLessonState")
 
   @@map("lessonStates")
 }
@@ -91,7 +92,8 @@ model Message {
   splitResponse   SplitResponse?   @relation(fields: [splitResponseId], references: [id])
   splitResponseId String?          @unique @db.ObjectId
   eliResponseType eliResponseType?
-  ls              lessonState      @relation("LessonStateToMessage", fields: [lessonStateId], references: [id])
+  ls              lessonState?     @relation("LessonStateToMessage", fields: [lessonStateId], references: [id])
+  lsO             lessonState?     @relation("LessonStateToOldMessage", fields: [lessonStateId], references: [id])
   lessonStateId   String           @db.ObjectId
 
   @@map("messages")

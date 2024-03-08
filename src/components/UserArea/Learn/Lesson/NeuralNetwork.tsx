@@ -19,7 +19,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
     console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
-    const scale = useRef(1);
+    const scaleMultiplier = useRef(1);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
     const calculateBoundaries = (points: IKnowledge[]) => {
@@ -39,18 +39,18 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
         return { adjustedScale, center };
     }
-    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0, scale = 1) => {
+    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
 
         // Store the current transformation matrix
         ctx.save();
 
-
         // Use the identity matrix while clearing the canvas
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+        // Apply the scale and offset for this draw operation
+        ctx.setTransform(scaleMultiplier.current, 0, 0, scaleMultiplier.current, offsetX, offsetY);
         // Restore the transform
-        ctx.restore();
+        // ctx.restore();
 
         // Reapply the transformations needed for your drawing
         // ctx.translate(offset.current.x, offset.current.y);
@@ -63,7 +63,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         for (let x = 0; x < width; x += dotSize + step) {
             for (let y = 0; y < height; y += dotSize + step) {
                 ctx.beginPath();
-                ctx.arc(x + offsetX, y + offsetY, dotSize, 0, 2 * Math.PI);
+                ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
                 ctx.fillStyle = colours.complementary_lightest;
                 ctx.fill();
             }
@@ -72,7 +72,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         if (allKnowledgePoints) {
             allKnowledgePoints.forEach((point, i) => {
                 ctx.beginPath();
-                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0] + offsetX, allKnowledgePoints[i].TwoDCoOrdinates[1] + offsetY, 5, 0, 2 * Math.PI);
+                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0], allKnowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
                 ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
                 ctx.fill();
                 ctx.closePath();
@@ -82,7 +82,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
         knowledgePoints.forEach((point, i) => {
             ctx.beginPath();
-            ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0] + offsetX, knowledgePoints[i].TwoDCoOrdinates[1] + offsetY, 5, 0, 2 * Math.PI);
+            ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0], knowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
             ctx.fillStyle = point.confidence == 5 ? colours.primary : point.confidence == 4 ? colours.complementary : colours.complementary;
             let pointBackgroundColour = "";
             switch (point.confidence) {
@@ -135,9 +135,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
 
-        // offset values to move the canvas around
-        let offsetX = offset.current.x;
-        let offsetY = offset.current.y;
         const onMouseDown = (e: MouseEvent) => {
             console.log("Offset: ", offset.current.x, offset.current.y)
             drag.current.isDragging = true;
@@ -169,7 +166,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
             offset.current.y = Math.min(Math.max(potentialOffsetY, minOffset), maxOffset);
 
-            draw(ctx, offset.current.x, offset.current.y, scale.current);
+            draw(ctx, offset.current.x, offset.current.y);
         };
 
         const onMouseUp = () => {
@@ -181,10 +178,9 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             e.preventDefault();
             const zoomFactor = 0.1;
             const direction = e.deltaY < 0 ? 1 : -1;
-            scale.current = (1 + zoomFactor * direction);
-            console.log("Scale: ", scale.current)
-            ctx.scale(scale.current, scale.current);
-            draw(ctx, offset.current.x, offset.current.y, scale.current);
+            scaleMultiplier.current = scaleMultiplier.current * (1 + zoomFactor * direction);
+            console.log("Scale: ", scaleMultiplier.current)
+            draw(ctx, offset.current.x, offset.current.y);
             // setScale(newScale);
         };
         canvas.addEventListener('mousedown', onMouseDown);
@@ -192,7 +188,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
 
-        draw(ctx, offset.current.x, offset.current.y, scale.current); // Initial draw
+        draw(ctx, offset.current.x, offset.current.y); // Initial draw
 
 
         // Clean up to prevent memory leaks
@@ -202,11 +198,11 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [offset.current, scale.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
+    }, [offset.current, scaleMultiplier.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
 
     return (
-        <div className="" style={{ paddingRight: sizing.variableWholePagePadding }}>
-            <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
+        <div className="h-full" style={{ paddingRight: sizing.variableWholePagePadding }}>
+            <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ paddingRight: `calc(6* ${sizing.variableWholePagePadding})`, borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
                 <canvas className='w-full h-full overflow-hidden' id="canvas" ref={canvasRef}>

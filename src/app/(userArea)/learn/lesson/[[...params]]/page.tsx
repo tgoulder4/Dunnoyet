@@ -35,14 +35,14 @@ async function getLessonState(lessonID: string, userID: string): Promise<ILesson
                         knowledgePointChain: true,
                     }
                 },
-                messages: true,
+                newMessages: true, oldMessages: true
 
             }
         })
         console.log("lesson loader found lesson state: ", result)
         if (!result) throw new Error("Prisma didn't return a lesson state @getLessonState")
-        const { messages, metadata } = result;
-        if (!messages) throw new Error("Prisma didn't return messages @getLessonState")
+        const { newMessages, oldMessages, metadata } = result;
+        if (!newMessages || !oldMessages) throw new Error("Prisma didn't return messages @getLessonState")
         if (!metadata) throw new Error("Prisma didn't return metadata @getLessonState")
         //threads is 2D so we need to parse it from JSON (prisma doesn't support 2D arrays so it stores it as a JSON)
 
@@ -55,7 +55,7 @@ async function getLessonState(lessonID: string, userID: string): Promise<ILesson
             lessonID: lesson.id,
         }
         const lessonState: ILessonState = {
-            messages: messages as IMessage[],
+            newMessages: newMessages as IMessage[], oldMessages: oldMessages as IMessage[],
             metadata: metadataForLessonState
         }
         console.log("[getLessonState] returning lessonState: ", lessonState)
