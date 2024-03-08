@@ -6,14 +6,14 @@ import EliMessage from './EliMsg'
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto'
 
-function Conversation({ oldMessages, newMessages, updateState, setDisableInput }: { oldMessages: IMessage[], newMessages: IMessage[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>> }) {
+function Conversation({ oldMessages, newMessages, updateState, setDisableInput, setUpdatingState }: { oldMessages: IMessage[], newMessages: IMessage[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>> }) {
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     const [newMessageControlIndex, setNewMessageControlIndex] = useState(1);
     const newEliMessagesToRender = newMessages.slice(0, newMessageControlIndex) as IMessage[];
+    if (newEliMessagesToRender[newEliMessagesToRender.length - 1].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
     // const [messages, setMessages] = useState([...oldMessages] as IMessage[]);
     //its joined if itself and its previous message is a general message
     useEffect(() => {
-        if (newEliMessagesToRender[newEliMessagesToRender.length - 1].eliResponseType === "SubjectIntroduction") setDisableInput(true);
     }, [])
     const messages = [];
     // Function to render old messages with correct grouping
@@ -29,7 +29,7 @@ function Conversation({ oldMessages, newMessages, updateState, setDisableInput }
                 return <UserMessage text={message.content as string} key={key} />;
             } else {
                 if (message.eliResponseType !== "General") {
-                    return <EliMessage text={message.content as string} eliResponseType={message.eliResponseType as any} updateState={updateState} setNewMessageControlIndex={setNewMessageControlIndex} key={key} />;
+                    return <EliMessage text={message.content as string} eliResponseType={message.eliResponseType as any} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setNewMessageControlIndex={setNewMessageControlIndex} key={key} />;
                 }
                 let groupSize = 1;
                 while (allMessages[index + groupSize]?.eliResponseType === "General") {
@@ -38,7 +38,7 @@ function Conversation({ oldMessages, newMessages, updateState, setDisableInput }
                 console.log("Group: ", allMessages.slice(index, index + groupSize).map(msg => msg.splitResponse!), ", all: ", allMessages)
                 customIndex = index + groupSize;
                 console.log("CustomIndex is now: ", customIndex)
-                return (<EliMessage splitResponses={allMessages.slice(index, index + groupSize).map(msg => msg.splitResponse!)} text={message.content as string} eliResponseType={message.eliResponseType} updateState={updateState} setNewMessageControlIndex={setNewMessageControlIndex} key={key} />);
+                return (<EliMessage setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} splitResponses={allMessages.slice(index, index + groupSize).map(msg => msg.splitResponse!)} text={message.content as string} eliResponseType={message.eliResponseType} updateState={updateState} setNewMessageControlIndex={setNewMessageControlIndex} key={key} />);
             }
         });
     };

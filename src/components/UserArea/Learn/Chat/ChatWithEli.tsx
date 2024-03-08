@@ -10,9 +10,11 @@ import { changeColour, colours, sizing, spacing } from '@/lib/constants'
 import { merriweather } from '@/app/fonts'
 import { Input } from '@/components/ui/input'
 import { IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
-import { redirect } from 'next/navigation'
 import UserMessage from './UserMessage'
 import Message from './Message'
+import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
 type chatProps = {
     isOpen: boolean,
@@ -41,11 +43,14 @@ function ChatWithEli({
     const [tutorialStage, setTutorialStage] = useState(-1);
     const [subject, setSubject] = useState(lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1] || 'New Question');
     const [disableInput, setDisableInput] = useState(false);
+    const [updatingState, setUpdatingState] = useState(false);
+    const router = useRouter();
     const [responseFromserver, setResponseFromServer] = useState(null as null | {
         type: 'error' | 'success',
         message: string
     });
     const [_type, setType] = useState(type);
+    console.log("Type: ", _type)
     if (_type == "Lesson" && !lessonState || _type == 'Lesson' && !updateState) throw new Error("No lesson state found @ChatWithEli")
     // const Lesson: ILesson = {
     //     id: "",
@@ -120,16 +125,16 @@ function ChatWithEli({
         summaryText: "You'll learn faster than ever before by visualizing your knowledge, creating links between concepts.",
         action: <></>,
         actionOrLink: () => {
-            setTutorialStage(-1);
-            console.log("TutorialStage set to -1")
-            setSubject("New Question")
+            console.log("End of tutorial, redirecting to /learn/lesson/new");
+            // redirect('/learn/lesson/new');
+            router.push('/learn/lesson/new');
         }
     }
     ]
     useEffect(() => {
         textAreaRef.current?.focus();
 
-        if (lessonID == "Tutorial") {
+        if (_type == "Tutorial") {
             setSubject("Eli - Welcome");
             setTutorialStage(0);
             nameInputRef.current?.focus();
@@ -413,9 +418,17 @@ function ChatWithEli({
         await updateState(data, response);
         setType('Lesson');
     }
+    function handleSumbitAction(data: FormData) {
+        setDisableInput(true);
+        if (_type == "NewQ") submitUserQuestion(data);
+        else if (_type == "Lesson") updateState!(data);
+        else if (_type == "Tutorial") null;
+        else null;
+        setDisableInput(false);
+    }
     return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
-        <form action={_type == "Lesson" ? updateState : _type == "NewQ" ? submitUserQuestion : _type == "Tutorial" ? "" : ""}>
+        <form action={handleSumbitAction}>
             {
                 isOpen ? <>
                     <div className='h-[60vh] w-full flex flex-col items-center' style={{ backgroundColor: type == 'Tutorial' ? changeColour(colours.primary).darken(8).toString() : type == "NewQ" ? colours.complementary_lightest : changeColour(colours.complementary_lightest).lighten(8).toString(), paddingTop: 0 }}>
@@ -426,11 +439,11 @@ function ChatWithEli({
                                 </Message>
                             </div>
                         </>}
-                        {_type == "Lesson" && <Conversation setDisableInput={setDisableInput} updateState={updateState!} oldMessages={lessonState!.oldMessages} newMessages={lessonState?.newMessages!} />}
+                        {_type == "Lesson" && <Conversation setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} oldMessages={lessonState!.oldMessages} newMessages={lessonState?.newMessages!} />}
 
                         {
                             _type == "Tutorial" &&
-                            <div className='h-full w-4/5 flex flex-col  items-center' style={{ rowGap: spacing.gaps.separateElement }}>
+                            <div className='h-full w-4/5 flex flex-col  items-center' style={{ paddingTop: 2 * spacing.gaps.largest, rowGap: spacing.gaps.separateElement }}>
                                 <div className="flex flex-col items-center" style={{ rowGap: spacing.gaps.groupedElement }}>
                                     {tutorialStages[tutorialStage].glyph}
                                     <h1 className='text-white font-bold text-center' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem' }}>{tutorialStages[tutorialStage].titleText}</h1>
@@ -445,10 +458,13 @@ function ChatWithEli({
                         {
                             type == "Lesson" && <Input disabled={disableInput} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-1' />
                         }
-                        <NewButton tooltip='Ask Question' type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
-                            //else I want to grab their new question and submit it.
+                        <NewButton disabled={disableInput} tooltip='Ask Question' type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
                             () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : ""}
-                            {_type == "Lesson" && <svg strokeWidth={1} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill='white' width="24"><path d="M120-40q-17 0-28.5-11.5T80-80q0-17 11.5-28.5T120-120h720q17 0 28.5 11.5T880-80q0 17-11.5 28.5T840-40H120Zm80-120q-17 0-28.5-11.5T160-200v-200q-33-54-51-114.5T91-638q0-61 15.5-120T143-874q8-21 26-33.5t40-12.5q31 0 53 21t18 50l-11 91q-6 48 8.5 91t43.5 75.5q29 32.5 70 52t89 19.5q60 0 120.5 12.5T706-472q45 23 69.5 58.5T800-326v126q0 17-11.5 28.5T760-160H200Zm40-80h480v-86q0-24-12-42.5T674-398q-41-20-95-31t-99-11q-66 0-122.5-27t-96-72.5Q222-585 202-644.5T190-768q-10 30-14.5 64t-4.5 66q0 58 20.5 111.5T240-422v182Zm240-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-720q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720q0 33 23.5 56.5T480-640ZM320-160v-37q0-67 46.5-115T480-360h120q17 0 28.5 11.5T640-320q0 17-11.5 28.5T600-280H480q-34 0-57 24.5T400-197v37h-80Zm160-80Zm0-480Z" /></svg>}
+                            {_type == "Lesson" &&
+
+                                <svg strokeWidth={1} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill='white' width="24"><path d="M120-40q-17 0-28.5-11.5T80-80q0-17 11.5-28.5T120-120h720q17 0 28.5 11.5T880-80q0 17-11.5 28.5T840-40H120Zm80-120q-17 0-28.5-11.5T160-200v-200q-33-54-51-114.5T91-638q0-61 15.5-120T143-874q8-21 26-33.5t40-12.5q31 0 53 21t18 50l-11 91q-6 48 8.5 91t43.5 75.5q29 32.5 70 52t89 19.5q60 0 120.5 12.5T706-472q45 23 69.5 58.5T800-326v126q0 17-11.5 28.5T760-160H200Zm40-80h480v-86q0-24-12-42.5T674-398q-41-20-95-31t-99-11q-66 0-122.5-27t-96-72.5Q222-585 202-644.5T190-768q-10 30-14.5 64t-4.5 66q0 58 20.5 111.5T240-422v182Zm240-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-720q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720q0 33 23.5 56.5T480-640ZM320-160v-37q0-67 46.5-115T480-360h120q17 0 28.5 11.5T640-320q0 17-11.5 28.5T600-280H480q-34 0-57 24.5T400-197v37h-80Zm160-80Zm0-480Z" /></svg>
+                            }
+                            {updatingState && <Loader2 size={20} fill='white' className='animate-spin' />}
                         </NewButton>
                     </div>
                 </>

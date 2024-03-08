@@ -65,7 +65,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                                         {
                                             splitResponse: {
                                                 text: '[Wave-particle duality] is a fundamental concept in quantum mechanics.',
-                                                active: true
+                                                active: false
                                             },
                                             role: 'eli',
                                             eliResponseType: 'General'

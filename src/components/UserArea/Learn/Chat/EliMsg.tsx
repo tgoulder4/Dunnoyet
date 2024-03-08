@@ -6,17 +6,26 @@ import { Loader2 } from 'lucide-react';
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto';
 
-function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>> }) {
+function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
     const [showCTA, setShowCTA] = useState(true);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
         setLoadingNextMessage(true);
+        setDisableInput(true);
+        setUpdatingState(true);
         if (type == "understand") {
-            updateState(undefined, undefined, 'UNDERSTOOD')!.then(() => setShowCTA(false));
+            updateState(undefined, undefined, 'UNDERSTOOD')!.then(() => {
+                setShowCTA(false);
+                setLoadingNextMessage(false);
+                setDisableInput(false);
+                setUpdatingState(false);
+            });
         } else {
             setNewMessageControlIndex(prev => prev + 1);
             setShowCTA(false);
             setLoadingNextMessage(false);
+            setDisableInput(false);
+            setUpdatingState(false);
         }
     }
     useEffect(() => {

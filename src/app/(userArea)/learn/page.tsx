@@ -7,7 +7,6 @@ import SummaryItem from '../../../components/UserArea/Learn/SummaryItem'
 import { merriweather, ruda } from '@/app/fonts'
 import Tip from '../../../components/UserArea/Learn/Tip'
 import NewButton from '@/components/ui/NewButton'
-import { redirect } from 'next/navigation'
 import { IDetail, ITip } from '@/lib/validation/enforceTypes'
 import { prismaClient } from '@/lib/db/prisma'
 import LessonItems from '@/components/UserArea/Learn/LessonItems'
@@ -23,7 +22,7 @@ var equal = require('deep-equal');
 // }
 function page({ params }: { params: { params: string } }) {
     const [chatIsOpen, setChatIsOpen] = useState(false);
-    const [tutorialMode, setTutorialMode] = useState(false);
+    const [tutorialMode, setTutorialMode] = useState(true);
     const [lessonItems, setLessonItems] = useState(null as ILesson[] | null);
     // const {
     //     id,
@@ -32,8 +31,8 @@ function page({ params }: { params: { params: string } }) {
     const { id, name } = { id: "65dbe7799c9c2a30ecbe6193", name: "" }
     if (!id) throw new Error("No user ID found")
     useEffect(() => {
-        if (!name) {
-            setTutorialMode(true);
+        if (name) {
+            setTutorialMode(false);
         }
         async function main() {
             console.log("LessonItems calling getLessons with userID: ", id!!)
@@ -75,7 +74,7 @@ function page({ params }: { params: { params: string } }) {
                         <SummaryItems />
                     </div>
                 </div>
-                <ChatWithEli type={tutorialMode ? 'Tutorial' : 'NewQ'} setIsOpen={setChatIsOpen} isOpen={chatIsOpen} />
+                <ChatWithEli type='Tutorial' setIsOpen={setChatIsOpen} isOpen={chatIsOpen} />
             </main>
         </div>
     )
