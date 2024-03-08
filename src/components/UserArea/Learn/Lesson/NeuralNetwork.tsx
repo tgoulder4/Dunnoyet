@@ -48,7 +48,16 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         // Apply the scale and offset for this draw operation
-        ctx.setTransform(scaleMultiplier.current, 0, 0, scaleMultiplier.current, offsetX, offsetY);
+
+
+        // Define maximum and minimum offsets
+        const maxOffset = 50 * scaleMultiplier.current;
+        const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
+
+        // Apply limits to the new offsets
+        const newOffsetx = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
+        const newOffsety = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
+        ctx.setTransform(scaleMultiplier.current, 0, 0, scaleMultiplier.current, newOffsetx, newOffsety);
         // Restore the transform
         // ctx.restore();
 
@@ -159,8 +168,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             const potentialOffsetY = offset.current.y + dy;
 
             // Define maximum and minimum offsets
-            const maxOffset = 50;
-            const minOffset = -50; // Assuming you also want to limit dragging in the opposite direction
+            const maxOffset = 50 * scaleMultiplier.current;
+            const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
 
             // Apply limits to the new offsets
             offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
