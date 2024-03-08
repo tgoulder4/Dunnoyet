@@ -22,29 +22,24 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const scaleMultiplier = useRef(0.7);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
-    const calculateBoundaries = (points: IKnowledge[]) => {
+    const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
         const xValues = points.map(point => point.TwoDCoOrdinates[0]);
+        console.log("xValues: ", xValues)
         const yValues = points.map(point => point.TwoDCoOrdinates[1]);
         const minX = Math.min(...xValues);
         const maxX = Math.max(...xValues);
         const minY = Math.min(...yValues);
         const maxY = Math.max(...yValues);
-        return { minX, maxX, minY, maxY };
-    };
-    // Function to adjust view
-    const adjustView = (ctx: CanvasRenderingContext2D) => {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
-        const { minX, maxX, minY, maxY } = calculateBoundaries(knowledgePoints);
-        //return an x and y offset amount which together with [SOME ALGORITHM] will encapsulate all the points
         const xRange = maxX - minX;
         const yRange = maxY - minY;
-        const centerX = xRange / 2;
-        const centerY = yRange / 2;
-        const overallScale = Math.max(width / xRange, height / yRange);
-        return { overallScale, centerX, centerY };
-
-    }
+        console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
+        const overallScale = 2.5;
+        const centerOffsetX = minX + (xRange / 2);
+        const centerOffsetY = minY + (yRange / 2);
+        console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
+        return { centerOffsetX, centerOffsetY, overallScale };
+    };
+    // Function to adjust view
     const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
 
         // Store the current transformation matrix
@@ -55,32 +50,33 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         // Apply the scale and offset for this draw operation
 
-
-        // Define maximum and minimum offsets
-        const maxOffset = 50 * scaleMultiplier.current;
-        const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
-
-        // Apply limits to the new offsets
-        let limitedOffsetX = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
-        let limitedOffsetY = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
+        // FUTURE FEATURE: Apply limits to the new offsets
+        // const maxOffset = 50 * scaleMultiplier.current;
+        // const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
+        // let limitedOffsetX = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
+        // let limitedOffsetY = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
 
         // Calculate center to scale as the middle of the currently rendere
-        const centerX = (ctx.canvas.width) / 2;
-        const centerY = (ctx.canvas.height) / 2;
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
         //draw a red dot to show the center of scaling
+        ctx.save()
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+        ctx.arc(centerX, centerY, 2, 0, 2 * Math.PI);
         ctx.fillStyle = "red";
         ctx.fill();
+        //add text
+        ctx.font = "20px Arial";
+        ctx.fillText("CENTER_OF_SCALING", centerX + 10, centerY + 10);
         ctx.closePath();
-
+        ctx.restore()
+        // Drawing lines for visual aid
 
         // NEW: Move to the center of the canvas
         ctx.translate(centerX, centerY);
 
 
         ctx.scale(scaleMultiplier.current, scaleMultiplier.current);
-
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
@@ -102,6 +98,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
                 ctx.fillStyle = colours.complementary_lightest;
                 ctx.fill();
+                ctx.closePath();
             }
         }
         //DRAW PAST KNOWLEDGE POINTS
@@ -114,12 +111,19 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.closePath();
             });
         }
-
+        //draw a blue dot at 0,0
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.font = "20px Arial";
+        ctx.fillText("ORIGIN", centerX + 10, centerY + 10);
+        ctx.closePath();
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
         if (knowledgePoints.length > 0) {
             knowledgePoints.forEach((point, i) => {
                 ctx.beginPath();
-                ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0], knowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
+                ctx.arc(knowledgePoints[i].TwoDCoOrdinates[0] + centerX, knowledgePoints[i].TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
                 ctx.fillStyle = point.confidence == 5 ? colours.primary : point.confidence == 4 ? colours.complementary : colours.complementary;
                 let pointBackgroundColour = "";
                 switch (point.confidence) {
@@ -231,10 +235,10 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
         if (knowledgePoints.length > 0) {
-            const { overallScale, centerX, centerY } = adjustView(ctx);
+            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
+            offset.current.x = centerOffsetX * scaleMultiplier.current;
+            offset.current.y = centerOffsetY * scaleMultiplier.current;
             scaleMultiplier.current = overallScale;
-            offset.current.x = centerX;
-            offset.current.y = centerY;
         }
         draw(ctx, offset.current.x, offset.current.y); // Initial draw
 
