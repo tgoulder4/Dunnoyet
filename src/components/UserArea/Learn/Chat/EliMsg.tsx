@@ -6,39 +6,55 @@ import { Loader2 } from 'lucide-react';
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto';
 
-function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>> }) {
+function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement> }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
     const [showCTA, setShowCTA] = useState(true);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
-        // setLoadingNextMessage(true);
-        // setDisableInput(true);
-        // setUpdatingState(true);
+        setLoadingNextMessage(true);
+        setDisableInput(true);
+        setUpdatingState(true);
         if (type == "understand") {
             updateState(undefined, undefined, 'UNDERSTOOD')!.then(() => {
-                setShowCTA(false);
-                // setLoadingNextMessage(false);
-                // setDisableInput(false);
-                // setUpdatingState(false);
+                // setShowCTA(false);
+                setLoadingNextMessage(false);
+                setDisableInput(false);
+                setUpdatingState(false);
             });
         } else {
-            setShowCTA(false);
             setNewMessageControlIndex(prev => prev + 1);
-            // setLoadingNextMessage(false);
-            // setDisableInput(false);
-            // setUpdatingState(false);
+            setShowCTA(false);
+            setLoadingNextMessage(false);
+            setDisableInput(false);
+            setUpdatingState(false);
         }
     }
+    // Use useEffect to attach and detach the keydown event listener
     useEffect(() => {
-        // console.log("Passed splitResponses: ", splitResponses)
-    }, [])
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                // Prevent default if you want to avoid submitting forms in case this component is used inside a form
+                event.preventDefault();
+                // Call your function here
+                if (!lessonReplyInputRef.current?.value) handleContinueOrIUnderstand({ type: eliResponseType !== "General" ? 'continue' : 'understand' });
+            }
+        };
+
+        // Add event listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Remove event listener on cleanup
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [eliResponseType, setNewMessageControlIndex, setDisableInput, setUpdatingState, updateState]);
     return (
         <div className={`w-full flex items-start justify-start ${eliResponseType !== "SubjectIntroduction" ? " pr-0 md:pr-16" : ""}`}>
-            <Message className='w-min' style={{ paddingBottom: eliResponseType == "SubjectIntroduction" ? 40 : 20, borderBottomLeftRadius: 0, borderBottomRightRadius: eliResponseType == "SubjectIntroduction" ? 0 : 20, width: eliResponseType == 'SubjectIntroduction' ? '100%' : 'min-content', backgroundColor: eliResponseType == "WhatComesToMind" || eliResponseType == 'ChallengeQ' ? colours.interrogativeMessage : eliResponseType == 'SubjectIntroduction' ? colours.systemEventMessage : colours.complementary_lightest }}>
+            <Message style={{ paddingBottom: eliResponseType == "SubjectIntroduction" ? 40 : 20, borderBottomLeftRadius: 0, borderBottomRightRadius: eliResponseType == "SubjectIntroduction" ? 0 : 20, width: eliResponseType == 'SubjectIntroduction' ? '100%' : '70%', backgroundColor: eliResponseType == "WhatComesToMind" || eliResponseType == 'ChallengeQ' ? colours.interrogativeMessage : eliResponseType == 'SubjectIntroduction' ? colours.systemEventMessage : colours.complementary_lightest }}>
                 <article className='flex flex-col' style={{ rowGap: spacing.gaps.groupedElement }}>
                     {eliResponseType == "SubjectIntroduction" && <h3 className='font-[900] text-white'>Bridging the gap</h3>}
                     {
-                        splitResponses ? splitResponses?.map(sr =>
-                            <p key={randomBytes(12).toString()} style={{ color: sr.active ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
+                        splitResponses ? splitResponses?.map((sr, i) =>
+                            <p key={randomBytes(12).toString()} style={{ color: i == splitResponses.length - 1 ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
                         ) : <p style={{ color: '#FFF', fontWeight: 500 }}>{text}</p>
                     }
                 </article>

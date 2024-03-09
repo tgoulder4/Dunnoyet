@@ -60,7 +60,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                 {
                     typeof actionOrLink === 'string' ?
                         <Link className={`${className} ${!noAnimation ? "w-fit hover:scale-105 transition-transform" : ""} 
-                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
+                    flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline  disabled:cursor-not-allowed disabled:opacity-50
                     rounded-[10px] whitespace-nowrap`}
                             href={actionOrLink}
                             style={{ ...style, color: textColour ? textColour : buttonVariant !== "ghost" ? bgc.isDark() ? "white" : "black" : '#000', backgroundColor: hovered ? bgc.darken(4).toString() : bgColour }}
@@ -75,7 +75,7 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
                             {...props}
                             onMouseEnter={() => setHovered(true)}
                             onMouseLeave={() => setHovered(false)}
-                            className={`${className} ${!noAnimation ? "relative disabled:opacity-50 disabled:hover:scale-100 hover:scale-105 disabled:transition-none transition-transform" : ""} 
+                            className={`${className} ${!noAnimation ? "relative disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed hover:scale-105 disabled:transition-none transition-transform" : ""} 
                     flex flex-row gap-3 justify-center items-center px-[16px] py-[8px] hover:underline 
                     rounded-[10px] whitespace-nowrap`}>
                             {text} {children}

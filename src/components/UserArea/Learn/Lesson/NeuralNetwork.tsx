@@ -27,7 +27,7 @@ function getColourFromConfidence(confidence: number) {
 let pulsateOpacity = 1;
 let pulsateDirection = true; // true for increasing, false for decreasing
 const updatePulsateOpacity = () => {
-    const speed = 0.005; // Speed of pulsating effect
+    const speed = 0.003; // Speed of pulsating effect
     if (pulsateDirection) {
         pulsateOpacity += speed;
         if (pulsateOpacity >= 1) {

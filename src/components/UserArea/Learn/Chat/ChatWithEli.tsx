@@ -15,6 +15,7 @@ import Message from './Message'
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { set } from 'zod'
 
 type chatProps = {
     isOpen: boolean,
@@ -40,7 +41,9 @@ function ChatWithEli({
 
     const nameInputRef = useRef<HTMLInputElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const lessonReplyInputRef = useRef<HTMLInputElement>(null);
     const [tutorialStage, setTutorialStage] = useState(-1);
+    console.log("Lessonstate subjects: ", lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1])
     const [subject, setSubject] = useState(lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1] || 'New Question');
     const [disableInput, setDisableInput] = useState(false);
     const [updatingState, setUpdatingState] = useState(false);
@@ -133,19 +136,25 @@ function ChatWithEli({
     ]
     useEffect(() => {
         textAreaRef.current?.focus();
-
         if (_type == "Tutorial") {
             setSubject("Eli - Welcome");
             setTutorialStage(0);
             nameInputRef.current?.focus();
         }
         else if (type == 'Lesson') {
-            setSubject("Eli - " + subject || "In Lesson");
+            const subject = lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1];
+            if (subject) {
+
+                setSubject("Eli - In Lesson");
+            } else {
+                setSubject("Eli - New Question");
+            }
 
         }
-    }, []);
+    }, [lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1]]);
     async function submitUserQuestion(data: FormData) {
-
+        setDisableInput(true);
+        setUpdatingState(true);
         //make a POST request to /lesson/new with the user's reply as 'newQuestin' key in the body.
         console.log("Submitting user reply with data ", data.get('newQuestion'))
         const newQuestion = data.get('userInput');
@@ -230,7 +239,7 @@ function ChatWithEli({
                                 }
                             ]
                         ],
-                        subjects: ['\nExplaining electrons exhibiting wave-like behavior\n'],
+                        subjects: ['\nDe-brogile equation and wave-like behaviour\n'],
                         knowledgePointChain: [
                             {
                                 confidence: 5,
@@ -416,16 +425,57 @@ function ChatWithEli({
         if (!updateState) throw new Error("No updateState function found in ChatWithEli, can't start the lesson.")
         console.log("Updating state with response");
         await updateState(data, response);
+        setDisableInput(false);
+        setUpdatingState(false);
         setType('Lesson');
     }
-    function handleSumbitAction(data: FormData) {
-        setDisableInput(true);
-        if (_type == "NewQ") submitUserQuestion(data);
-        else if (_type == "Lesson") updateState!(data);
+    async function handleSumbitAction(data: FormData) {
+        if (_type == "NewQ") await submitUserQuestion(data);
+        else if (_type == "Lesson") await updateState!(data);
         else if (_type == "Tutorial") null;
         else null;
-        setDisableInput(false);
     }
+
+    // Use useEffect to attach and detach the keydown event listener
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                // Prevent default if you want to avoid submitting forms in case this component is used inside a form
+                if (_type == "NewQ") {
+                    event.preventDefault();
+                    // I'll need the form data...?
+                    setDisableInput(true);
+                    setUpdatingState(true);
+                    const formData = new FormData();
+                    formData.append('userInput', textAreaRef.current!.value);
+                    submitUserQuestion(formData).then(() => {
+                        setDisableInput(false);
+                        setUpdatingState(false);
+                    });
+
+                };
+                if (_type == "Lesson" && lessonReplyInputRef.current?.value) {
+                    setDisableInput(true);
+                    setUpdatingState(true);
+                    event.preventDefault();
+                    const formData = new FormData();
+                    formData.append('userInput', lessonReplyInputRef.current!.value);
+                    handleSumbitAction(formData).then(() => {
+                        setDisableInput(false);
+                        setUpdatingState(false);
+                    });
+                }
+            }
+        };
+
+        // Add event listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Remove event listener on cleanup
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [textAreaRef, _type]);
     return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
         <form action={handleSumbitAction}>
@@ -435,11 +485,11 @@ function ChatWithEli({
                         {_type == "NewQ" && <>
                             <div className="w-full px-8 pt-9 flex items-center justify-center">
                                 <Message className='w-full h-48 ' style={{ marginBottom: spacing.gaps.groupedElement, borderBottomRightRadius: 0, backgroundColor: changeColour(colours.primary).darken(2).toString() }}>
-                                    <textarea ref={textAreaRef} placeholder='Ask a question...' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem', fontWeight: 600 }} id="userInput" name="userInput" className='resize-none text-start bg-transparent active:border-input focus:border-4 focus:border-input  border-transparent !placeholder-[#0F291B] text-white flex w-full rounded-md border-2 px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50'></textarea>
+                                    <textarea ref={textAreaRef} placeholder='Ask a question...' style={{ fontFamily: merriweather.style.fontFamily, fontSize: sizing.largerFontSize + 'rem', fontWeight: 600 }} id="userInput" name="userInput" className='resize-none text-start bg-transparent active:border-transparent focus:border-1 focus:border-transparent border-transparent !placeholder-[#0F291B] text-white flex w-full rounded-md border-2 px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50'></textarea>
                                 </Message>
                             </div>
                         </>}
-                        {_type == "Lesson" && <Conversation setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} oldMessages={lessonState!.oldMessages} newMessages={lessonState?.newMessages!} />}
+                        {_type == "Lesson" && <Conversation lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} oldMessages={lessonState!.oldMessages} newMessages={lessonState?.newMessages!} />}
 
                         {
                             _type == "Tutorial" &&
@@ -456,15 +506,15 @@ function ChatWithEli({
                     </div>
                     <div style={{ columnGap: spacing.gaps.groupedElement }} className="p-8 pb-16 flex flex-row h-max bg-white">
                         {
-                            type == "Lesson" && <Input disabled={disableInput} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-1' />
+                            type == "Lesson" && <Input ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-1' />
                         }
-                        <NewButton disabled={disableInput} tooltip='Ask Question' type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
+                        <NewButton disabled={disableInput || updatingState} tooltip='Ask Question' type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
                             () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : ""}
                             {_type == "Lesson" &&
 
                                 <svg strokeWidth={1} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill='white' width="24"><path d="M120-40q-17 0-28.5-11.5T80-80q0-17 11.5-28.5T120-120h720q17 0 28.5 11.5T880-80q0 17-11.5 28.5T840-40H120Zm80-120q-17 0-28.5-11.5T160-200v-200q-33-54-51-114.5T91-638q0-61 15.5-120T143-874q8-21 26-33.5t40-12.5q31 0 53 21t18 50l-11 91q-6 48 8.5 91t43.5 75.5q29 32.5 70 52t89 19.5q60 0 120.5 12.5T706-472q45 23 69.5 58.5T800-326v126q0 17-11.5 28.5T760-160H200Zm40-80h480v-86q0-24-12-42.5T674-398q-41-20-95-31t-99-11q-66 0-122.5-27t-96-72.5Q222-585 202-644.5T190-768q-10 30-14.5 64t-4.5 66q0 58 20.5 111.5T240-422v182Zm240-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-720q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720q0 33 23.5 56.5T480-640ZM320-160v-37q0-67 46.5-115T480-360h120q17 0 28.5 11.5T640-320q0 17-11.5 28.5T600-280H480q-34 0-57 24.5T400-197v37h-80Zm160-80Zm0-480Z" /></svg>
                             }
-                            {updatingState && <Loader2 size={20} fill='white' className='animate-spin' />}
+                            {updatingState && <Loader2 size={20} fill='none' className='animate-spin' />}
                         </NewButton>
                     </div>
                 </>

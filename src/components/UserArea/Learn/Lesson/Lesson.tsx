@@ -13,7 +13,7 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
     const [lessonState, setLessonState] = useState<ILessonState>(initialLessonState);
     console.log("LessonState: ", lessonState)
-    const currentSubject = initialLessonState.metadata.subjects[initialLessonState.metadata.subjects.length - 1];
+    const currentSubject = lessonState.metadata.subjects[lessonState.metadata.subjects.length - 1];
     const {
         oldMessages, newMessages, metadata
     } = lessonState;
@@ -25,6 +25,8 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
     // const knowledgePointsWithTwoDCoOrds: IKnowledge[] = knowledgePointChain.map((kp, index) => {
     //     return { ...kp, TwoDCoOrdinates: twoDCoOrds[index] };
     // })
+
+    //TODO: KNOWLEDGEPOINT TOOLTIPS OF POINTSINSOLITUDE. i need a DAMN BREAK
     async function updateState(formData?: FormData, explicitState?: IMessagesEndpointResponsePayload, action?: "UNDERSTOOD" | 'ENDLESSON') {
         try {
             console.log("UpdateState called")
@@ -88,7 +90,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                                         }
                                     ]
                                 ],
-                                subjects: ['\nExplaining electrons exhibiting wave-like behavior\n'],
+                                subjects: ['\nDe-brogile equation and wave-like behaviour\n'],
                                 knowledgePointChain: [
                                     {
                                         confidence: 5,
