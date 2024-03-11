@@ -5,7 +5,7 @@ import prisma from '@/lib/db/prisma';
 export async function POST(req: NextRequest, res: NextResponse) {
     const sess = await getServerSession(authConfig).auth();
     console.log("sess: ", sess)
-    if (!sess || !sess.user || sess.user.role !== 'ADMIN') return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+    if (!sess || !sess.user || sess.user.role !== 'ADMIN') return NextResponse.json("UNAUTHORIZED", { status: 401 });
     const userID = sess.user?.id;
     if (!userID) return NextResponse.json({ error: "User ID not found in session" }, { status: 400 });
     try {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 }
                 catch (e) {
                     console.error(e)
-                    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
+                    return NextResponse.json("An error occurred (rm less failed)", { status: 500 });
                 }
 
         }

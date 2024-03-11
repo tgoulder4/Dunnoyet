@@ -6,9 +6,9 @@ import { Loader2 } from 'lucide-react';
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto';
 
-function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement> }) {
+function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
-    const [showCTA, setShowCTA] = useState(true);
+    const [showCTA, setShowCTA] = useState(current);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
         setLoadingNextMessage(true);
         setDisableInput(true);
@@ -22,7 +22,7 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
             });
         } else {
             setNewMessageControlIndex(prev => prev + 1);
-            setShowCTA(false);
+            setShowCTA(current);
             setLoadingNextMessage(false);
             setDisableInput(false);
             setUpdatingState(false);
@@ -53,8 +53,8 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
                 <article className='flex flex-col' style={{ rowGap: spacing.gaps.groupedElement }}>
                     {eliResponseType == "SubjectIntroduction" && <h3 className='font-[900] text-white'>Bridging the gap</h3>}
                     {
-                        splitResponses ? splitResponses?.map((sr, i) =>
-                            <p key={randomBytes(12).toString()} style={{ color: i == splitResponses.length - 1 ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
+                        splitResponses ? splitResponses.map((sr, i) =>
+                            <p key={randomBytes(12).toString()} style={{ color: sr.active ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
                         ) : <p style={{ color: '#FFF', fontWeight: 500 }}>{text}</p>
                     }
                 </article>

@@ -20,7 +20,7 @@ export type IMetadata = {
     action?: "UNDERSTOOD" | 'ENDLESSON',
     knowledgePointChain: Array<IKnowledge>;
     currentKnowledgePointIndex: number;
-    lessonState?: ILessonState;
+    errorWithTheirInput?: string;
 }
 export type INode = {
     knowledgePointID: string,
@@ -30,6 +30,7 @@ export type INode = {
     TwoDCoOrdinates: number[],
 }
 export type IMessage = {
+    id?: string;
     content?: string;
     splitResponse?: ISplitResponse;
     eliResponseType?: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction';

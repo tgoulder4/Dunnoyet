@@ -68,11 +68,11 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const maxY = Math.max(...yValues);
         const xRange = maxX - minX;
         const yRange = maxY - minY;
-        console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
+        // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
         const overallScale = Math.max(ctx.canvas.width / xRange, ctx.canvas.height / yRange) * 0.15;
         const centerOffsetX = minX + (xRange / 2);
         const centerOffsetY = minY + (yRange / 2);
-        console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
+        // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
         return { centerOffsetX, centerOffsetY, overallScale };
     };
 
@@ -220,13 +220,42 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     useEffect(() => {
         async function main() {
             const allKp = await getAllReinforcedKnowledgePoints(userId!);
-            console.log("Setting allKnowledgePoints to: ", allKp)
+            // console.log("Setting allKnowledgePoints to: ", allKp)
             setAllKnowledgePoints(allKp);
         }
         main()
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
     }, [])
+    const handleResize = (
+    ) => {
+        // Adjust for device pixel ratio to fix blurriness and make canvas responsive
+        const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas not found');
+        const dpr = window.devicePixelRatio || 1;
+
+        //TOFIX: rect.width never changes for some reason
+        const rect = canvas.getBoundingClientRect();
+
+        // Set the display size of the canvas.
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+
+        // Set the actual, scaled size of the canvas drawing buffer.
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
+        ctx.scale(dpr, dpr); // Scale all drawing operations by the dpr, so you don't need to manually scale each draw operation
+
+        // Redraw the canvas content based on the new dimensions
+        draw(ctx, offset.current.x, offset.current.y);
+        console.log("resize fired")
+    };
     useEffect(() => {
-        console.log("useEffect called")
+        // console.log("useEffect called")
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Canvas not found');
@@ -237,7 +266,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         canvas.height = rect.height * dpr;
 
         const onMouseDown = (e: MouseEvent) => {
-            console.log("Offset: ", offset.current.x, offset.current.y)
+            // console.log("Offset: ", offset.current.x, offset.current.y)
             drag.current.isDragging = true;
             // Store the initial click position relative to the viewport
             drag.current.startX = e.clientX;
@@ -274,7 +303,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
 
         const onMouseUp = () => {
             drag.current.isDragging = false;
-            console.log("Offset: ", offset.current.x, offset.current.y)
+            // console.log("Offset: ", offset.current.x, offset.current.y)
             // setOffset({ x: offsetX, y: offsetY });
         };
         const onWheel = (e: WheelEvent) => {
@@ -297,8 +326,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             scaleMultiplier.current = overallScale;
         }
         draw(ctx, offset.current.x, offset.current.y); // Initial draw
-
-
         // Clean up to prevent memory leaks
         return () => {
             canvas.removeEventListener('mousedown', onMouseDown);

@@ -346,6 +346,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
     }
     //IF THEY UNDERSTAND THE CURRENT THREAD SPLITRESPONSE. knowledgePointChain: like [{confidecne:4...},[{confidence:5...},{confidence:5...}]]
     else if (action == "UNDERSTOOD") {
+        //move mock promises into eli.ts
         const currentKP = knowledgePointChain[currentKnowledgePointIndex];
         currentKP.confidence = 5;
         //remove response from threads

@@ -13,9 +13,9 @@ async function POST(req: NextRequest) {
     try {
         if (!req.body) return NextResponse.json({ message: "No req body was provided." }, { status: 201 });
         const sess = await auth();
-        if (!sess || !sess.user) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+        if (!sess || !sess.user) return NextResponse.json("UNAUTHORIZED", { status: 401 });
         const userId = sess.user.id;
-        if (!userId) return NextResponse.json({ error: "No user ID found." }, { status: 401 });
+        if (!userId) return NextResponse.json("No user ID found", { status: 401 });
         const { newQuestion }: { newQuestion: string } = await req.json();
         //make a new message as the newQuestion
         //create a new lesson, and a new lesson state. the lesson state's messages will be the new message
@@ -32,11 +32,7 @@ async function POST(req: NextRequest) {
                 currentKnowledgePointIndex: 0,
             }
         });
-        if (typeof res === "string") return NextResponse.json({ error: res }, { status: 500 });
-        const {
-            newMessages, metadata
-        } = res;
-
+        if (typeof res === "string") return NextResponse.json(res, { status: 500 });
         console.log("Skipping prisma transaction for now, just returning the response.")
         //some responses could be a splitResponse, which is a model so we must create it. this produces the correct invocation of the prisma create method
         // const firstSrMsg = newMessages.filter(nm => nm.splitResponse)[0];
@@ -110,7 +106,7 @@ async function POST(req: NextRequest) {
         }, { status: 201 })
     } catch (error) {
         console.error("Error creating the lesson: ", error);
-        return NextResponse.json({ error: "Couldn't create the lesson." }, { status: 500 });
+        return NextResponse.json("Couldn't create the lesson", { status: 500 });
     }
 }
 export { POST as POST }
