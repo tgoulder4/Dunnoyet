@@ -8,7 +8,6 @@ import { randomBytes } from 'crypto';
 
 function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
-    const [showCTA, setShowCTA] = useState(current);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
         setLoadingNextMessage(true);
         setDisableInput(true);
@@ -22,7 +21,6 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
             });
         } else {
             setNewMessageControlIndex(prev => prev + 1);
-            setShowCTA(current);
             setLoadingNextMessage(false);
             setDisableInput(false);
             setUpdatingState(false);
@@ -40,7 +38,9 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
         };
 
         // Add event listener
-        window.addEventListener('keydown', handleKeyDown);
+        if (current) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
 
         // Remove event listener on cleanup
         return () => {
@@ -54,13 +54,13 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
                     {eliResponseType == "SubjectIntroduction" && <h3 className='font-[900] text-white'>Bridging the gap</h3>}
                     {
                         splitResponses ? splitResponses.map((sr, i) =>
-                            <p key={randomBytes(12).toString()} style={{ color: sr.active ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
+                            <p key={randomBytes(12).toString()} style={{ color: (i == splitResponses.length - 1 && current) ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
                         ) : <p style={{ color: '#FFF', fontWeight: 500 }}>{text}</p>
                     }
                 </article>
                 {/* Continue button */}
                 {
-                    eliResponseType !== "WhatComesToMind" && showCTA &&
+                    eliResponseType !== "WhatComesToMind" && current &&
                     <NewButton type='button' onClick={() => { handleContinueOrIUnderstand({ type: eliResponseType !== "General" ? 'continue' : 'understand' }) }} buttonVariant='black' className={`${eliResponseType == "SubjectIntroduction" ? "!bg-[rgb(22,22,22,0.5)] border-2 border-black" : loadingNextMessage ? "!bg-[rgb(0,0,0,0.5)]" : 'black'} !px-[1.4rem] !py-[0.9rem] w-max font-bold`}>
 
                         {eliResponseType == "SubjectIntroduction" ? "Continue" : "I understand!"} (Enter)

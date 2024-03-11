@@ -65,19 +65,13 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                 console.error("No user input found in form data");
                 return null;
             };
-            //show the submitting question so the user knows their question is being processed
-            setLessonState({
-                oldMessages: [...ls.oldMessages, ...ls.newMessages], metadata, newMessages: [{
-                    id: "TEMP",
-                    content:
-                        theirReply, role: "user"
-                }]
-            });
+            //TODO: show the submitting question so the user knows their question is being processed
+
             //if there is an explicit state, use it
             if (explicitState) {
                 console.log("Setting lesson state to explicitState: ", explicitState)
                 setLessonState({
-                    oldMessages: [...ls.oldMessages, ...ls.newMessages, { id: "TEMPID - only one of these can be used. (Don't send more user msgs)", content: theirReply, role: "user" }], newMessages: [...explicitState.newMessages],
+                    oldMessages: [...ls.oldMessages, ...ls.newMessages, { content: theirReply, role: "user" }], newMessages: [...explicitState.newMessages],
                     metadata: explicitState.metadata
                 });
                 return;

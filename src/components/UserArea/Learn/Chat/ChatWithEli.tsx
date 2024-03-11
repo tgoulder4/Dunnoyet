@@ -47,12 +47,10 @@ function ChatWithEli({
     const [subject, setSubject] = useState(lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1] || 'New Question');
     const [disableInput, setDisableInput] = useState(false);
     const [updatingState, setUpdatingState] = useState(false);
+    const [theirReply, setTheirReply] = useState("");
     //for showing details client side before the response from server
     const router = useRouter();
-    const [responseFromserver, setResponseFromServer] = useState(null as null | {
-        type: 'error' | 'success',
-        message: string
-    });
+    const [erroMessage, seterrorMessage] = useState(null as null | string);
     const [_type, setType] = useState(type);
     if (_type == "Lesson" && !lessonState || _type == 'Lesson' && !updateState) throw new Error("No lesson state found @ChatWithEli")
     // const Lesson: ILesson = {
@@ -153,8 +151,6 @@ function ChatWithEli({
         }
     }, [lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1]]);
     async function submitUserQuestion(data: FormData) {
-        setDisableInput(true);
-        setUpdatingState(true);
         //make a POST request to /lesson/new with the user's reply as 'newQuestin' key in the body.
         console.log("Submitting user reply with data ", data.get('newQuestion'))
         const newQuestion = data.get('userInput');
@@ -178,7 +174,7 @@ function ChatWithEli({
         console.log("recieved response from /lesson/new: ", response)
         if (typeof response == 'string') {
             console.error("Error from /lesson/new: ", response)
-            setResponseFromServer({ type: 'error', message: response })
+            seterrorMessage(response);
             return;
         }
         console.log("response: ", response)
@@ -192,40 +188,45 @@ function ChatWithEli({
         if (type !== 'Lesson') setType('Lesson');
     }
     async function handleSumbitAction(data: FormData) {
+        console.log("HandleSubmitAction called")
+        setDisableInput(true);
+        setUpdatingState(true);
         if (_type == "NewQ") await submitUserQuestion(data);
-        else if (_type == "Lesson") await updateState!(data);
+        else if (_type == "Lesson") {
+            if (!lessonReplyInputRef.current) throw new Error("No lessonReplyInputRef found in ChatWithEli")
+            console.log("Setting theirReply to ", lessonReplyInputRef.current.value)
+            //NOT WORKING
+            setTheirReply(lessonReplyInputRef.current.value);
+            //clear the input
+            lessonReplyInputRef.current.value = "";
+            // //wait 2s
+            // await new Promise((resolve) => setTimeout(resolve, 2000));
+            await updateState!(data);
+            setTheirReply("");
+        }
         else if (_type == "Tutorial") null;
         else null;
+        setDisableInput(false);
+        setUpdatingState(false);
+        console.log("Setting theirReply to ''")
     }
 
     // Use useEffect to attach and detach the keydown event listener
+    //CLICKING BTN SUBMIT DOES WORK, BUT ENTER DOESN'T. ENTER DOES WORK WITH PREVIEW MESSAGE THOUGH
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter' || event.keyCode === 13) {
-                // Prevent default if you want to avoid submitting forms in case this component is used inside a form
+                event.preventDefault();
+                const formData = new FormData();
                 if (_type == "NewQ") {
-                    event.preventDefault();
                     // I'll need the form data...?
-                    setDisableInput(true);
-                    setUpdatingState(true);
-                    const formData = new FormData();
                     formData.append('userInput', textAreaRef.current!.value);
-                    submitUserQuestion(formData).then(() => {
-                        setDisableInput(false);
-                        setUpdatingState(false);
-                    });
+                    handleSumbitAction(formData);
 
                 };
                 if (_type == "Lesson" && lessonReplyInputRef.current?.value) {
-                    setDisableInput(true);
-                    setUpdatingState(true);
-                    event.preventDefault();
-                    const formData = new FormData();
-                    formData.append('userInput', lessonReplyInputRef.current!.value);
-                    handleSumbitAction(formData).then(() => {
-                        setDisableInput(false);
-                        setUpdatingState(false);
-                    });
+                    //tell them to click the button
+                    seterrorMessage("Please click the button on the right ask your question!");
                 }
             }
         };
@@ -251,7 +252,7 @@ function ChatWithEli({
                                 </Message>
                             </div>
                         </>}
-                        {_type == "Lesson" && <Conversation lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} oldMessages={lessonState!.oldMessages} newMessages={lessonState?.newMessages!} />}
+                        {_type == "Lesson" && lessonState && <Conversation theirReply={theirReply} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} lessonState={lessonState} />}
 
                         {
                             _type == "Tutorial" &&
@@ -266,9 +267,16 @@ function ChatWithEli({
                         }
 
                     </div>
-                    <div style={{ columnGap: spacing.gaps.groupedElement }} className="p-8 pb-16 flex flex-row h-max bg-white">
+                    <div style={{ columnGap: spacing.gaps.groupedElement }} className="p-8 pb-16 flex flex-row items-end h-max bg-white">
                         {
-                            type == "Lesson" && <Input ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-1' />
+                            type == "Lesson" && <div className='w-full flex flex-col-reverse'>
+                                <Input onChange={() => seterrorMessage("")} style={{
+                                    borderColor: erroMessage ? 'red' : ''
+                                }} ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-0 h-14' />
+                                {
+                                    erroMessage && <p className='text-red-500 pb-4'>{erroMessage}</p>
+                                }
+                            </div>
                         }
                         <NewButton disabled={disableInput || updatingState} tooltip='Ask Question' type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
                             () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : ""}
