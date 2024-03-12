@@ -11,7 +11,7 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     // console.log("Conversation rendered, theirReply is: ", theirReply)
     const { oldMessages, newMessages, metadata } = lessonState;
-    const [threadsForSeparationOfMessages, setThreadsForSeparationOfMessages] = useState(metadata.threads);
+    let threadsForSeparationOfMessages = useRef(metadata.threads);
     const [newMessageControlIndex, setNewMessageControlIndex] = useState(1);
     const newEliMessagesToRender = newMessages.slice(0, newMessageControlIndex) as IMessage[];
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -40,10 +40,10 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                 }
                 customIndex = index + groupSize;
                 // Adjust splitResponses based on the index and if joinWithMsg is provided and if threads length hasn't changed
-                const splitResponses = joinWithMsg
+                console.log("JoinWithMsg is ", joinWithMsg, " for this message ", message.splitResponse?.text)
+                const splitResponses = joinWithMsg && checkIfLastTwoMsgsShouldBeJoined()
                     ? [joinWithMsg.splitResponse!, ...messages.slice(index, index + groupSize).map(msg => msg.splitResponse!)]
                     : messages.slice(index, index + groupSize).map(msg => msg.splitResponse!);
-                console.log("Threads length on this render was: ", threadsForSeparationOfMessages.length)
                 return (<EliMessage current={type == "newmsgs" ? index == messages.length - 1 : false} splitResponses={splitResponses} text={message.content as string} eliResponseType={message.eliResponseType} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setNewMessageControlIndex={setNewMessageControlIndex} key={message.id} />);
             }
         });
@@ -52,17 +52,15 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     console.log("Old messages are: ", oldMessages)
     console.log("New messages are: ", newMessages)
     const checkIfLastTwoMsgsShouldBeJoined = (): boolean => {
-        const result = (oldMessages[oldMessages.length - 1].splitResponse && (lessonState.metadata.threads.length === threadsForSeparationOfMessages.length))
-        console.log("Result of checkIfMessageShouldBeJoined is: ", result)
+        console.log("Comparing thread lengths ", threadsForSeparationOfMessages.current.length, " and ", metadata.threads.length)
+        const result = (oldMessages[oldMessages.length - 1].splitResponse && newMessages[0].splitResponse && (lessonState.metadata.threads.length === threadsForSeparationOfMessages.current.length))
+        console.log("Result of checkIfLastTwoMsgsShouldBeJoined is: ", result)
         if (result == undefined) return false;
         return result;
     }
     //if the last msg is on the same thread level and a splitResponse, don't render it as old
-    const _oldMessages = useMemo(() => getJsxFromMessages(checkIfLastTwoMsgsShouldBeJoined() ? oldMessages.slice(0, -1) : oldMessages, "newmsgs"), [oldMessages])
+    const _oldMessages = getJsxFromMessages(checkIfLastTwoMsgsShouldBeJoined() ? oldMessages.slice(0, -1) : oldMessages, "oldmsgs")
     const _newMessages = getJsxFromMessages(newEliMessagesToRender, 'newmsgs', checkIfLastTwoMsgsShouldBeJoined() ? oldMessages[oldMessages.length - 1] : undefined);
-    if (lessonState.metadata.threads.length !== threadsForSeparationOfMessages.length) {
-        setThreadsForSeparationOfMessages(lessonState.metadata.threads)
-    }
     // const [messages, setMessages] = useState([...oldMessages] as IMessage[]);
     //its joined if itself and its previous message is a general message
     // Function to render old messages with correct grouping
@@ -70,6 +68,10 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     useEffect(() => {
         if (newEliMessagesToRender[newEliMessagesToRender.length - 1].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
     }, []);
+    useEffect(() => {
+        console.log("Equating stored thread ref to new thread ref - ", threadsForSeparationOfMessages.current, " becomes ", metadata.threads)
+        threadsForSeparationOfMessages.current = metadata.threads;
+    }, [metadata.threads.length]);
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
