@@ -191,18 +191,20 @@ function ChatWithEli({
         console.log("HandleSubmitAction called")
         setDisableInput(true);
         setUpdatingState(true);
+        seterrorMessage(null);
         if (_type == "NewQ") await submitUserQuestion(data);
         else if (_type == "Lesson") {
             if (!lessonReplyInputRef.current) throw new Error("No lessonReplyInputRef found in ChatWithEli")
-            console.log("Setting theirReply to ", lessonReplyInputRef.current.value)
-            //NOT WORKING
             setTheirReply(lessonReplyInputRef.current.value);
+            if (!updateState) throw new Error("No updateState function found in ChatWithEli, can't update.")
+            console.log("Setting theirReply to ", lessonReplyInputRef.current.value)
+            //NOT WORKING ON BUTTON CLICK
             //clear the input
-            lessonReplyInputRef.current.value = "";
             // //wait 2s
             // await new Promise((resolve) => setTimeout(resolve, 2000));
-            await updateState!(data);
+            await updateState(data);
             setTheirReply("");
+            lessonReplyInputRef.current.value = "";
         }
         else if (_type == "Tutorial") null;
         else null;
@@ -270,9 +272,10 @@ function ChatWithEli({
                     <div style={{ columnGap: spacing.gaps.groupedElement }} className="p-8 pb-16 flex flex-row items-end h-max bg-white">
                         {
                             type == "Lesson" && <div className='w-full flex flex-col-reverse'>
-                                <Input onChange={() => seterrorMessage("")} style={{
-                                    borderColor: erroMessage ? 'red' : ''
-                                }} ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-0 h-14' />
+                                <Input
+                                    onChange={() => seterrorMessage("")} style={{
+                                        borderColor: erroMessage ? 'red' : ''
+                                    }} ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-0 h-14' />
                                 {
                                     erroMessage && <p className='text-red-500 pb-4'>{erroMessage}</p>
                                 }

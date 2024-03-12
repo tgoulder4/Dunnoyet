@@ -157,15 +157,20 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.fillText("ORIGIN", centerX + 10, centerY + 10);
         ctx.closePath();
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
+        const potentialPulsingLinks: number[] = []; //links of indexes
         if (knowledgePoints.length > 0) {
             for (let i = 0; i < knowledgePoints.length - 1; i++) { // Stop at the second to last element
                 const point = knowledgePoints[i];
                 const nextPoint = knowledgePoints[i + 1];
                 // Draw line from current point to next
                 // Special handling for pulsating lines between confidence 5 and 4
-                if (point.confidence === 5 && nextPoint.confidence === 4) {
-                    updatePulsateOpacity();
-                    ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
+                if (point.confidence === 5 && nextPoint.confidence === 4 || point.confidence === 4 && nextPoint.confidence === 2) {
+                    if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
+                        updatePulsateOpacity();
+                        ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
+                        potentialPulsingLinks.push(i)
+                    }
+
                 } else {
                     ctx.globalAlpha = 1; // No pulsating effect, fully opaque
                 }

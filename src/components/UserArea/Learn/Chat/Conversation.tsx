@@ -10,7 +10,8 @@ import { render } from 'react-dom'
 function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, theirReply }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, theirReply: string }) {
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     console.log("Conversation rendered, theirReply is: ", theirReply)
-    const { oldMessages, newMessages } = lessonState;
+    const { oldMessages, newMessages, metadata } = lessonState;
+    const [threadsForSeparationOfMessages, setThreadsForSeparationOfMessages] = useState(metadata.threads);
     const [newMessageControlIndex, setNewMessageControlIndex] = useState(1);
     const newEliMessagesToRender = newMessages.slice(0, newMessageControlIndex) as IMessage[];
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,10 +39,14 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                     groupSize++;
                 }
                 customIndex = index + groupSize;
-                // Adjust splitResponses based on the index and if joinWithMsg is provided
-                const splitResponses = index === 0 && joinWithMsg
+                // Adjust splitResponses based on the index and if joinWithMsg is provided and if threads length hasn't changed
+                const splitResponses = index === 0 && joinWithMsg && lessonState.metadata.threads.length === threadsForSeparationOfMessages.length
                     ? [joinWithMsg.splitResponse!, ...messages.slice(index, index + groupSize).map(msg => msg.splitResponse!)]
                     : messages.slice(index, index + groupSize).map(msg => msg.splitResponse!);
+                // console.log("Setting threads for separation of messages to: ", lessonState.metadata.threads)
+                if (lessonState.metadata.threads.length !== threadsForSeparationOfMessages.length) {
+                    setThreadsForSeparationOfMessages(lessonState.metadata.threads)
+                }
                 return (<EliMessage current={type == "newmsgs" ? index == messages.length - 1 : false} splitResponses={splitResponses} text={message.content as string} eliResponseType={message.eliResponseType} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setNewMessageControlIndex={setNewMessageControlIndex} key={message.id} />);
             }
         });
