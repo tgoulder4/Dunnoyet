@@ -50,6 +50,14 @@ enum kpSource {
   offered
 }
 
+model Feedback {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  userId  String @db.ObjectId // User ID
+
+  @@map("feedbacks")
+}
+
 model Lesson {
   id                  String           @id @default(auto()) @map("_id") @db.ObjectId
   ls                  lessonState      @relation("LessonToLessonState", fields: [stateId], references: [id])

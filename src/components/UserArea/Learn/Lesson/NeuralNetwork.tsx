@@ -183,7 +183,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.globalAlpha = 1; // Reset global alpha if you've changed it
                 //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node
                 if (point.confidence === 4 && nextPoint.confidence === 2) {
-                    if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
+                    if (potentialPulsingLinks.find(index => index > i) || potentialPulsingLinks.length === 0) {
                         updatePulsateOpacity();
                         ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
                         potentialPulsingLinks.push(i)
