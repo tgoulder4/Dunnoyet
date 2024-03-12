@@ -85,6 +85,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         // Use the identity matrix while clearing the canvas
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        const knowledgePointRadius = 5;
         // Apply the scale and offset for this draw operation
 
         // FUTURE FEATURE: Apply limits to the new offsets
@@ -142,7 +143,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         if (allKnowledgePoints) {
             allKnowledgePoints.forEach((point, i) => {
                 ctx.beginPath();
-                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0], allKnowledgePoints[i].TwoDCoOrdinates[1], 5, 0, 2 * Math.PI);
+                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0], allKnowledgePoints[i].TwoDCoOrdinates[1], knowledgePointRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
                 ctx.fill();
                 ctx.closePath();
@@ -163,8 +164,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 const point = knowledgePoints[i];
                 const nextPoint = knowledgePoints[i + 1];
                 // Draw line from current point to next
-                // Special handling for pulsating lines between confidence 5 and 4
-                if (point.confidence === 5 && nextPoint.confidence === 4 || point.confidence === 4 && nextPoint.confidence === 2) {
+                //at this point, the context is drawing the line. We can change the opacity of the line here, and then reset it after drawing the line
+                if (point.confidence === 5 && nextPoint.confidence === 4) {
                     if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
                         updatePulsateOpacity();
                         ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
@@ -175,11 +176,22 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                     ctx.globalAlpha = 1; // No pulsating effect, fully opaque
                 }
                 ctx.beginPath();
-                ctx.moveTo(point.TwoDCoOrdinates[0] + centerX, point.TwoDCoOrdinates[1] + centerY); // Start at current point
-                ctx.lineTo(nextPoint.TwoDCoOrdinates[0] + centerX, nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
+                ctx.moveTo(centerX + point.TwoDCoOrdinates[0], point.TwoDCoOrdinates[1] + centerY); // Start at current point
+                ctx.lineTo(centerX + nextPoint.TwoDCoOrdinates[0], nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
                 ctx.strokeStyle = getColourFromConfidence(nextPoint.confidence); // Use the helper function to get the color
                 ctx.stroke();
                 ctx.globalAlpha = 1; // Reset global alpha if you've changed it
+                //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node
+                if (point.confidence === 4 && nextPoint.confidence === 2) {
+                    if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
+                        updatePulsateOpacity();
+                        ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
+                        potentialPulsingLinks.push(i)
+                    }
+
+                } else {
+                    ctx.globalAlpha = 1; // No pulsating effect, fully opaque
+                }
                 // Now draw the current point
                 ctx.beginPath();
                 ctx.arc(point.TwoDCoOrdinates[0] + centerX, point.TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
