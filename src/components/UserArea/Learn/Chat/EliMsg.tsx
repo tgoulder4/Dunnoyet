@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto';
 
-function EliMessage({ eliResponseType, splitResponses, text, updateState, setNewMessageControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setNewMessageControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean }) {
+function EliMessage({ eliResponseType, splitResponses, text, updateState, setControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'SubjectIntroduction', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {
         setLoadingNextMessage(true);
@@ -20,7 +20,8 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
                 setUpdatingState(false);
             });
         } else {
-            setNewMessageControlIndex(prev => prev + 1);
+            console.log("INCREMENTING CONTROL INDEX REF")
+            setControlIndex(prev => prev + 1);
             setLoadingNextMessage(false);
             setDisableInput(false);
             setUpdatingState(false);
@@ -46,7 +47,7 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setNew
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [eliResponseType, setNewMessageControlIndex, setDisableInput, setUpdatingState, updateState]);
+    }, [eliResponseType, setDisableInput, setUpdatingState, updateState]);
     return (
         <div className={`w-full flex items-start justify-start ${eliResponseType !== "SubjectIntroduction" ? " pr-0 md:pr-16" : ""}`}>
             <Message style={{ paddingBottom: eliResponseType == "SubjectIntroduction" ? 40 : 20, borderBottomLeftRadius: 0, borderBottomRightRadius: eliResponseType == "SubjectIntroduction" ? 0 : 20, width: eliResponseType == 'SubjectIntroduction' ? '100%' : '70%', backgroundColor: eliResponseType == "WhatComesToMind" || eliResponseType == 'ChallengeQ' ? colours.interrogativeMessage : eliResponseType == 'SubjectIntroduction' ? colours.systemEventMessage : colours.complementary_lightest }}>

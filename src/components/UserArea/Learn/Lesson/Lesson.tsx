@@ -1,5 +1,5 @@
 'use client'
-import { ILessonState, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
+import { ILessonState, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
 import React, { useState } from 'react'
 import { merriweather } from '@/app/fonts'
 import ChatWithEli from '@/components/UserArea/Learn/Chat/ChatWithEli'
@@ -16,7 +16,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
     console.log("LessonState: ", lessonState)
     const currentSubject = lessonState.metadata.subjects[lessonState.metadata.subjects.length - 1];
     const {
-        oldMessages, newMessages, metadata
+        newMessages, metadata,
     } = lessonState;
     const {
         knowledgePointChain,
@@ -65,13 +65,14 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                 console.error("No user input found in form data");
                 return null;
             };
+            const theirReplyMsg: IMessage = { content: theirReply, role: "user" };
             //TODO: show the submitting question so the user knows their question is being processed
 
             //if there is an explicit state, use it
             if (explicitState) {
                 console.log("Setting lesson state to explicitState: ", explicitState)
                 setLessonState({
-                    oldMessages: [...ls.oldMessages, ...ls.newMessages, { content: theirReply, role: "user" }], newMessages: [...explicitState.newMessages],
+                    oldMessages: [...ls.oldMessages, ...ls.newMessages, theirReplyMsg], newMessages: [...explicitState.newMessages],
                     metadata: explicitState.metadata
                 });
                 return;
@@ -90,7 +91,7 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
             if (typeof getMessageResponse === "string") { error = getMessageResponse } else {
                 console.log("nextState: ", getMessageResponse)
                 const { newMessages, metadata } = getMessageResponse;
-                setLessonState({ oldMessages: [...ls.oldMessages, ...ls.newMessages, { content: theirReply, role: "user" }], newMessages, metadata });
+                setLessonState({ oldMessages: [...ls.oldMessages, ...ls.newMessages, theirReplyMsg], newMessages, metadata });
             };
         } catch (e) { console.error(e) }
 
