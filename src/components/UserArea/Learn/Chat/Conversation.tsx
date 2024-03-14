@@ -17,18 +17,18 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     const scrollRef = useRef<HTMLDivElement>(null);
     const getJsxFromAllMessages = (messages: IMessage[]) => {
         console.log("Messages passed to getJsxFromAllMessages: ", messages)
-        let customIndex = 0;
+        let index = 0;
         if (messages.length === 0) return []
         const jsxMessages = [];
 
-        while (customIndex < messages.length) {
-            const message = messages[customIndex];
+        while (index < messages.length) {
+            const message = messages[index];
             let key;
 
             if (message.splitResponse) {
-                key = `${message.splitResponse.text}-${customIndex}`;
+                key = `${message.splitResponse.text}-${index}`;
             } else if (message.content) {
-                key = `${message.content}-${customIndex}`;
+                key = `${message.content}-${index}`;
             } else {
                 throw new Error("Message has no content or splitResponse, could not generate key for message.");
             }
@@ -38,21 +38,22 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                 jsxMessages.push(<UserMessage text={message.content} key={key} />);
             } else {
                 if (message.eliResponseType !== "General") {
-                    jsxMessages.push(<EliMessage current={customIndex === messages.length - 1} text={message.content} eliResponseType={message.eliResponseType as any} lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
+                    jsxMessages.push(<EliMessage current={index === messages.length - 1} text={message.content} eliResponseType={message.eliResponseType as any} lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
                 } else if (message.content === "BREAK") {
                     jsxMessages.push(<div className='w-full h-4' key={key}></div>);
                 } else {
                     let groupSize = 1;
-                    while (messages[customIndex + groupSize] && messages[customIndex + groupSize].eliResponseType === "General") {
+                    while (messages[index + groupSize] && messages[index + groupSize].eliResponseType === "General") {
                         groupSize++;
                     }
-                    const splitResponses = messages.slice(customIndex, customIndex + groupSize).map(msg => msg.splitResponse);
+                    const splitResponses = messages.slice(index, index + groupSize).map(msg => msg.splitResponse);
                     if (splitResponses.includes(undefined)) throw new Error("SplitResponse includes undefined in splitResponses array. It should contain 1 general response at minimum.")
-                    jsxMessages.push(<EliMessage current={customIndex === messages.length - 1} splitResponses={splitResponses as any} eliResponseType={"General"} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
-                    customIndex += groupSize - 1; // Adjust for the increase in group size
+                    console.log("Current is ", index === messages.length - 1, " - index is ", index, " - messages.length - splitREsponses.length ", messages.length - splitResponses.length)
+                    jsxMessages.push(<EliMessage current={index === messages.length - splitResponses.length} splitResponses={splitResponses as any} eliResponseType={"General"} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
+                    index += groupSize - 1; // Adjust for the increase in group size
                 }
             }
-            customIndex++;
+            index++;
         }
         return jsxMessages;
     };
@@ -78,20 +79,22 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
             controlIndexRef = 0;
         }
         const theirReplyMsg = { content: theirReply, role: "user" } as IMessage;
+        const updatedMessages = [] as IMessage[];
         console.log("Control index ref being used is: ", controlIndex); //WHY IS THIS STILL 1
         if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
         if (messagesToRender.length == 0) {
-            setMessagesToRender([theirReplyMsg!, newMessages[controlIndexRef]]);
+            updatedMessages.push(theirReplyMsg!, newMessages[controlIndexRef]);
         }
         else if (theirReply.length !== 0) {
             console.log("Their reply wasn't undefined, rendering messages you see with controlIndex: ", controlIndexRef, " and newMessages: ", newMessages);
-            setMessagesToRender(prev => [...prev, theirReplyMsg, newMessages[controlIndexRef]]);
+            updatedMessages.push(...messagesToRender, theirReplyMsg, newMessages[controlIndexRef])
             if (!lessonReplyInputRef.current) throw new Error("lessonReplyInputRef is undefined, can't clear the reply");
             lessonReplyInputRef.current.value = "";
         } else {
             console.log("Their reply was undefined, setting messages to render to: ", [...messagesToRender, newMessages[controlIndexRef]])
-            setMessagesToRender(prev => [...prev, newMessages[controlIndexRef]]);
+            updatedMessages.push(...messagesToRender, newMessages[controlIndexRef]);
         }
+        setMessagesToRender(updatedMessages);
     }, [controlIndex, newMessages]);
     //spy and see if threads.length has changed, if it has then start a new general message else attach to the current general message
     return (
