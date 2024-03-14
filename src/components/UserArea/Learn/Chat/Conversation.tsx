@@ -37,10 +37,11 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                 if (!message.content) throw new Error("User message has no content.");
                 jsxMessages.push(<UserMessage text={message.content} key={key} />);
             } else {
-                if (message.eliResponseType !== "General") {
-                    jsxMessages.push(<EliMessage current={index === messages.length - 1} text={message.content} eliResponseType={message.eliResponseType as any} lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
-                } else if (message.content === "BREAK") {
+                if (message.content === "BREAK") {
                     jsxMessages.push(<div className='w-full h-4' key={key}></div>);
+                }
+                else if (message.eliResponseType !== "General") {
+                    jsxMessages.push(<EliMessage current={index === messages.length - 1} text={message.content} eliResponseType={message.eliResponseType as any} lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
                 } else {
                     let groupSize = 1;
                     while (messages[index + groupSize] && messages[index + groupSize].eliResponseType === "General") {
@@ -83,17 +84,24 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         console.log("Control index ref being used is: ", controlIndex); //WHY IS THIS STILL 1
         if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
         if (messagesToRender.length == 0) {
-            updatedMessages.push(theirReplyMsg!, newMessages[controlIndexRef]);
+            updatedMessages.push(theirReplyMsg!);
         }
         else if (theirReply.length !== 0) {
             console.log("Their reply wasn't undefined, rendering messages you see with controlIndex: ", controlIndexRef, " and newMessages: ", newMessages);
-            updatedMessages.push(...messagesToRender, theirReplyMsg, newMessages[controlIndexRef])
+            updatedMessages.push(...messagesToRender, theirReplyMsg)
             if (!lessonReplyInputRef.current) throw new Error("lessonReplyInputRef is undefined, can't clear the reply");
             lessonReplyInputRef.current.value = "";
         } else {
             console.log("Their reply was undefined, setting messages to render to: ", [...messagesToRender, newMessages[controlIndexRef]])
-            updatedMessages.push(...messagesToRender, newMessages[controlIndexRef]);
+            updatedMessages.push(...messagesToRender);
         }
+        //check if the thread length has changed and if so insert a break.
+        if (metadata.threads.length < threadsForSeparationOfMessages.current.length) {
+            console.log("Threads length has changed, inserting a break")
+            updatedMessages.push({ content: "BREAK", role: "eli" });
+        }
+        threadsForSeparationOfMessages.current = metadata.threads;
+        updatedMessages.push(newMessages[controlIndexRef])
         setMessagesToRender(updatedMessages);
     }, [controlIndex, newMessages]);
     //spy and see if threads.length has changed, if it has then start a new general message else attach to the current general message
