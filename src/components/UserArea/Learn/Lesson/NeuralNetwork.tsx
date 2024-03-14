@@ -26,8 +26,8 @@ function getColourFromConfidence(confidence: number) {
 // Function to calculate the opacity for pulsating effect
 let pulsateOpacity = 1;
 let pulsateDirection = true; // true for increasing, false for decreasing
-const updatePulsateOpacity = () => {
-    const speed = 0.003; // Speed of pulsating effect
+const updatePulsateOpacity = (frameRate: number) => {
+    const speed = 1 / frameRate; // Speed of pulsating effect
     if (pulsateDirection) {
         pulsateOpacity += speed;
         if (pulsateOpacity >= 1) {
@@ -53,10 +53,34 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const canvasRef = useRef(null);
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
-    const requestAnimationRef = useRef<any>(0);
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
-    const [scaleMultiplier, setScaleMultiplier] = useState(0.7);
+    const scaleMultiplier = useRef(0.7)
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
+    const previousTime = useRef(performance.now());
+    var t: Array<number> = [];
+    //being more resource friendly by only calculating the required frame rate. Draw updates ALOT.
+    const getRequiredFrameRate = () => new Promise<number>((resolve, reject) => {
+        if (frameRate !== 60) resolve(Math.min(frameRate, 240));
+        const getNext = () => {
+            const now = performance.now();
+            t.unshift(now);
+            if (t.length > 5) {
+                var t0 = t.pop();
+                var fps = Math.floor(1000 * 5 / (now - (t0 || 0)));
+                console.log("Resolving fps: ", fps)
+                resolve(fps);
+                return () => cancelAnimationFrame(requestAnimationRef.current);
+            } else {
+
+                requestAnimationRef.current = requestAnimationFrame(getNext);
+            }
+
+        };
+        getNext();
+    });
+
+    let frameRate: number = 60;
+    const requestAnimationRef = useRef<any>(null);
     // Function to calculate boundaries
     const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
         const xValues = points.map(point => point.TwoDCoOrdinates[0]);
@@ -69,7 +93,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const xRange = maxX - minX;
         const yRange = maxY - minY;
         // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-        const overallScale = Math.max(ctx.canvas.width / xRange, ctx.canvas.height / yRange) * 0.15;
+        const overallScale = Math.min(ctx.canvas.width / xRange, ctx.canvas.height / yRange) * 0.15;
         const centerOffsetX = minX + (xRange / 2);
         const centerOffsetY = minY + (yRange / 2);
         // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
@@ -77,7 +101,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     };
 
     // Function to adjust view
-    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0) => {
+    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0, scale: number) => {
 
         // Store the current transformation matrix
         ctx.save();
@@ -110,11 +134,12 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.restore()
         // Drawing lines for visual aid
 
-        // NEW: Move to the center of the canvas
+        // NEW: Move to the center of the canvas to scale from the center
         ctx.translate(centerX, centerY);
-
-
-        ctx.scale(scaleMultiplier, scaleMultiplier);
+        //reset scale
+        // ctx.scale(1 / scaleMultiplier, 1 / scaleMultiplier);
+        // console.log("Scaling by: ", scale)
+        ctx.scale(scale, scale);
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
@@ -167,7 +192,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 //at this point, the context is drawing the line. We can change the opacity of the line here, and then reset it after drawing the line
                 if (point.confidence === 5 && nextPoint.confidence === 4) {
                     if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
-                        updatePulsateOpacity();
+                        updatePulsateOpacity(frameRate);
                         ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
                         potentialPulsingLinks.push(i)
                     }
@@ -178,13 +203,13 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.beginPath();
                 ctx.moveTo(centerX + point.TwoDCoOrdinates[0], point.TwoDCoOrdinates[1] + centerY); // Start at current point
                 ctx.lineTo(centerX + nextPoint.TwoDCoOrdinates[0], nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
-                ctx.strokeStyle = (nextPoint.confidence < point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
+                ctx.strokeStyle = (nextPoint.confidence <= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
                 ctx.stroke();
                 ctx.globalAlpha = 1; // Reset global alpha if you've changed it
                 //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node
                 if (point.confidence === 4 && nextPoint.confidence === 2) {
                     if (potentialPulsingLinks.find(index => index > i) || potentialPulsingLinks.length === 0) {
-                        updatePulsateOpacity();
+                        updatePulsateOpacity(frameRate);
                         ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
                         potentialPulsingLinks.push(i)
                     }
@@ -213,6 +238,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             ctx.closePath();
             // Reset global alpha if you've changed it
             ctx.globalAlpha = 1;
+            ctx.save()
         }
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     // Animation loop function
@@ -220,24 +246,32 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Canvas not found');
-        if (knowledgePoints.length > 0) {
-            updatePulsateOpacity(); // Update the opacity for pulsating effect
-            if (ctx) {
-                draw(ctx, offset.current.x, offset.current.y); // Redraw with updated pulsate opacity
+        // console.log("Draw called in animate")
 
-            }
-            requestAnimationRef.current = requestAnimationFrame(animate);
-        };
-    };
+        // Calculate the time elapsed since the last frame
+        const timeAtCallOfAnimate = performance.now();
+        let deltaTime: number = 0;
+        requestAnimationRef.current = requestAnimationFrame(animate);
+        // Limit the frame rate to 60 FPS
+        while (deltaTime < 1000 / frameRate) {
+            deltaTime = performance.now() - timeAtCallOfAnimate;
+        }
+        updatePulsateOpacity(frameRate); // Update the opacity for pulsating effect
+        draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current)
+        return () => cancelAnimationFrame(requestAnimationRef.current);
+    }
     // Start the animation loop
     useEffect(() => {
-        requestAnimationRef.current = requestAnimationFrame(animate);
+        if (knowledgePoints.length > 0) {
+            requestAnimationRef.current = requestAnimationFrame(animate); //start animation loop
+        }
         return () => cancelAnimationFrame(requestAnimationRef.current);
     }, [knowledgePoints]); // Rerun the effect when knowledgePoints change
     useEffect(() => {
         async function main() {
             const allKp = await getAllReinforcedKnowledgePoints(userId!);
-            // console.log("Setting allKnowledgePoints to: ", allKp)
+            frameRate = await getRequiredFrameRate();
+            console.log("Frame rate used: ", frameRate)
             setAllKnowledgePoints(allKp);
         }
         main()
@@ -268,7 +302,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.scale(dpr, dpr); // Scale all drawing operations by the dpr, so you don't need to manually scale each draw operation
 
         // Redraw the canvas content based on the new dimensions
-        draw(ctx, offset.current.x, offset.current.y);
+        console.log("Draw called in handleResize")
+        draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         console.log("resize fired")
     };
     useEffect(() => {
@@ -281,7 +316,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
-
         const onMouseDown = (e: MouseEvent) => {
             // console.log("Offset: ", offset.current.x, offset.current.y)
             drag.current.isDragging = true;
@@ -294,55 +328,47 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             if (!drag.current.isDragging) return;
 
             // Calculate the delta between the current mouse position and the initial click position
-            const dx = (e.clientX - drag.current.startX) / scaleMultiplier;
-            const dy = (e.clientY - drag.current.startY) / scaleMultiplier;
+            const dx = (e.clientX - drag.current.startX) / scaleMultiplier.current;
+            const dy = (e.clientY - drag.current.startY) / scaleMultiplier.current;
 
             // Update the drag start position to the current position
             drag.current.startX = e.clientX;
             drag.current.startY = e.clientY;
 
-            // Calculate potential new offsets by adding deltas
-            const potentialOffsetX = offset.current.x + dx;
-            const potentialOffsetY = offset.current.y + dy;
-
-            // Define maximum and minimum offsets
-            const maxOffset = 50 * scaleMultiplier;
-            const minOffset = -50 * scaleMultiplier; // Assuming you also want to limit dragging in the opposite direction
-
-            // Apply limits to the new offsets
-            // offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
-            // offset.current.y = Math.min(Math.max(potentialOffsetY, minOffset), maxOffset);
             offset.current.x += dx;
             offset.current.y += dy;
-
-            draw(ctx, offset.current.x, offset.current.y);
+            console.log("Draw called in onMouseMove")
+            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
 
         const onMouseUp = () => {
             drag.current.isDragging = false;
-            // console.log("Offset: ", offset.current.x, offset.current.y)
-            // setOffset({ x: offsetX, y: offsetY });
+            //go back to current knowledge points
+            if (knowledgePoints.length > 0) {
+                const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
+                // offset.current.x = -centerOffsetX;
+                // offset.current.y = -centerOffsetY;
+                console.log("Scale set by knowledgePoints onMouseUp: ", overallScale)
+                // scaleMultiplier.current = overallScale;
+                draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+            }
         };
         const onWheel = (e: WheelEvent) => {
             e.preventDefault();
             const zoomFactor = 0.1;
             const direction = e.deltaY < 0 ? 1 : -1;
-            setScaleMultiplier(prev => prev * (1 + zoomFactor * direction));
+            console.log("Scale set by onWheel: ", scaleMultiplier.current * (1 + zoomFactor * direction))
+            scaleMultiplier.current = scaleMultiplier.current * (1 + zoomFactor * direction);
             console.log("Scale: ", scaleMultiplier)
-            draw(ctx, offset.current.x, offset.current.y);
-            // setScale(newScale);
+            console.log("Draw called in onWheel")
+            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
         canvas.addEventListener('mousedown', onMouseDown);
         canvas.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
-        if (knowledgePoints.length > 0) {
-            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
-            offset.current.x = -centerOffsetX;
-            offset.current.y = -centerOffsetY;
-            setScaleMultiplier(overallScale);
-        }
-        draw(ctx, offset.current.x, offset.current.y); // Initial draw
+        console.log("Draw called in general useEffect")
+        draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current); // Initial draw
         // Clean up to prevent memory leaks
         return () => {
             canvas.removeEventListener('mousedown', onMouseDown);
