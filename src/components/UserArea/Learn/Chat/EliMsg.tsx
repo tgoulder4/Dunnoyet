@@ -27,6 +27,16 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setCon
             setUpdatingState(false);
         }
     }
+    const underlineBracketedText = (text: string) => {
+        return text.split(/(\[.*?\])/).map((part, index) => {
+            if (part.startsWith('[') && part.endsWith(']')) {
+                // Wrap text inside brackets with span for underlining
+                return <span key={index} style={{ textDecoration: 'underline' }}>{part.slice(1, -1)}</span>;
+            } else {
+                return part;
+            }
+        });
+    };
     // Use useEffect to attach and detach the keydown event listener
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -55,8 +65,8 @@ function EliMessage({ eliResponseType, splitResponses, text, updateState, setCon
                     {eliResponseType == "SubjectIntroduction" && <h3 className='font-[900] text-white'>Bridging the gap</h3>}
                     {
                         splitResponses ? splitResponses.map((sr, i) =>
-                            <p key={randomBytes(12).toString()} style={{ color: (i == splitResponses.length - 1 && current) ? '#000' : '#747474', fontWeight: 700 }}>{sr.text}</p>
-                        ) : <p style={{ color: '#FFF', fontWeight: 500 }}>{text}</p>
+                            <p key={randomBytes(12).toString()} style={{ color: (i == splitResponses.length - 1 && current) ? '#000' : '#747474', fontWeight: 700 }}>{underlineBracketedText(sr.text)}</p>
+                        ) : <p style={{ color: '#FFF', fontWeight: 500 }}>{underlineBracketedText(text!)}</p>
                     }
                 </article>
                 {/* Continue button */}
