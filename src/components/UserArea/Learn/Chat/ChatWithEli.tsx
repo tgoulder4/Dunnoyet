@@ -199,7 +199,6 @@ function ChatWithEli({
         else if (_type == "Lesson") {
             if (!lessonReplyInputRef.current) throw new Error("No lessonReplyInputRef found in ChatWithEli")
             if (!updateState) throw new Error("No updateState function found in ChatWithEli, can't update.")
-            console.log("Setting theirReply to ", lessonReplyInputRef.current.value)
             //NOT WORKING ON BUTTON CLICK
             //clear the input
             // //wait 2s
@@ -211,7 +210,6 @@ function ChatWithEli({
         else null;
         setDisableInput(false);
         setUpdatingState(false);
-        // theirReplyRef.current = "";
     }
 
     // Use useEffect to attach and detach the keydown event listener
@@ -255,7 +253,7 @@ function ChatWithEli({
                                 </Message>
                             </div>
                         </>}
-                        {_type == "Lesson" && lessonState && <Conversation theirReply={textAreaRef.current?.value || lessonReplyInputRef.current?.value || ""} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} lessonState={lessonState} />}
+                        {_type == "Lesson" && lessonState && <Conversation initialQ={textAreaRef.current?.value} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} lessonState={lessonState} />}
 
                         {
                             _type == "Tutorial" &&

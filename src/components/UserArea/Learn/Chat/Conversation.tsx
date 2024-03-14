@@ -5,14 +5,14 @@ import UserMessage from './UserMessage'
 import EliMessage from './EliMsg'
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 var equal = require('deep-equal')
-function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, theirReply }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, theirReply: string }) {
+function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, initialQ }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, initialQ: string | undefined }) {
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     const { newMessages, metadata } = lessonState;
     const prevState = useRef(lessonState);     // Check if newMessages was the cause of the re-render to set the contronIndexRef to 0
     const threadsForSeparationOfMessages = useRef(metadata.threads);
     const [controlIndex, setControlIndex] = useState(0);
     let controlIndexRef = controlIndex;
-    console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex, " their reply passed is: ", theirReply);
+    console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex);
     const [messagesToRender, setMessagesToRender] = useState([] as IMessage[]);
     const scrollRef = useRef<HTMLDivElement>(null);
     const getJsxFromAllMessages = (messages: IMessage[]) => {
@@ -71,6 +71,7 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         //     console.log("Old messages has changed")
         //     theirReply = oldMessages[oldMessages.length - 1].role == "user" ? oldMessages[oldMessages.length - 1] : undefined;
         // }
+        const theirReply = lessonReplyInputRef?.current?.value || initialQ || "";
         console.log("TheirReply: ", theirReply)
         if (!equal(newMessages, prevState.current.newMessages)) {
             console.log("New messages has changed, setting controlIndex to 0")
@@ -85,6 +86,8 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         else if (theirReply.length !== 0) {
             console.log("Their reply wasn't undefined, rendering messages you see with controlIndex: ", controlIndexRef, " and newMessages: ", newMessages);
             setMessagesToRender(prev => [...prev, theirReplyMsg, newMessages[controlIndexRef]]);
+            if (!lessonReplyInputRef.current) throw new Error("lessonReplyInputRef is undefined, can't clear the reply");
+            lessonReplyInputRef.current.value = "";
         } else {
             console.log("Their reply was undefined, setting messages to render to: ", [...messagesToRender, newMessages[controlIndexRef]])
             setMessagesToRender(prev => [...prev, newMessages[controlIndexRef]]);
