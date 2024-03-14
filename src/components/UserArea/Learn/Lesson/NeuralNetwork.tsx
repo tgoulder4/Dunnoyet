@@ -55,7 +55,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const offset = useRef({ x: 0, y: 0 });
     const requestAnimationRef = useRef<any>(0);
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
-    const scaleMultiplier = useRef(0.7);
+    const [scaleMultiplier, setScaleMultiplier] = useState(0.7);
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     // Function to calculate boundaries
     const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
@@ -114,7 +114,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.translate(centerX, centerY);
 
 
-        ctx.scale(scaleMultiplier.current, scaleMultiplier.current);
+        ctx.scale(scaleMultiplier, scaleMultiplier);
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
@@ -178,7 +178,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 ctx.beginPath();
                 ctx.moveTo(centerX + point.TwoDCoOrdinates[0], point.TwoDCoOrdinates[1] + centerY); // Start at current point
                 ctx.lineTo(centerX + nextPoint.TwoDCoOrdinates[0], nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
-                ctx.strokeStyle = getColourFromConfidence(nextPoint.confidence); // Use the helper function to get the color
+                ctx.strokeStyle = (nextPoint.confidence < point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
                 ctx.stroke();
                 ctx.globalAlpha = 1; // Reset global alpha if you've changed it
                 //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node
@@ -294,8 +294,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             if (!drag.current.isDragging) return;
 
             // Calculate the delta between the current mouse position and the initial click position
-            const dx = (e.clientX - drag.current.startX) / scaleMultiplier.current;
-            const dy = (e.clientY - drag.current.startY) / scaleMultiplier.current;
+            const dx = (e.clientX - drag.current.startX) / scaleMultiplier;
+            const dy = (e.clientY - drag.current.startY) / scaleMultiplier;
 
             // Update the drag start position to the current position
             drag.current.startX = e.clientX;
@@ -306,8 +306,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             const potentialOffsetY = offset.current.y + dy;
 
             // Define maximum and minimum offsets
-            const maxOffset = 50 * scaleMultiplier.current;
-            const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
+            const maxOffset = 50 * scaleMultiplier;
+            const minOffset = -50 * scaleMultiplier; // Assuming you also want to limit dragging in the opposite direction
 
             // Apply limits to the new offsets
             // offset.current.x = Math.min(Math.max(potentialOffsetX, minOffset), maxOffset);
@@ -327,8 +327,8 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             e.preventDefault();
             const zoomFactor = 0.1;
             const direction = e.deltaY < 0 ? 1 : -1;
-            scaleMultiplier.current = scaleMultiplier.current * (1 + zoomFactor * direction);
-            console.log("Scale: ", scaleMultiplier.current)
+            setScaleMultiplier(prev => prev * (1 + zoomFactor * direction));
+            console.log("Scale: ", scaleMultiplier)
             draw(ctx, offset.current.x, offset.current.y);
             // setScale(newScale);
         };
@@ -340,7 +340,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
             offset.current.x = -centerOffsetX;
             offset.current.y = -centerOffsetY;
-            scaleMultiplier.current = overallScale;
+            setScaleMultiplier(overallScale);
         }
         draw(ctx, offset.current.x, offset.current.y); // Initial draw
         // Clean up to prevent memory leaks
@@ -350,7 +350,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [offset.current, scaleMultiplier.current, knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
+    }, [knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
 
     return (
         <div className="h-full" style={{ paddingRight: sizing.variableWholePagePadding }}>

@@ -47,7 +47,6 @@ function ChatWithEli({
     const [subject, setSubject] = useState(lessonState?.metadata.subjects[lessonState.metadata.subjects.length - 1] || 'New Question');
     const [disableInput, setDisableInput] = useState(false);
     const [updatingState, setUpdatingState] = useState(false);
-    const [theirReply, setTheirReply] = useState("");
     //for showing details client side before the response from server
     const router = useRouter();
     const [erroMessage, seterrorMessage] = useState(null as null | string);
@@ -192,10 +191,13 @@ function ChatWithEli({
         setDisableInput(true);
         setUpdatingState(true);
         seterrorMessage(null);
-        if (_type == "NewQ") await submitUserQuestion(data);
+        if (_type == "NewQ") {
+            if (!textAreaRef.current) throw new Error("No textAreaRef found in ChatWithEli")
+            await submitUserQuestion(data);
+            console.log("Setting theirReply to ''")
+        }
         else if (_type == "Lesson") {
             if (!lessonReplyInputRef.current) throw new Error("No lessonReplyInputRef found in ChatWithEli")
-            setTheirReply(lessonReplyInputRef.current.value);
             if (!updateState) throw new Error("No updateState function found in ChatWithEli, can't update.")
             console.log("Setting theirReply to ", lessonReplyInputRef.current.value)
             //NOT WORKING ON BUTTON CLICK
@@ -203,14 +205,13 @@ function ChatWithEli({
             // //wait 2s
             // await new Promise((resolve) => setTimeout(resolve, 2000));
             await updateState(data);
-            setTheirReply("");
-            lessonReplyInputRef.current.value = "";
+            console.log("Setting theirReply to ''")
         }
         else if (_type == "Tutorial") null;
         else null;
         setDisableInput(false);
         setUpdatingState(false);
-        console.log("Setting theirReply to ''")
+        // theirReplyRef.current = "";
     }
 
     // Use useEffect to attach and detach the keydown event listener
@@ -254,7 +255,7 @@ function ChatWithEli({
                                 </Message>
                             </div>
                         </>}
-                        {_type == "Lesson" && lessonState && <Conversation theirReply={theirReply} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} lessonState={lessonState} />}
+                        {_type == "Lesson" && lessonState && <Conversation theirReply={textAreaRef.current?.value || lessonReplyInputRef.current?.value || ""} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} updateState={updateState!} lessonState={lessonState} />}
 
                         {
                             _type == "Tutorial" &&
@@ -273,7 +274,7 @@ function ChatWithEli({
                         {
                             type == "Lesson" && lessonState?.metadata.action !== "ENDLESSON" && <div className='w-full flex flex-col-reverse'>
                                 <Input
-                                    onChange={() => seterrorMessage("")} style={{
+                                    onChange={(e) => { seterrorMessage(""); }} style={{
                                         borderColor: erroMessage ? 'red' : ''
                                     }} ref={lessonReplyInputRef} disabled={disableInput || updatingState} id="userInput" name="userInput" type="text" placeholder="Type your reply..." className='rounded-[20px] w-full flex-0 h-14' />
                                 {

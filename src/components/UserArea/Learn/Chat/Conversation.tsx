@@ -5,16 +5,14 @@ import UserMessage from './UserMessage'
 import EliMessage from './EliMsg'
 import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 var equal = require('deep-equal')
-function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, theirReply: string }) {
+function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, theirReply }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, theirReply: string }) {
     // const [messages, setMessages] = useState([] as IMessage[] | null)
-    const { oldMessages, newMessages, metadata } = lessonState;
+    const { newMessages, metadata } = lessonState;
     const prevState = useRef(lessonState);     // Check if newMessages was the cause of the re-render to set the contronIndexRef to 0
-
     const threadsForSeparationOfMessages = useRef(metadata.threads);
     const [controlIndex, setControlIndex] = useState(0);
     let controlIndexRef = controlIndex;
-    const theirReplyRef = useRef(oldMessages[oldMessages.length - 1].role == "user" ? oldMessages[oldMessages.length - 1] : undefined);
-    console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex);
+    console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex, " their reply passed is: ", theirReply);
     const [messagesToRender, setMessagesToRender] = useState([] as IMessage[]);
     const scrollRef = useRef<HTMLDivElement>(null);
     const getJsxFromAllMessages = (messages: IMessage[]) => {
@@ -56,7 +54,6 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
             }
             customIndex++;
         }
-
         return jsxMessages;
     };
     // const [messages, setMessages] = useState([...oldMessages] as IMessage[]);
@@ -70,20 +67,24 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     }, [messagesToRender]);
     useEffect(() => {
         //if newMessages was the cause then setControlIndex to 0
-        let theirReply: IMessage | undefined = oldMessages[oldMessages.length - 1].role == "user" ? oldMessages[oldMessages.length - 1] : undefined;
         // if (prevState.current.oldMessages !== oldMessages) {
         //     console.log("Old messages has changed")
         //     theirReply = oldMessages[oldMessages.length - 1].role == "user" ? oldMessages[oldMessages.length - 1] : undefined;
         // }
+        console.log("TheirReply: ", theirReply)
         if (!equal(newMessages, prevState.current.newMessages)) {
             console.log("New messages has changed, setting controlIndex to 0")
             controlIndexRef = 0;
         }
+        const theirReplyMsg = { content: theirReply, role: "user" } as IMessage;
         console.log("Control index ref being used is: ", controlIndex); //WHY IS THIS STILL 1
         if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
-        if (theirReply !== undefined) {
+        if (messagesToRender.length == 0) {
+            setMessagesToRender([theirReplyMsg!, newMessages[controlIndexRef]]);
+        }
+        else if (theirReply.length !== 0) {
             console.log("Their reply wasn't undefined, rendering messages you see with controlIndex: ", controlIndexRef, " and newMessages: ", newMessages);
-            setMessagesToRender(prev => [...prev, theirReply!, newMessages[controlIndexRef]]);
+            setMessagesToRender(prev => [...prev, theirReplyMsg, newMessages[controlIndexRef]]);
         } else {
             console.log("Their reply was undefined, setting messages to render to: ", [...messagesToRender, newMessages[controlIndexRef]])
             setMessagesToRender(prev => [...prev, newMessages[controlIndexRef]]);
