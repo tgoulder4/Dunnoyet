@@ -7,7 +7,7 @@ import { getURL } from 'next/dist/shared/lib/utils'
 import LessonTimer from './LessonTimer'
 
 
-function MainAreaNavbar({ style, showTimer }: { style: 'normal' | 'lesson' | 'authOrAdmin', showTimer?: boolean }) {
+function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrAdmin', show?: { leftSide?: { lessonTimer?: boolean, links?: boolean }, userSide?: { newQuestion?: boolean, profileButton?: boolean } } }) {
     const theme = {
         backgroundColour: style == 'normal' ? colours.primary : style == "lesson" ? '#000' : colours.accent,
     }
@@ -29,7 +29,7 @@ function MainAreaNavbar({ style, showTimer }: { style: 'normal' | 'lesson' | 'au
                         <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? changeColour(theme.backgroundColour).darken(8).toString() : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
                         <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>
                             {
-                                style == 'lesson' ? showTimer ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
+                                style == 'lesson' ? show?.leftSide?.lessonTimer !== false ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
                                     In Lesson: <LessonTimer />
                                 </NewButton> : <></> :
                                     <>
@@ -46,10 +46,10 @@ function MainAreaNavbar({ style, showTimer }: { style: 'normal' | 'lesson' | 'au
           </NewButton> */}
                         {
                             style == 'normal' ? <>
-                                <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/lesson/new"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                {show?.userSide?.newQuestion !== false && <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/lesson/new"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6.94407 6.92174L6.83669 3.86087V0H9.16331V3.86087L9.02013 6.92174L11.6689 6.74783H16V9.00869H11.6689L9.02013 8.90435L9.16331 11.8957V16H6.83669V11.8957L6.94407 8.90435L3.86577 9.00869H0V6.74783H3.86577L6.94407 6.92174Z" fill="#323232" />
                                 </svg> <h2>New Question</h2>
-                                </NewButton>
+                                </NewButton>}
                                 <NewButton buttonVariant='ghost' className='relative block md:hidden'>
                                     <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M2.39222 21.7434C1.90147 21.7434 1.48314 21.57 1.13722 21.2231C0.791306 20.8763 0.618347 20.4515 0.618347 19.9489C0.618347 19.4661 0.791306 19.0528 1.13722 18.7092C1.48314 18.3657 1.90147 18.1939 2.39222 18.1939H29.6217C30.1032 18.1939 30.5195 18.3673 30.8707 18.7141C31.2218 19.061 31.3974 19.4758 31.3974 19.9587C31.3974 20.4613 31.2218 20.8844 30.8707 21.228C30.5195 21.5716 30.1032 21.7434 29.6217 21.7434H2.39222ZM2.39222 12.753C1.90147 12.753 1.48314 12.5796 1.13722 12.2327C0.791306 11.8859 0.618347 11.4664 0.618347 10.9743C0.618347 10.4914 0.791306 10.0782 1.13722 9.73457C1.48314 9.39099 1.90147 9.2192 2.39222 9.2192H29.6217C30.1032 9.2192 30.5195 9.39261 30.8707 9.73945C31.2218 10.0863 31.3974 10.5012 31.3974 10.984C31.3974 11.4761 31.2218 11.894 30.8707 12.2376C30.5195 12.5812 30.1032 12.753 29.6217 12.753H2.39222ZM2.39222 3.77836C1.90147 3.77836 1.48314 3.60493 1.13722 3.25807C0.791306 2.91121 0.618347 2.48649 0.618347 1.9839C0.618347 1.50104 0.791306 1.08781 1.13722 0.744197C1.48314 0.400613 1.90147 0.228821 2.39222 0.228821H29.6217C30.1032 0.228821 30.5195 0.402238 30.8707 0.749072C31.2218 1.09593 31.3974 1.51079 31.3974 1.99365C31.3974 2.49624 31.2218 2.91933 30.8707 3.26294C30.5195 3.60656 30.1032 3.77836 29.6217 3.77836H2.39222Z" fill="white" />

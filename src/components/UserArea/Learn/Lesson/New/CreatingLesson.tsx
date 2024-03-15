@@ -4,7 +4,6 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import { changeColour, colours, spacing } from '@/lib/constants'
 import { Loader2 } from 'lucide-react'
 import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
 
 function CreatingLesson({ saying }: { saying: string }) {
     useEffect(() => {
@@ -20,15 +19,16 @@ function CreatingLesson({ saying }: { saying: string }) {
                 },
                 body: JSON.stringify({ _userID: userID })
             });
-            const link = await response.json().then((data) => data.link);
-            console.log("Link from NewLesson POST Response in creatingLesson: ", link)
-            redirect(`/learn/lesson/${link}`);
+            const res = await response.json();
+            console.log("res: ", res)
+            console.log("Redirecting to: ", res.link)
+            window.location = res.link;
         };
         main();
     }, []);
     return (
         <>
-            <MainAreaNavbar style='lesson' showTimer={false} />
+            <MainAreaNavbar style='lesson' show={{ leftSide: { lessonTimer: false } }} />
             <div className='w-full h-full grid place-items-center'><div style={{ rowGap: spacing.gaps.largest }} className="spinner flex flex-col items-center">
                 <div style={{ rowGap: spacing.gaps.groupedElement }} className='flex flex-col items-center justify-center'>
                     <Loader2 className="h-12 w-12 animate-spin" color='black' />

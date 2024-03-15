@@ -244,7 +244,7 @@ function ChatWithEli({
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [textAreaRef, _type]);
-    return (<div style={{ right: sizing.variableWholePagePadding }} className='flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
+    return (<div style={{ right: sizing.variableWholePagePadding }} className='animate-in slide-in-from-bottom-7 flex flex-col bottom-0  z-10 w-full max-w-[600px] fixed rounded-t-[10px] shadow-[0px_0px_0px_2px_#131313]'>
         <div className='p-4 px-6 bg-white rounded-t-[20px] font-bold'>{subject}</div>
         <form action={handleSumbitAction}>
             {

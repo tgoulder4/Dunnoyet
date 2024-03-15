@@ -52,7 +52,7 @@ function page({ params }: { params: { params: string } }) {
     }, [])
     return (
         <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
-            <MainAreaNavbar style="normal" />
+            <MainAreaNavbar style="normal" show={{ userSide: { newQuestion: !tutorialMode } }} />
             <main className="flex flex-col" style={{ paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.separateElement, paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, }}>
                 <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
                     <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largestFontSize), fontWeight: 300 }}>{name ? "Welcome back, " + name : "Hi there!"}</h1>

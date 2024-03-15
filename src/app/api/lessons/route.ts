@@ -15,14 +15,20 @@ import { getNextMessage } from '@/lib/chat/Eli/eli';
 export async function GET(req: NextRequest) {
     console.log("Get request to /api/lessons/ called")
     try {
+        const url = req.nextUrl.clone().basePath;
         const sess = await getServerSession(authConfig).auth();
         console.log("Session: ", sess)
-        if (!sess) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+        if (!sess) return NextResponse.redirect(url + "/api/auth/signin", { status: 401 });
         const userID = sess.user?.id;
-        if (!userID) return NextResponse.json({ error: "User ID not found in session" }, { status: 400 });
-        console.log("Request body: ", req.body)
+        if (!userID) return NextResponse.redirect("/api/error?err=8", { status: 400 });
+        const request = await req.json();
+        console.log("Request body: ", request.body)
         let lesson: ILesson[] | ILesson | null = null;
-        if (!req.body) {
+        if (!request.body) return NextResponse.redirect(url + "/api/error?err=1", { status: 400 });
+        const { startChunkFromIndex, lessonID } = request.body;
+        if (!startChunkFromIndex && !lessonID) return NextResponse.redirect(url + "/api/error?err=9", { status: 400 });
+        //they can use this api to get a certain lesson or multiple. If they don't provide a lessonID, we get all lessons
+        if (req.body) {
             //find many lessons
             console.log("Finding this user's lessons...")
             const _userLessons = await prisma.user.findUnique({

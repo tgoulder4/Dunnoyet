@@ -19,6 +19,7 @@ async function CreatingNewLessonLoader({ params }: { params: any }) {
             id: userID
         }
     });
+    if (!user) redirect('/api/auth/signin');
     //compare dates now and lastLessonCreatedAt and limit rate of creating new lessons
     const passedParams = params.params;
     console.log("LESSON PAGE params", passedParams);
