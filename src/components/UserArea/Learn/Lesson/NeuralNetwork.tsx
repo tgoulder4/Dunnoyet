@@ -310,9 +310,10 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     }
     // Animation function to smoothly animate to the target offset
-    function animateToOffset(ctx: CanvasRenderingContext2D, targetOffsetX: number, targetOffsetY: number, overallScale: number) {
+    function animateToPositionAndScale(ctx: CanvasRenderingContext2D, targetOffsetX: number, targetOffsetY: number, targetScale: number) {
         const startOffsetX = offset.current.x;
         const startOffsetY = offset.current.y;
+        const startScale = scaleMultiplier.current;
         const startTime = performance.now();
         const duration = 500; // milliseconds
 
@@ -324,16 +325,17 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 const easeProgress = easeInOut(progress); // Use your desired easing function
                 offset.current.x = startOffsetX + (targetOffsetX - startOffsetX) * easeProgress;
                 offset.current.y = startOffsetY + (targetOffsetY - startOffsetY) * easeProgress;
+                scaleMultiplier.current = startScale + (targetScale - startScale) * easeProgress;
                 draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
                 requestAnimationRef.current = requestAnimationFrame(updatePosition);
             } else {
-                draw(ctx, targetOffsetX, targetOffsetY, scaleMultiplier.current);
+                draw(ctx, targetOffsetX, targetOffsetY, targetScale);
             }
         }
 
         requestAnimationRef.current = requestAnimationFrame(updatePosition);
         // Uncomment below line if you want to cancel the animation
-        return () => cancelAnimationFrame(requestAnimationRef.current);
+        // return () => cancelAnimationFrame(requestAnimationRef.current);
     }
     useEffect(() => {
         // console.log("useEffect called")
@@ -377,7 +379,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
                 const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
                 const targetOffsetX = -centerOffsetX;
                 const targetOffsetY = -centerOffsetY;
-                animateToOffset(ctx, targetOffsetX, targetOffsetY, overallScale);
+                animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, scaleMultiplier.current);
                 console.log("Scale set by knowledgePoints onMouseUp: ", overallScale)
                 // scaleMultiplier.current = overallScale;
                 // draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
@@ -398,6 +400,15 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
         console.log("Draw called in general useEffect")
+        if (knowledgePoints.length > 0) {
+            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
+            const targetOffsetX = -centerOffsetX;
+            const targetOffsetY = -centerOffsetY;
+            animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, overallScale);
+            console.log("Scale set by knowledgePoints useEffect: ", overallScale)
+            // scaleMultiplier.current = overallScale;
+            // draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+        }
         draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current); // Initial draw
         // Clean up to prevent memory leaks
         return () => {
