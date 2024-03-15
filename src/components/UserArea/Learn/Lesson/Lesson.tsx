@@ -9,6 +9,8 @@ import { getNextMessage } from '@/lib/chat/Eli/eli'
 import NeuralNetwork from './NeuralNetwork'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import getResponse from '@/lib/chat/Eli/mockResponses'
+import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
 
 export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
@@ -44,8 +46,13 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                         action
                     }
                 }
-                // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
-                const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Understood');
+                //PROD:
+                const _getMessageResponse: Response = await fetch('/api/lessons', {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+                const getMessageResponse = await _getMessageResponse.json();
+                // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Understood'); //DEV
 
                 if (typeof getMessageResponse === "string") {
                     setLessonState({
@@ -85,14 +92,28 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                 messages: [...ls.oldMessages, ...ls.newMessages, { content: theirReply, role: "user" }],
                 metadata
             }
+            console.log("Sending payload to backend: ", payload)
             // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
-            const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Reply');
-            let error = "";
-            if (typeof getMessageResponse === "string") { error = getMessageResponse } else {
+
+            /**
+             * _getMessageResponse returns {error:string} | {error:z.ZodIssue[]} | {resp: string | IMessagesEndpointResponsePayload}
+             */
+            const _getMessageResponse: Response = await fetch('/api/lessons', {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            });
+            const getMessageResponse = await _getMessageResponse.json();
+
+            if (getMessageResponse.error) {
+                console.error(getMessageResponse.error)
+                return;
+            } else if (typeof getMessageResponse.resp === "string") {
+                return getMessageResponse.resp;
+            } else {
                 console.log("nextState: ", getMessageResponse)
                 const { newMessages, metadata } = getMessageResponse;
                 setLessonState({ oldMessages: [...ls.oldMessages, ...ls.newMessages, theirReplyMsg], newMessages, metadata });
-            };
+            }
         } catch (e) { console.error(e) }
 
     }

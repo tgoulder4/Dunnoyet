@@ -24,14 +24,14 @@ export async function getUser(userID?: string,
                 id: true,
                 email: true,
                 username: true,
-                lessons: true,
-                knowledgePoints: true,
                 name: true,
+                knowledgePoints: true,
+                lessons: true,
             },
         });
         if (!user) return null;
         console.log("User which getUser returned: ", user)
-        return user as IUser;
+        return user as any;
     }
     catch (error) {
         console.error("Couldn't retrieve the user. ", error);
@@ -133,20 +133,4 @@ export async function getTips(): Promise<ITip[] | null> {
         console.error("Couldn't retrieve the tips. ", error);
         return null;
     }
-}
-export async function getLessons(userID: string): Promise<ILesson[]> {
-    console.log("getLessons called, userID: ", userID)
-    const lessons = await prisma.lesson.findMany({
-        where: {
-            userId: userID
-        },
-        select: {
-            id: true,
-            beganAt: true,
-            knowledgePointChain: true,
-            lessonStatus: true,
-        }
-    })
-    console.log("getLessons returned ", lessons.length, " lessons")
-    return lessons as ILesson[];
 }

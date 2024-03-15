@@ -15,6 +15,9 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex);
     const [messagesToRender, setMessagesToRender] = useState([] as IMessage[]);
     const scrollRef = useRef<HTMLDivElement>(null);
+    // if (newMessages.length == 0) {
+    //     controlIndexRef = -1;
+    // }; //end of lesson")
     const getJsxFromAllMessages = (messages: IMessage[]) => {
         console.log("Messages passed to getJsxFromAllMessages: ", messages)
         let index = 0;
@@ -24,7 +27,11 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         while (index < messages.length) {
             const message = messages[index];
             let key;
-
+            if (controlIndex == -1) {
+                jsxMessages.push(<></>)
+                //break out of while loop
+                break;
+            };
             if (message.splitResponse) {
                 key = `${message.splitResponse.text}-${index}`;
             } else if (message.content) {
@@ -41,7 +48,7 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                     jsxMessages.push(<div className='w-full h-4' key={key}></div>);
                 }
                 else if (message.eliResponseType !== "General") {
-                    jsxMessages.push(<EliMessage current={index === messages.length - 1} text={message.content} eliResponseType={message.eliResponseType as any} lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
+                    jsxMessages.push(<EliMessage current={index === messages.length - 1 && newMessages.length !== 0} text={message.content} eliResponseType={message.eliResponseType as any} systemMessagePosition='Start' lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
                 } else {
                     let groupSize = 1;
                     while (messages[index + groupSize] && messages[index + groupSize].eliResponseType === "General") {
@@ -50,7 +57,7 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
                     const splitResponses = messages.slice(index, index + groupSize).map(msg => msg.splitResponse);
                     if (splitResponses.includes(undefined)) throw new Error("SplitResponse includes undefined in splitResponses array. It should contain 1 general response at minimum.")
                     console.log("Current is ", index === messages.length - 1, " - index is ", index, " - messages.length - splitREsponses.length ", messages.length - splitResponses.length)
-                    jsxMessages.push(<EliMessage current={index === messages.length - splitResponses.length} splitResponses={splitResponses as any} eliResponseType={"General"} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
+                    jsxMessages.push(<EliMessage current={index === messages.length - splitResponses.length && newMessages.length !== 0} splitResponses={splitResponses as any} eliResponseType={"General"} updateState={updateState} lessonReplyInputRef={lessonReplyInputRef} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex} key={key} />);
                     index += groupSize - 1; // Adjust for the increase in group size
                 }
             }
@@ -66,13 +73,14 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messagesToRender]);
+    }, [messagesToRender, newMessages]);
     useEffect(() => {
         //if newMessages was the cause then setControlIndex to 0
         // if (prevState.current.oldMessages !== oldMessages) {
         //     console.log("Old messages has changed")
         //     theirReply = oldMessages[oldMessages.length - 1].role == "user" ? oldMessages[oldMessages.length - 1] : undefined;
         // }
+        console.log("-------- ControlIndex is ", controlIndexRef, " newMessages is ", newMessages)
         const theirReply = lessonReplyInputRef?.current?.value || initialQ || "";
         console.log("TheirReply: ", theirReply)
         if (!equal(newMessages, prevState.current.newMessages)) {
@@ -82,7 +90,12 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         const theirReplyMsg = { content: theirReply, role: "user" } as IMessage;
         const updatedMessages = [] as IMessage[];
         console.log("Control index ref being used is: ", controlIndex); //WHY IS THIS STILL 1
-        if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "SubjectIntroduction") { setDisableInput(true); } else { setDisableInput(false); }
+        if (newMessages.length == 0) {
+
+            setMessagesToRender(messagesToRender)
+            return;
+        }
+        if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "System") { setDisableInput(true); } else { setDisableInput(false); }
         if (messagesToRender.length == 0) {
             updatedMessages.push(theirReplyMsg!);
         }
@@ -106,19 +119,22 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     }, [controlIndex, newMessages]);
     //spy and see if threads.length has changed, if it has then start a new general message else attach to the current general message
     return (
-        <div className='px-[28px] w-full h-full flex flex-col overflow-y-scroll py-[14px]' ref={scrollRef}>
-            <div className="h-4/5 w-full"></div>
-            {
-                ...getJsxFromAllMessages(messagesToRender)
-            }
-            {/* {
+        <div className='px-[28px] w-full h-full flex flex-col overflow-y-scroll py-[14px]' style={{ pointerEvents: 'none' }} ref={scrollRef}>
+            <div className="" style={{ pointerEvents: 'all' }}>
+
+                <div className="h-[24vh] w-full"></div>
+                {
+                    ...getJsxFromAllMessages(messagesToRender)
+                }
+                {/* {
                 theirReply && <><UserMessage text={theirReply.content as string} /> <EliMessage current={false} text='Loading...' eliResponseType='General' lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setNewMessageControlIndex={setNewMessageControlIndex} /></>
             } */}
-            {
-                metadata.action == "ENDLESSON" && <EliMessage current={true} text='Lesson complete' eliResponseType='SubjectIntroduction'
-                    lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex}
-                />
-            }
+                {
+                    metadata.action == "ENDLESSON" && <EliMessage current={true} text={lessonState.metadata.subjects[0]} eliResponseType='System' systemMessagePosition='End' ctaText="Give Feedback"
+                        lessonReplyInputRef={lessonReplyInputRef} updateState={updateState} setDisableInput={setDisableInput} setUpdatingState={setUpdatingState} setControlIndex={setControlIndex}
+                    />
+                }
+            </div>
         </div>
     )
 }

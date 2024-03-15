@@ -75,8 +75,24 @@ export default async function LessonLoader({ params }: { params: any }) {
     console.log("LESSON PAGE params", passedParams);
     if (passedParams == 0 || equal(params, {})) redirect('/api/error');
     const lessonID = passedParams[0];
-    if (!lessonID) throw new Error("LessonID was undefined. params was: " + JSON.stringify(params) + " and passedParams was: " + JSON.stringify(passedParams));
-    const initialLessonState: ILessonState | null = await getLessonState(lessonID, userID);
+    let initialLessonState: ILessonState | null = null;
+    if (lessonID) {
+        initialLessonState = await getLessonState(lessonID, userID);
+    } else {
+        console.log("No lessonID found, returning initialLessonState as mock.")
+        initialLessonState = {
+            oldMessages: [],
+            newMessages: [],
+            metadata: {
+                metadataId: "0",
+                lessonID: "0",
+                threads: [],
+                subjects: [],
+                knowledgePointChain: [],
+                currentKnowledgePointIndex: 0,
+            }
+        }
+    }
     if (!initialLessonState) throw new Error("No initial lesson state found, couldn't load lesson page");
     return (<Lesson initialLessonState={initialLessonState} />)
 }

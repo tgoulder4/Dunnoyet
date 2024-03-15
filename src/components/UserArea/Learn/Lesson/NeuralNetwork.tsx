@@ -56,9 +56,16 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scaleMultiplier = useRef(0.7)
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
-    const previousTime = useRef(performance.now());
+    const prevKNowledgePoints = useRef(knowledgePoints);
+    const requestAnimationRef = useRef<any>(null);
+    if (prevKNowledgePoints.current == knowledgePoints) {
+        (() => cancelAnimationFrame(requestAnimationRef.current))();
+    } else {
+        prevKNowledgePoints.current = knowledgePoints;
+    }
     var t: Array<number> = [];
-    //being more resource friendly by only calculating the required frame rate. Draw updates ALOT.
+    //being more resource friendly by only calculating the required frame rate. Draw updates ALOT and for some requestAnimationFrame affects the whole page's frame rate.
+    //this is responsible for laggy scrollbar. scrollbar click events are disabled as a result
     const getRequiredFrameRate = () => new Promise<number>((resolve, reject) => {
         if (frameRate !== 60) resolve(Math.min(frameRate, 240));
         const getNext = () => {
@@ -80,7 +87,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     });
 
     let frameRate: number = 60;
-    const requestAnimationRef = useRef<any>(null);
     // Function to calculate boundaries
     const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
         const xValues = points.map(point => point.TwoDCoOrdinates[0]);
@@ -110,13 +116,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         const knowledgePointRadius = 5;
-        // Apply the scale and offset for this draw operation
-
-        // FUTURE FEATURE: Apply limits to the new offsets
-        // const maxOffset = 50 * scaleMultiplier.current;
-        // const minOffset = -50 * scaleMultiplier.current; // Assuming you also want to limit dragging in the opposite direction
-        // let limitedOffsetX = Math.min(Math.max(offset.current.x, minOffset), maxOffset);
-        // let limitedOffsetY = Math.min(Math.max(offset.current.y, minOffset), maxOffset);
 
         // Calculate center to scale as the middle of the currently rendere
         const centerX = ctx.canvas.width / 2;

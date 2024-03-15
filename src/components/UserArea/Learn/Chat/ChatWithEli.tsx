@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { set } from 'zod'
 import getResponse from '@/lib/chat/Eli/mockResponses'
+import { saveKnowledgePointsToDBAndPineCone } from '@/lib/chat/Eli/eli'
 
 type chatProps = {
     isOpen: boolean,
@@ -38,6 +39,7 @@ function ChatWithEli({
     //     id,
     //     name,
     // } = session?.user!!;
+
     const { id, name } = { id: "65dbe7799c9c2a30ecbe6193", name: "" }
 
     const nameInputRef = useRef<HTMLInputElement>(null);
@@ -168,7 +170,14 @@ function ChatWithEli({
         // });
         // const response = await res.json();
         //DEV: Mock response
-        const response = await getResponse('NewQ');
+        // const response = await getResponse('NewQ');
+        //PROD: Real response
+        const _getMessageResponse: Response = await fetch('/api/lessons', {
+            method: 'PUT',
+            body: JSON.stringify({ newQuestion })
+        });
+        const response = await _getMessageResponse.json();
+        console.log("response from /api/lessons/ ", response)
 
         console.log("recieved response from /lesson/new: ", response)
         if (typeof response == 'string') {
@@ -215,7 +224,7 @@ function ChatWithEli({
     // Use useEffect to attach and detach the keydown event listener
     //CLICKING BTN SUBMIT DOES WORK, BUT ENTER DOESN'T. ENTER DOES WORK WITH PREVIEW MESSAGE THOUGH
     useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
+        const handleKeyDown = async (event: KeyboardEvent) => {
             if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
                 const formData = new FormData();
@@ -223,9 +232,17 @@ function ChatWithEli({
                     // I'll need the form data...?
                     formData.append('userInput', textAreaRef.current!.value);
                     handleSumbitAction(formData);
-
-                };
-                if (_type == "Lesson" && lessonReplyInputRef.current?.value) {
+                }
+                else if (lessonState?.metadata.action == "ENDLESSON" && _type == "Lesson") {
+                    //save their knowledgePoints
+                    setDisableInput(true);
+                    setUpdatingState(true);
+                    //get lessonID from URL
+                    if (!lessonID) throw new Error("No lessonID found in ChatWithEli - can\'t end the lesson without using it to save to points & pinecone.")
+                    await saveKnowledgePointsToDBAndPineCone(lessonID, lessonState.metadata.knowledgePointChain)
+                }
+                //redirect to homepage
+                else if (_type == "Lesson" && lessonReplyInputRef.current?.value) {
                     //tell them to click the button
                     seterrorMessage("Please click the button on the right ask your question!");
                 }
@@ -283,11 +300,14 @@ function ChatWithEli({
                         <NewButton disabled={disableInput || updatingState} tooltip={
                             _type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action !== 'ENDLESSON' ? "Save Progress and End Lesson" : "Raise question" : ""
 
-                        } type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" ? 999 : 10, width: _type == "Lesson" ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
-                            () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action == 'ENDLESSON' ? "Save Progress and End Lesson" : "" : ""}
-                            {_type == "Lesson" &&
-                                <svg strokeWidth={1} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill='white' width="24"><path d="M120-40q-17 0-28.5-11.5T80-80q0-17 11.5-28.5T120-120h720q17 0 28.5 11.5T880-80q0 17-11.5 28.5T840-40H120Zm80-120q-17 0-28.5-11.5T160-200v-200q-33-54-51-114.5T91-638q0-61 15.5-120T143-874q8-21 26-33.5t40-12.5q31 0 53 21t18 50l-11 91q-6 48 8.5 91t43.5 75.5q29 32.5 70 52t89 19.5q60 0 120.5 12.5T706-472q45 23 69.5 58.5T800-326v126q0 17-11.5 28.5T760-160H200Zm40-80h480v-86q0-24-12-42.5T674-398q-41-20-95-31t-99-11q-66 0-122.5-27t-96-72.5Q222-585 202-644.5T190-768q-10 30-14.5 64t-4.5 66q0 58 20.5 111.5T240-422v182Zm240-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-720q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720q0 33 23.5 56.5T480-640ZM320-160v-37q0-67 46.5-115T480-360h120q17 0 28.5 11.5T640-320q0 17-11.5 28.5T600-280H480q-34 0-57 24.5T400-197v37h-80Zm160-80Zm0-480Z" />
-                                </svg>
+                        } type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" && lessonState?.metadata.action !== 'ENDLESSON' ? 999 : 10, width: _type == "Lesson" && lessonState?.metadata.action !== 'ENDLESSON' ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
+                            () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action == 'ENDLESSON' ? "Save Progress and End (Enter)" : "" : ""}
+                            {_type == "Lesson" ?
+                                lessonState?.metadata.action !== "ENDLESSON" ?
+                                    <svg strokeWidth={1} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill='white' width="24"><path d="M120-40q-17 0-28.5-11.5T80-80q0-17 11.5-28.5T120-120h720q17 0 28.5 11.5T880-80q0 17-11.5 28.5T840-40H120Zm80-120q-17 0-28.5-11.5T160-200v-200q-33-54-51-114.5T91-638q0-61 15.5-120T143-874q8-21 26-33.5t40-12.5q31 0 53 21t18 50l-11 91q-6 48 8.5 91t43.5 75.5q29 32.5 70 52t89 19.5q60 0 120.5 12.5T706-472q45 23 69.5 58.5T800-326v126q0 17-11.5 28.5T760-160H200Zm40-80h480v-86q0-24-12-42.5T674-398q-41-20-95-31t-99-11q-66 0-122.5-27t-96-72.5Q222-585 202-644.5T190-768q-10 30-14.5 64t-4.5 66q0 58 20.5 111.5T240-422v182Zm240-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-720q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720q0 33 23.5 56.5T480-640ZM320-160v-37q0-67 46.5-115T480-360h120q17 0 28.5 11.5T640-320q0 17-11.5 28.5T600-280H480q-34 0-57 24.5T400-197v37h-80Zm160-80Zm0-480Z" />
+                                    </svg> : <svg width="16" height="16" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 14.25V1.75C0 1.39583 0.117497 1.09896 0.35249 0.859375C0.587484 0.619792 0.878672 0.5 1.22605 0.5C1.57344 0.5 1.86462 0.619792 2.09962 0.859375C2.33461 1.09896 2.45211 1.39583 2.45211 1.75V14.25C2.45211 14.6042 2.33461 14.901 2.09962 15.1406C1.86462 15.3802 1.57344 15.5 1.22605 15.5C0.878672 15.5 0.587484 15.3802 0.35249 15.1406C0.117497 14.901 0 14.6042 0 14.25ZM6.77395 14.375L15.4176 9.0625C15.622 8.9375 15.7701 8.78125 15.8621 8.59375C15.954 8.40625 16 8.20833 16 8C16 7.79167 15.954 7.59375 15.8621 7.40625C15.7701 7.21875 15.622 7.0625 15.4176 6.9375L6.77395 1.625C6.67178 1.5625 6.5645 1.52083 6.45211 1.5C6.33972 1.47917 6.23244 1.46875 6.13027 1.46875C5.80332 1.46875 5.51724 1.58854 5.27203 1.82812C5.02682 2.06771 4.90421 2.36458 4.90421 2.71875V13.2812C4.90421 13.6354 5.02682 13.9323 5.27203 14.1719C5.51724 14.4115 5.80332 14.5312 6.13027 14.5312C6.23244 14.5312 6.33972 14.5208 6.45211 14.5C6.5645 14.4792 6.67178 14.4375 6.77395 14.375ZM7.35632 11.0938V4.90625L12.4138 8L7.35632 11.0938Z" fill="white" />
+                                    </svg> : null
                             }
                             {updatingState && <Loader2 size={20} fill='none' className='animate-spin' />}
                         </NewButton>

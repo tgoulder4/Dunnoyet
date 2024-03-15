@@ -13,9 +13,9 @@ import LessonItems from '@/components/UserArea/Learn/LessonItems'
 import { useSession } from 'next-auth/react'
 import SummaryItems from '@/components/UserArea/Learn/SummaryItems'
 import ChatWithEli from '../../../components/UserArea/Learn/Chat/ChatWithEli'
-import { getLessons } from '@/actions'
 import { ILesson } from '@/lib/validation/enforceTypes'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
+import { GET, getLesson } from '@/app/api/lessons/route'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -36,8 +36,16 @@ function page({ params }: { params: { params: string } }) {
         }
         async function main() {
             console.log("LessonItems calling getLessons with userID: ", id!!)
-            const items = await getLessons(id!!);
-            setLessonItems(items);
+            const _items = await fetch(`/api/lessons/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const items: { lesson: ILesson[] } | { error: string } = await _items.json();
+            if (!items) throw new Error("No items were found")
+            if ('error' in items) throw new Error(items.error)
+            setLessonItems(items.lesson);
         }
         main()
     }, [])

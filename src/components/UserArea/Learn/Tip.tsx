@@ -9,6 +9,7 @@ export default function Tip() {
         async function main() {
             console.log("Tip calling getTips...")
             const tips = await getTips();
+            console.log("Tips returned from getTips: ", tips)
             if (tips == null) return;
             if (equal(tips, [])) return;
             const randomTipNumber = Math.floor(Math.random() * tips.length) + 1;

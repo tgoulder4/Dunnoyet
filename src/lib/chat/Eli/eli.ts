@@ -106,17 +106,26 @@ export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: st
     //find the id of each from prisma
     //return that
 }
-export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[], userID: string, metadataId: string) {
+export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowledgePointChain: IKnowledge[]) {
     try {
         console.log("savekNowledgePointsToDBAndPineCone called")
         const _kps = await Promise.all(knowledgePointChain.map(async (Kp) => {
             const updatedUser = await prisma.$transaction(async (tx) => {
                 const em = await getEmbedding(Kp.pointInSolitude);
                 console.log("embedding formed: ", em, "for KpSol: ", Kp.pointInSolitude)
+                const lessonAndMetadata = await tx.lesson.findUnique({
+                    where: { id: lessonID }, include: { ls: { include: { metadata: true } } }
+                });
+                // if (!userID) return null, if (!metadataId) return null;
+                const metadataId = lessonAndMetadata?.ls.metadata.id;
+                const userID = lessonAndMetadata?.userId;
+                if (!metadataId || !userID) {
+                    console.error("Either of these retrieved from DB was null: metadataId: ", metadataId, "userID: ", userID)
+                    return null
+                };
                 const K = await tx.knowledgePoint.create({
                     data: {
                         metadataId: metadataId,
-                        lessonId: lessonID,
                         userId: userID,
                         source: Kp.source,
                         pointInSolitude: Kp.pointInSolitude,
@@ -144,6 +153,7 @@ export async function saveKnowledgePointsToDBAndPineCone(lessonID: string, knowl
                 console.log("upserted to pinecone")
                 return updatedUser;
             })
+            if (!updatedUser) return null;
             return updatedUser.knowledgePoints;
         })
         )
@@ -329,7 +339,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
                 newMessages: [{
                     content: subjectIntro,
                     role: 'eli',
-                    eliResponseType: 'SubjectIntroduction'
+                    eliResponseType: 'System'
                 }, newThreads[newThreads.length - 1][0]],
                 metadata: {
                     lessonID,
@@ -374,7 +384,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
         }
         if (threads.length == 0) {
             //save all rks to db and pinecone, 
-            saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain, userID, metadataId);
+            saveKnowledgePointsToDBAndPineCone(lessonID, knowledgePointChain);
             //end lesson
             const payload: IMessagesEndpointResponsePayload = {
                 newMessages: [],
@@ -440,7 +450,7 @@ export async function getNextMessage(payload: IMessagesEndpointSendPayload): Pro
             newMessages: [{
                 content: subjectIntro,
                 role: 'eli',
-                eliResponseType: 'SubjectIntroduction'
+                eliResponseType: 'System'
             }, newThreads[newThreads.length - 1][0]],
             metadata: {
                 lessonID,
