@@ -121,77 +121,20 @@ export async function PUT(req: NextRequest) {
         let payload: IMessagesEndpointSendPayload = parseResult.data;
         console.log("Payload: ", payload)
         let status = 201;
-        if ('newQuestion' in payload) {
-            console.log("New Question detected in payload: ", payload.newQuestion)
-            payload = {
-                messages: [{ content: payload.newQuestion, role: "user" }],
-                metadata: {
-                    subjects: [],
-                    knowledgePointChain: [],
-                    currentKnowledgePointIndex: 0,
-                    lessonID: '',
-                    threads: []
-                }
-            } as IMessagesEndpointSendPayload
 
-            //if there's a new question,
-            //create a new lesson
-            //add the current userID to each knowledgePointChain object
-            const kpc = payload.metadata.knowledgePointChain.map((k: IKnowledge) => {
-                return { ...k, userId: userID }
-            })
-            console.log("Beginning to create lesson transaction")
-            const less = await prisma.$transaction(async (tx) => {
-                const createdLesson = tx.lesson.create({
-                    data: {
-                        userId: userID,
-                        ls: {
-                            create: {
-                                //new messages should be an empty array
-                                newMessages: { create: [] as IMessage[] },
-                                oldMessages: { create: payload.messages as IMessage[] },
-                                metadata: {
-                                    create: {
-                                        subjects: payload.metadata.subjects,
-                                        knowledgePointChain: {
-                                            createMany: {
-                                                data: kpc as any
-                                            }
-                                        },
-                                        currentKnowledgePointIndex: payload.metadata.currentKnowledgePointIndex,
-                                    }
-                                }
-                            }
-                        }
-                    } as any,
-                    include: {
-                        ls: {
-                            include: {
-                                metadata: true
-                            }
-
-                        }
-                    }
-                });
-                console.log("Created lesson: ", createdLesson)
-                return createdLesson;
-            })
-            payload.metadata.lessonID = less.id;
-            console.log("New lesson payload into getNextMessage: ", payload)
-        } else {
-            //they passed a lesson to get the next message - do all verficiation checks
-            const lessonExists = await prisma.lesson.findUnique({
-                where: {
-                    id: payload.metadata.lessonID,
-                    userId: userID
-                }
-            });
-            console.log("Lesson exists: ", lessonExists)
-            //if it doesn't exist or is already completed, return an error
-            if (!lessonExists || lessonExists.endedAt) {
-                return NextResponse.json({ error: "ERR3" }, { status: 400 });
+        //they passed a lesson to get the next message - do all verficiation checks
+        const lessonExists = await prisma.lesson.findUnique({
+            where: {
+                id: payload.metadata.lessonID,
+                userId: userID
             }
+        });
+        console.log("Lesson exists: ", lessonExists)
+        //if it doesn't exist or is already completed, return an error
+        if (!lessonExists || lessonExists.endedAt) {
+            return NextResponse.json({ error: "ERR3" }, { status: 400 });
         }
+
         console.log("[/API/LESSONS/PUT] Payload: ", payload)
 
         let resp: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);

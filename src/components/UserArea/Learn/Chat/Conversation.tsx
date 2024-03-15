@@ -73,6 +73,8 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
+        //animate messages in
+
     }, [messagesToRender, newMessages]);
     useEffect(() => {
         //if newMessages was the cause then setControlIndex to 0

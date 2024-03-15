@@ -160,34 +160,23 @@ function ChatWithEli({
             return;
         };
 
-        console.log("POSTing new question to /lesson/new with newQuestion: ", newQuestion)
-        // const res = await fetch('/api/lessons/new', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
+        console.log("PUTting new question to /lesson/new with newQuestion: ", newQuestion)
+        //DEV: Mock response
+        const response = await getResponse('NewQ');
+        //PROD: Real response
+        // const _getMessageResponse: Response = await fetch('/api/lessons', {
+        //     method: 'PUT',
         //     body: JSON.stringify({ newQuestion })
         // });
-        // const response = await res.json();
-        //DEV: Mock response
-        // const response = await getResponse('NewQ');
-        //PROD: Real response
-        const _getMessageResponse: Response = await fetch('/api/lessons', {
-            method: 'PUT',
-            body: JSON.stringify({ newQuestion })
-        });
-        const response = await _getMessageResponse.json();
-        console.log("response from /api/lessons/ ", response)
+        // const response = await _getMessageResponse.json();
 
-        console.log("recieved response from /lesson/new: ", response)
+        console.log("recieved response from /lesson/new: ")
+        console.dir(response, { depth: null });
         if (typeof response == 'string') {
             console.error("Error from /lesson/new: ", response)
             seterrorMessage(response);
             return;
         }
-        console.log("response: ", response)
-        console.log("Response from /api/lessons/new: ")
-        console.dir(response, { depth: null });
         if (!updateState) throw new Error("No updateState function found in ChatWithEli, can't start the lesson.")
         console.log("Updating state with response");
         await updateState(data, response);
@@ -203,7 +192,6 @@ function ChatWithEli({
         if (_type == "NewQ") {
             if (!textAreaRef.current) throw new Error("No textAreaRef found in ChatWithEli")
             await submitUserQuestion(data);
-            console.log("Setting theirReply to ''")
         }
         else if (_type == "Lesson") {
             if (!lessonReplyInputRef.current) throw new Error("No lessonReplyInputRef found in ChatWithEli")
@@ -213,7 +201,6 @@ function ChatWithEli({
             // //wait 2s
             // await new Promise((resolve) => setTimeout(resolve, 2000));
             await updateState(data);
-            console.log("Setting theirReply to ''")
         }
         else if (_type == "Tutorial") null;
         else null;

@@ -12,16 +12,17 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  role            String?          @default("STUDENT") @db.String
-  username        String           @unique
-  email           String           @unique
-  password        String
-  name            String           @default("") @map("_name")
-  lessons         Lesson[]
+  id                  String           @id @default(auto()) @map("_id") @db.ObjectId
+  role                String?          @default("STUDENT") @db.String
+  username            String           @unique
+  email               String           @unique
+  password            String
+  name                String           @default("") @map("_name")
+  lessons             Lesson[]
   // sessions                  Session[]
   //collection id or something? idk
-  knowledgePoints knowledgePoint[] @relation("UserToKnowledgePoint")
+  knowledgePoints     knowledgePoint[] @relation("UserToKnowledgePoint")
+  lastCreatedLessonAt DateTime?
 
   @@map("users")
 }

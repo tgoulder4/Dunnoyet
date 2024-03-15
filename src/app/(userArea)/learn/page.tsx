@@ -20,6 +20,7 @@ var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
 // }
+export async function createNewLesson() { }
 function page({ params }: { params: { params: string } }) {
     const [chatIsOpen, setChatIsOpen] = useState(false);
     const [tutorialMode, setTutorialMode] = useState(true);

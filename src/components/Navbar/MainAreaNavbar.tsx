@@ -7,7 +7,7 @@ import { getURL } from 'next/dist/shared/lib/utils'
 import LessonTimer from './LessonTimer'
 
 
-function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' | 'authOrAdmin' }) {
+function MainAreaNavbar({ style, showTimer }: { style: 'normal' | 'lesson' | 'authOrAdmin', showTimer?: boolean }) {
     const theme = {
         backgroundColour: style == 'normal' ? colours.primary : style == "lesson" ? '#000' : colours.accent,
     }
@@ -29,9 +29,9 @@ function MainAreaNavbar({ style, }: { style: 'normal' | 'lesson' | 'authOrAdmin'
                         <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? changeColour(theme.backgroundColour).darken(8).toString() : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
                         <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>
                             {
-                                style == 'lesson' ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
+                                style == 'lesson' ? showTimer ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
                                     In Lesson: <LessonTimer />
-                                </NewButton> :
+                                </NewButton> : <></> :
                                     <>
                                         <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
                                         <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/mind">Mind</NewButton></>

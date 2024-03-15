@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 var equal = require('deep-equal');
+//if you give it a new question, it'' return with a lesson payload response
 async function getLessonState(lessonID: string, userID: string): Promise<ILessonState | null> {
     console.log("getLessonState called with lessonID: ", lessonID)
     try {
@@ -20,7 +21,10 @@ async function getLessonState(lessonID: string, userID: string): Promise<ILesson
                 userId: userID
             }
         })
-        if (!lesson) throw new Error("Prisma didn't return a lesson @getLessonState")
+        if (!lesson) {
+            console.error("!!! Prisma didn't return a lesson @getLessonState")
+            return null;
+        };
         const result = await prisma.lessonState.findFirst({
             //also get the lesson from this and check if the lesson's userID matches the userID
             where: {
@@ -75,24 +79,9 @@ export default async function LessonLoader({ params }: { params: any }) {
     console.log("LESSON PAGE params", passedParams);
     if (passedParams == 0 || equal(params, {})) redirect('/api/error');
     const lessonID = passedParams[0];
-    let initialLessonState: ILessonState | null = null;
-    if (lessonID) {
-        initialLessonState = await getLessonState(lessonID, userID);
-    } else {
-        console.log("No lessonID found, returning initialLessonState as mock.")
-        initialLessonState = {
-            oldMessages: [],
-            newMessages: [],
-            metadata: {
-                metadataId: "0",
-                lessonID: "0",
-                threads: [],
-                subjects: [],
-                knowledgePointChain: [],
-                currentKnowledgePointIndex: 0,
-            }
-        }
-    }
-    if (!initialLessonState) throw new Error("No initial lesson state found, couldn't load lesson page");
+    let initialLessonState: ILessonState | null = await getLessonState(lessonID, userID);
+
+    //redirect them if not found
+    if (!initialLessonState) redirect('/api/error?code=3');
     return (<Lesson initialLessonState={initialLessonState} />)
 }

@@ -27,12 +27,21 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
 
     //TODO: KNOWLEDGEPOINT TOOLTIPS OF POINTSINSOLITUDE. i need a DAMN BREAK
     async function updateState(formData?: FormData, explicitState?: IMessagesEndpointResponsePayload, action?: "UNDERSTOOD" | 'ENDLESSON') {
+        if (lessonState.metadata.lessonID == "0") {
+            //begin lesson
+            //PROD:
+            // const newQuestion = formData!.get("userInput") as string;
+            // const _getMessageResponse: Response = await fetch('/api/lessons', {
+            //     method: 'PUT',
+            //     body: JSON.stringify(newQuestion)
+            // });
+            // const getMessageResponse = await _getMessageResponse.json();
+        }
         try {
             let ls = lessonState;
             if (ls.metadata.errorWithTheirInput) {
                 ls.metadata.errorWithTheirInput = "";
             }
-            console.log("UpdateState called")
             console.log("UpdateState called with formData: ", formData)
             if (!formData && !explicitState && !action) throw new Error("No data was provided to updateState");
             //if there's an action, use it
@@ -47,12 +56,12 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                     }
                 }
                 //PROD:
-                const _getMessageResponse: Response = await fetch('/api/lessons', {
-                    method: 'PUT',
-                    body: JSON.stringify(payload)
-                });
-                const getMessageResponse = await _getMessageResponse.json();
-                // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Understood'); //DEV
+                // const _getMessageResponse: Response = await fetch('/api/lessons', {
+                //     method: 'PUT',
+                //     body: JSON.stringify(payload)
+                // });
+                // const getMessageResponse = await _getMessageResponse.json();
+                const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Understood'); //DEV
 
                 if (typeof getMessageResponse === "string") {
                     setLessonState({
@@ -83,9 +92,6 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
                     metadata: explicitState.metadata
                 });
                 return;
-            } else {
-
-
             }
             //update state with their new reply
             const payload: IMessagesEndpointSendPayload = {
@@ -95,15 +101,15 @@ export default function LessonPage({ initialLessonState }: { initialLessonState:
             console.log("Sending payload to backend: ", payload)
             // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
 
-            /**
+            /** PROD
              * _getMessageResponse returns {error:string} | {error:z.ZodIssue[]} | {resp: string | IMessagesEndpointResponsePayload}
              */
-            const _getMessageResponse: Response = await fetch('/api/lessons', {
-                method: 'PUT',
-                body: JSON.stringify(payload)
-            });
-            const getMessageResponse = await _getMessageResponse.json();
-
+            // const _getMessageResponse: Response = await fetch('/api/lessons', {
+            //     method: 'PUT',
+            //     body: JSON.stringify(payload)
+            // });
+            // const getMessageResponse = await _getMessageResponse.json();
+            const getMessageResponse: any = await getResponse('Understood'); //DEV
             if (getMessageResponse.error) {
                 console.error(getMessageResponse.error)
                 return;

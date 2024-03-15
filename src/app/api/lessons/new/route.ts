@@ -1,122 +1,51 @@
-import { metadata } from '../../../auth/register/page';
-import prisma from "@/lib/db/prisma";
+'use server'
+import getServerSession from 'next-auth';
+import { putLessonSchema } from "@/lib/validation/parseTypes";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from '@/auth';
-import { getEmbedding } from "@/lib/chat/openai";
-import { redirect } from "next/navigation";
-import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
-import { getNextMessage } from '@/lib/chat/Eli/eli';
-import { randomBytes } from 'crypto';
-
-async function POST(req: NextRequest) {
-    //create a new lesson, get the lessonID from that lesson then redirect to /learn/lesson/[lessonID]
+import { authConfig } from "@/auth.config";
+import prisma from '@/lib/db/prisma';
+import { IKnowledge, ILesson, ILessonState, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload, IMetadata } from '@/lib/validation/enforceTypes';
+export async function GET(req: NextRequest) {
+    console.log("Entered handler")
+    const sess = await getServerSession(authConfig).auth();
+    const url = req.nextUrl.clone()
+    if (!sess) return NextResponse.redirect(url.host + "/api/error?err=ERR7");
+    const userID = sess.user?.id;
+    if (!userID) return NextResponse.redirect(url.host + "/api/error?err=ERR7");
     try {
-        if (!req.body) return NextResponse.json({ message: "No req body was provided." }, { status: 201 });
-        const sess = await auth();
-        if (!sess || !sess.user) return NextResponse.json("UNAUTHORIZED", { status: 401 });
-        const userId = sess.user.id;
-        if (!userId) return NextResponse.json("No user ID found", { status: 401 });
-        const { newQuestion }: { newQuestion: string } = await req.json();
-        //make a new message as the newQuestion
-        //create a new lesson, and a new lesson state. the lesson state's messages will be the new message
-        console.log("Entered prisma create lesson transaction with Q: ", newQuestion);
-        //if newMessages content is of type splitResponse, change 'content' key to 'splitResponse'
-        const res = await getNextMessage({
-            messages: [{ content: newQuestion, role: "user" }],
-            metadata: {
-                metadataId: "65dbe7799c9c2a30ecbe6100",
-                lessonID: "65dbe7799c9c2a30ecbe6193",
-                threads: [],
-                subjects: [],
-                knowledgePointChain: [],
-                currentKnowledgePointIndex: 0,
-            }
-        });
-        if (typeof res === "string") return NextResponse.json(res, { status: 500 });
-        console.log("Skipping prisma transaction for now, just returning the response.")
-        //some responses could be a splitResponse, which is a model so we must create it. this produces the correct invocation of the prisma create method
-        // const firstSrMsg = newMessages.filter(nm => nm.splitResponse)[0];
-        // if (!firstSrMsg || !firstSrMsg.splitResponse) return NextResponse.json({ error: "Couldn't add the firstSrMsg to lessonState as it was falsy." }, { status: 500 });
-
-        // const lessAndState = await prisma.$transaction(async (tx) => {
-        //     // const createdSplitResponse = await tx.splitResponse.create({
-        //     //     data: {
-        //     //         id: randomBytes(12).toString('hex'),
-        //     //         text: firstSrMsg!.splitResponse!.text,
-        //     //         active: firstSrMsg!.splitResponse!.active
-        //     //     }
-        //     // });
-
-        //     const lessonState = await tx.lessonState.create({
-        //         data: {
-        //             messages: {
-        //                 create: {
-        //                     content: newQuestion,
-        //                     //generate a 12 byte ID for the message
-        //                     role: "user"
-        //                 },
-        //             },
-        //             metadataId: "65dbe7799c9c2a30ecbe6100", //will be overwritten with a real metadata ID in a few lines
-        //         }
-        //     });
-        //     console.log("TEMP: lessonState created: ", lessonState);
-        //     const lesson = await tx.lesson.create({
-        //         data: {
-        //             stateId: lessonState.id,
-        //             userId: userId,
-
-        //         }
-        //     });
-        //     console.log("lesson created: ", lesson);
-        //     //connect the knowledge point's ID to this lesson just made
-        //     const createdMetadata = await tx.metadata.create({
-        //         data: {
-        //             knowledgePointChain: {
-        //                 create: [
-        //                     ...metadata.knowledgePointChain.map((k) => {
-        //                         return {
-        //                             ...k,
-        //                             userId: userId,
-        //                             lessonId: lesson.id
-        //                         }
-        //                     })
-        //                 ]
-        //             },
-        //             subjects: metadata.subjects,
-        //             currentKnowledgePointIndex: metadata.currentKnowledgePointIndex,
-        //             threads: metadata.threads,
-        //         }
-        //     });
-        //     console.log("metadata created: ", metadata)
-        //     //change lessonState's metadataId to the metadata's ID
-        //     const newLessonState = await tx.lessonState.update({
-        //         where: { id: lessonState.id },
-        //         data: {
-        //             metadataId: createdMetadata.id
-        //         }
-        //     });
-        //     console.log("LessonState updated to ", newLessonState);
-        //     return { less: lesson, state: newLessonState };
-        // });
-        // if (!lessAndState.less) return NextResponse.json({ error: "Couldn't create the lesson." }, { status: 500 });
-        // console.log("Lesson and state created: ", lessAndState);
-        return NextResponse.json({
-            // lessonId: lessAndState.less.id, 
-            res
-        }, { status: 201 })
-    } catch (error) {
-        console.error("Error creating the lesson: ", error);
-        return NextResponse.json("Couldn't create the lesson", { status: 500 });
+        const body = await req.json();
+        if (!body._userID) return NextResponse.redirect(url.host + "/api/error?err=ERR4");
+        const { _userID } = body;
+        if (_userID !== userID) return NextResponse.redirect(url.host + "/api/error?err=ERR5");
+        const less = await prisma.$transaction(async (tx) => {
+            console.log("Creating lesson for user: ", userID)
+            const createdLesson = tx.lesson.create({
+                data: {
+                    user: {
+                        connect: { id: userID }
+                    },
+                    ls: {
+                        create: {
+                            //new messages should be an empty array
+                            newMessages: { create: [] as IMessage[] },
+                            oldMessages: { create: [] as IMessage[] },
+                            metadata: {
+                                create: {
+                                    subjects: [], currentKnowledgePointIndex: 0,
+                                }
+                            }
+                        }
+                    }
+                } as any,
+            });
+            console.log("Created lesson: ", createdLesson)
+            return createdLesson;
+        })
+        //return the lesson ID
+        return NextResponse.json({ lessonID: less.id, link: `/learn/lesson/${less.id}` });
+    } catch (e) {
+        console.error(e)
+        return NextResponse.json({ error: "Something went wrong with creating the lesson." }, { status: 500 });
     }
+    return NextResponse.json({ error: "Something went wrong with creating the lesson." }, { status: 500 });
 }
-export { POST as POST }
-
-//SUMMARY
-// lesson/new now calls getNextMessage to return newMessages[] and metadata
-// then it creates a new lesson and a new lessonState
-// then it creates a new metadata
-// then it updates the lessonState to have the new metadata
-// then it returns the lesson and lessonState IDs
-//but I want the newMessages to be returned within chatWithEli
-//so just push these messages to the lesson state, the lesson state ID is passed as url params anyway.
-//then within chatwithEli retrieve the lesson state. Maybe pass the question as well for faster percieved response time.
