@@ -97,7 +97,8 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
             setMessagesToRender(messagesToRender)
             return;
         }
-        if (messagesToRender.length && newMessages[controlIndexRef].eliResponseType === "System") { setDisableInput(true); } else { setDisableInput(false); }
+
+        if (newMessages[controlIndexRef].eliResponseType === "System") { setDisableInput(true); } else { setDisableInput(false); }
         if (messagesToRender.length == 0) {
             updatedMessages.push(theirReplyMsg!);
         }

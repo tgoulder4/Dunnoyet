@@ -58,11 +58,6 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
     const prevKNowledgePoints = useRef(knowledgePoints);
     const requestAnimationRef = useRef<any>(null);
-    if (prevKNowledgePoints.current == knowledgePoints) {
-        (() => cancelAnimationFrame(requestAnimationRef.current))();
-    } else {
-        prevKNowledgePoints.current = knowledgePoints;
-    }
     var t: Array<number> = [];
     //being more resource friendly by only calculating the required frame rate. Draw updates ALOT and for some requestAnimationFrame affects the whole page's frame rate.
     //this is responsible for laggy scrollbar. scrollbar click events are disabled as a result
@@ -99,7 +94,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         const xRange = maxX - minX;
         const yRange = maxY - minY;
         // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-        const overallScale = Math.min(ctx.canvas.width / xRange, ctx.canvas.height / yRange) * 0.15;
+        const overallScale = Math.min(ctx.canvas.width * 0.3 / xRange, ctx.canvas.height * 0.3 / yRange);
         const centerOffsetX = minX + (xRange / 2);
         const centerOffsetY = minY + (yRange / 2);
         // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
@@ -261,14 +256,15 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     }
     // Start the animation loop
     useEffect(() => {
-        if (knowledgePoints.length > 0) {
-            requestAnimationRef.current = requestAnimationFrame(animate); //start animation loop
+        if (prevKNowledgePoints.current !== knowledgePoints) {
+            cancelAnimationFrame(requestAnimationRef.current);
+            prevKNowledgePoints.current = knowledgePoints;
         }
-        return () => cancelAnimationFrame(requestAnimationRef.current);
-    }, [knowledgePoints]); // Rerun the effect when knowledgePoints change
+    }, [knowledgePoints]);
     useEffect(() => {
         async function main() {
             const allKp = await getAllReinforcedKnowledgePoints(userId!);
+            console.log("All existing knowledge points: ", allKp)
             frameRate = await getRequiredFrameRate();
             console.log("Frame rate used: ", frameRate)
             setAllKnowledgePoints(allKp);
@@ -335,7 +331,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
 
         requestAnimationRef.current = requestAnimationFrame(updatePosition);
         // Uncomment below line if you want to cancel the animation
-        // return () => cancelAnimationFrame(requestAnimationRef.current);
+        return () => cancelAnimationFrame(requestAnimationRef.current);
     }
     useEffect(() => {
         // console.log("useEffect called")
