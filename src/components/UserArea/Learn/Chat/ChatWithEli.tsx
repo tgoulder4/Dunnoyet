@@ -215,23 +215,25 @@ function ChatWithEli({
             if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
                 const formData = new FormData();
+                formData.append('userInput', lessonReplyInputRef.current ? lessonReplyInputRef.current.value : textAreaRef.current!.value);
                 if (_type == "NewQ") {
                     // I'll need the form data...?
-                    formData.append('userInput', textAreaRef.current!.value);
                     handleSumbitAction(formData);
                 }
                 else if (lessonState?.metadata.action == "ENDLESSON" && _type == "Lesson") {
-                    //save their knowledgePoints
                     setDisableInput(true);
                     setUpdatingState(true);
                     //get lessonID from URL
                     if (!lessonID) throw new Error("No lessonID found in ChatWithEli - can\'t end the lesson without using it to save to points & pinecone.")
+                    //save their knowledgePoints
                     await saveKnowledgePointsToDBAndPineCone(lessonID, lessonState.metadata.knowledgePointChain)
                 }
                 //redirect to homepage
                 else if (_type == "Lesson" && lessonReplyInputRef.current?.value) {
                     //tell them to click the button
                     seterrorMessage("Please click the button on the right ask your question!");
+                } else {
+                    await handleSumbitAction(formData);
                 }
             }
         };
@@ -285,7 +287,7 @@ function ChatWithEli({
                             </div>
                         }
                         <NewButton disabled={disableInput || updatingState} tooltip={
-                            _type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action !== 'ENDLESSON' ? "Save Progress and End Lesson" : "Raise question" : ""
+                            _type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action == 'ENDLESSON' ? "Save Progress and End Lesson" : "Raise question" : ""
 
                         } type={_type == "Tutorial" ? 'button' : 'submit'} buttonVariant='black' className='h-14' style={{ borderRadius: _type == "Lesson" && lessonState?.metadata.action !== 'ENDLESSON' ? 999 : 10, width: _type == "Lesson" && lessonState?.metadata.action !== 'ENDLESSON' ? '5rem' : '100%' }} actionOrLink={tutorialStage !== -1 ? tutorialStages[tutorialStage].actionOrLink :
                             () => { }}>{_type == "Tutorial" ? tutorialStage == tutorialStages.length - 1 ? "Ask my first question" : 'Continue' : _type == "NewQ" ? "Ask question" : _type == "Lesson" ? lessonState?.metadata.action == 'ENDLESSON' ? "Save Progress and End (Enter)" : "" : ""}

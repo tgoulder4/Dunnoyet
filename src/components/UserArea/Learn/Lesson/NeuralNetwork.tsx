@@ -254,13 +254,13 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
         draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current)
         return () => cancelAnimationFrame(requestAnimationRef.current);
     }
-    // Start the animation loop
-    useEffect(() => {
-        if (prevKNowledgePoints.current !== knowledgePoints) {
-            cancelAnimationFrame(requestAnimationRef.current);
-            prevKNowledgePoints.current = knowledgePoints;
-        }
-    }, [knowledgePoints]);
+    // // Start the animation loop
+    // useEffect(() => {
+    //     if (prevKNowledgePoints.current !== knowledgePoints) {
+    //         cancelAnimationFrame(requestAnimationRef.current);
+    //         prevKNowledgePoints.current = knowledgePoints;
+    //     }
+    // }, [knowledgePoints]);
     useEffect(() => {
         async function main() {
             const allKp = await getAllReinforcedKnowledgePoints(userId!);

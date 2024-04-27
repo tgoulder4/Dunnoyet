@@ -5,6 +5,8 @@ const errorCodes = {
     'ERR3': 'Error creating lesson - Lesson ID doesn\'t exist or doesn\'t belong to the user',
     'ERR4': 'The entered userID doesn\'t exist in the user DB.',
     'ERR5': '[/API/LESSONS/NEW] The user ID provided in the body doesn\'t match the user ID in the session. (are they trying to create a lesson for someone else?)',
-    'ERR6': '[/API/LESSONS/NEW] No user ID was assed in the body.',
+    'ERR6': '[/API/LESSONS/NEW] No user ID was passed in the body.',
     'ERR7': 'They had no session server side.',
+    'ERR8': 'The userID wasn\'t found in the session.',
+    'ERR9': '[/API/LESSONS: GET] The chunkFrom wasn\'t provided in the request body.',
 }

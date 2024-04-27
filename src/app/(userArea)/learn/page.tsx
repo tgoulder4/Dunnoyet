@@ -20,8 +20,8 @@ var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
 // }
-export async function createNewLesson() { }
-function page({ params }: { params: { params: string } }) {
+// export async function createNewLesson() { }
+function Page({ params }: { params: { params: string } }) {
     const [chatIsOpen, setChatIsOpen] = useState(false);
     const [tutorialMode, setTutorialMode] = useState(true);
     const [lessonItems, setLessonItems] = useState(null as ILesson[] | null);
@@ -49,7 +49,7 @@ function page({ params }: { params: { params: string } }) {
             setLessonItems(items.lesson);
         }
         main()
-    }, [])
+    })
     return (
         <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
             <MainAreaNavbar style="normal" show={{ userSide: { newQuestion: !tutorialMode } }} />
@@ -89,4 +89,4 @@ function page({ params }: { params: { params: string } }) {
     )
 }
 
-export default page
+export default Page

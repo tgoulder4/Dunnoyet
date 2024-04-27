@@ -17,7 +17,7 @@ const InputWithLegend = React.forwardRef<HTMLInputElement, InputWithLegendProps>
                 required
                 id={idAndName}
                 name={idAndName}
-                ref={ref}
+                ref={ref as any}
                 defaultValue={defaultValue}
                 className='py-[20px] w-full'
                 type={type}
@@ -29,5 +29,5 @@ const InputWithLegend = React.forwardRef<HTMLInputElement, InputWithLegendProps>
         </div>
     )
 );
-
+InputWithLegend.displayName = 'InputWithLegend'
 export default InputWithLegend

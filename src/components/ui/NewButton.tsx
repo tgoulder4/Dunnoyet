@@ -89,5 +89,5 @@ const NewButton = React.forwardRef<HTMLButtonElement, buttonProps>(
             // </button>
         )
     })
-
+NewButton.displayName = 'NewButton'
 export default NewButton

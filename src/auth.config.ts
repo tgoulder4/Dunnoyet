@@ -2,6 +2,7 @@ import type { NextAuthConfig } from "next-auth"
 import prisma from "./lib/db/prisma"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import * as dotenv from 'dotenv/config'
+import { date } from "zod";
 declare module "next-auth" {
     interface User {
         // Add your additional properties here:
@@ -55,6 +56,7 @@ export const authConfig: NextAuthConfig = {
                     name: token.name, // Retain existing session.user.name if necessary
                     email: token.email || "", // Retain existing session.user.email if necessary
                     role: token.role as string,
+                    emailVerified: new Date()
                 };
             }
             return session;

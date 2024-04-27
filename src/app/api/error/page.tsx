@@ -16,7 +16,7 @@ function ErrorPage() {
             <div className="flex flex-col" style={{ rowGap: spacing.gaps.groupedElement }}>
 
                 <h1 style={{ fontSize: responsiveFont(sizing.largestFontSize), fontFamily: merriweather.style.fontFamily }} className=''>There was an error</h1>
-                <p>Sorry, it looks like something went wrong on our end. If this issue persists, please report it below and we'll address it ASAP.</p>
+                <p>Sorry, it looks like something went wrong on our end. If this issue persists, please report it below and we&apos;ll address it ASAP.</p>
                 <ReportErrorForm />
             </div>
         </div>
