@@ -10,11 +10,11 @@ import { ruda } from "@/app/fonts";
 import { useState } from "react";
 import { Checkbox } from "./checkbox";
 import File from "./File";
-import { IFile, ISource } from "@/lib/actions/actions";
+// import { IFile, ISource } from "@/lib/actions/actions";
 type Props = {
   index: number;
-  source: ISource;
-  files: (IFile | null)[];
+  source: any;
+  files: (any | null)[];
   appearanceMods: {
     _selectable?: boolean;
     _selected?: boolean;
@@ -168,6 +168,7 @@ const Source = ({
                 <File
                   type={file.type}
                   name={file.name}
+                  key={file.id}
                   uploadedAt={file.uploadedAt}
                 />
               );

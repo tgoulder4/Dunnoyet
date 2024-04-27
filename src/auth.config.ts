@@ -1,18 +1,16 @@
 import type { NextAuthConfig } from "next-auth"
 import prisma from "./lib/db/prisma"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import type { DefaultSession } from "next-auth";
-import type DefaultUser from "next-auth";
+import * as dotenv from 'dotenv/config'
+import { date } from "zod";
 declare module "next-auth" {
     interface User {
         // Add your additional properties here:
         givenName?: string | null;
         preferLanguage?: string | null;
         role?: string;
-        tutorName?: string;
     }
 }
-
 declare module "@auth/core/adapters" {
     interface AdapterUser {
         // Add your additional properties here:
@@ -26,12 +24,12 @@ export const authConfig: NextAuthConfig = {
         signIn: "/auth/login",
         newUser: "/auth/register",
         error: "/auth/error",
+
     },
     session: {
         strategy: "jwt",
     },
-    adapter: PrismaAdapter(prisma),
-    // secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async redirect({ url, baseUrl }) {
             // Allows relative callback URLs
@@ -40,10 +38,10 @@ export const authConfig: NextAuthConfig = {
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.userId = user.id; // Assuming 'user.id' is the userID from your user model
-                token.name = user.name;
+                token.name = (trigger == "update" && session.name) ? session.name : user.name;
                 token.email = user.email;
                 token.role = user.role;
             }
@@ -55,10 +53,10 @@ export const authConfig: NextAuthConfig = {
                 // console.log("token.userId: ", token.userId)
                 session.user = {
                     id: token.userId as string, // Replace or extend the user object with the userId
-                    name: session.user.name, // Retain existing session.user.name if necessary
-                    email: session.user.email, // Retain existing session.user.email if necessary
-                    emailVerified: session.user.emailVerified, // Retain existing session.user.emailVerified if necessary
+                    name: token.name, // Retain existing session.user.name if necessary
+                    email: token.email || "", // Retain existing session.user.email if necessary
                     role: token.role as string,
+                    emailVerified: new Date()
                 };
             }
             return session;
@@ -72,6 +70,8 @@ export const authConfig: NextAuthConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isInUserArea = nextUrl.pathname.startsWith("/learn");
+
+            // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
                 if (isLoggedIn) {
                     // console.log("Is logged in, and in user area. AUTHORISED")
@@ -84,6 +84,8 @@ export const authConfig: NextAuthConfig = {
                 console.log("redirecitng to /learn")
                 return Response.redirect(new URL("/learn", nextUrl))
             };
+
+
             // console.log("Not logged in, and not user area. AUTHORISED")
             return true;
         }

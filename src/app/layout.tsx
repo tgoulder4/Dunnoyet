@@ -1,4 +1,5 @@
 import '@/app/globals.css'
+// import 'dotenv/config'
 import SessionProvider from "@/components/auth/context/CustomSessionProvider"
 
 export default function RootLayout({
