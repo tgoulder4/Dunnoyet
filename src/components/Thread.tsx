@@ -19,15 +19,15 @@ const Thread = (props: Props) => {
   const [messages, setMessages] = useState<Array<IMessage>>(
     _messages
   );
-  if (messages === null) {
-    console.error("Couldn't render thread.tsx as messages is null")
-    return <></>;
-  }
   useEffect(() => {
     toast.success("Lesson entered: The Bourbon Monarch", {
       className: `${ruda.className} p-8`,
     });
-  }, []);
+  });
+  if (messages === null) {
+    console.error("Couldn't render thread.tsx as messages is null")
+    return <></>;
+  }
   function addMessage(message: IMessage) {
     setMessages([...messages, message]);
   }
@@ -37,7 +37,7 @@ const Thread = (props: Props) => {
         className={`relative flex flex-col gap-4 divide-x-4`}
         id="cardContainer"
       >
-        {messages.map((elem, index) => {
+        {/* {messages.map((elem, index) => {
           switch (elem.type) {
             case "Question":
               return (
@@ -73,7 +73,7 @@ const Thread = (props: Props) => {
                 />
               );
           }
-        })}
+        })} */}
 
         <>
           <hr className="h-[2px] bg-[hsl(0,0%,75%)]" />

@@ -8,7 +8,7 @@ export const responsiveFont = (maxSizeInRem: number) => {
 
 }
 export const colours = {
-    background: "#f4f3fa",
+    background: "#f3f2f7",
     white: "#ebebeb",
     complementary: "#3d3d3d",
     complementary_lighter: "#969696",
@@ -21,13 +21,28 @@ export const colours = {
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",
+    blue: '#9BC9E2',
     accent: "#E4F2ED",
     destructive: "#f75a72",
+    error: "#f75a72",
+    success: "#4caf50",
     destructiveForeground: "#fcfcfc",
     border: "#e8e8ed",
     inputBorder: "#757575",
     link: "#19445C",
     textLegend: "#616161",
+    black: "#131313",
+    interrogativeMessage: '#0A1B1E',
+    systemEventMessage: '#3F2962',
+    lessonNodes: {
+        //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint aka force correct their knowledge to a position
+        confidence5: "#315D35",
+        confidence4: "#8F8F8F",
+        confidence3: "#8B6326",
+        confidence2: "#D2D2D2",
+        confidence1: '#4D1B8C',
+        background: '#F6F6F6',
+    },
     light: {
         textColour: "#131313",
         backgroundLight: "#f4f4f4"

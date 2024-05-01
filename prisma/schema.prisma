@@ -12,27 +12,120 @@ datasource db {
 }
 
 model User {
-  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
-  role                      String?  @default("STUDENT") @db.String
-  username                  String   @unique
-  email                     String   @unique
-  password                  String
-  name                      String?
-  lessons                   Lesson[]
+  id                  String           @id @default(auto()) @map("_id") @db.ObjectId
+  role                String?          @default("STUDENT") @db.String
+  username            String           @unique
+  email               String           @unique
+  password            String
+  name                String           @default("") @map("_name")
+  lessons             Lesson[]
+  isPremium           Boolean          @default(false)
   // sessions                  Session[]
-  tutorName                 String
-  knowledgePointsUnderstood String[]
+  //collection id or something? idk
+  knowledgePoints     knowledgePoint[] @relation("UserToKnowledgePoint")
+  lastCreatedLessonAt DateTime?
 
   @@map("users")
 }
 
-// model Session {
-//   id           String   @id @default(cuid()) @map("_id") @db.ObjectId
-//   sessionToken String   @unique
-//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId       String   @db.ObjectId
-//   expires      DateTime
-// }
+model knowledgePoint {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  uid             User      @relation("UserToKnowledgePoint", fields: [userId], references: [id])
+  userId          String    @map("_userId") @db.ObjectId
+  pointInSolitude String    @map("_pointInSolitude")
+  pointInChain    String    @map("_pointInChain")
+  source          kpSource  @map("_source")
+  TwoDCoOrdinates Float[]   @map("_TwoDCoOrdinates")
+  vectorEmbedding Float[]   @map("_vectorEmbedding")
+  confidence      Int       @map("_confidence")
+  meta            metadata? @relation("MetadataToKnowledgePointChain", fields: [metadataId], references: [id])
+  metadataId      String?   @db.ObjectId
+  // linksTo         String[]
+
+  @@map("knowledgePoints")
+}
+
+enum kpSource {
+  reinforced
+  offered
+}
+
+model Feedback {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  userId  String @db.ObjectId // User ID
+
+  @@map("feedbacks")
+}
+
+model Lesson {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  subject String?
+  ls      lessonState @relation("LessonToLessonState", fields: [stateId], references: [id])
+  stateId String      @unique @db.ObjectId
+  beganAt DateTime    @default(now())
+  endedAt DateTime?
+  user    User        @relation(fields: [userId], references: [id])
+  userId  String      @db.ObjectId
+
+  @@map("lessons")
+}
+
+model lessonState {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  newMessages Message[] @relation("LessonStateToMessage")
+  oldMessages Message[] @relation("LessonStateToOldMessage")
+  metadata    metadata  @relation("LessonStateToMetadata", fields: [metadataId], references: [id])
+  metadataId  String    @unique @db.ObjectId
+  Lesson      Lesson?   @relation("LessonToLessonState")
+
+  @@map("lessonStates")
+}
+
+model metadata {
+  id                         String           @id @default(auto()) @map("_id") @db.ObjectId
+  lessonState                lessonState?     @relation("LessonStateToMetadata")
+  threads                    Json[]
+  subjects                   String[]
+  knowledgePointChain        knowledgePoint[] @relation("MetadataToKnowledgePointChain")
+  currentKnowledgePointIndex Int
+}
+
+model Message {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  role            role
+  rk              String[]
+  content         String? // Make content optional
+  splitResponse   SplitResponse?   @relation(fields: [splitResponseId], references: [id])
+  splitResponseId String?          @unique @db.ObjectId
+  eliResponseType eliResponseType?
+  ls              lessonState?     @relation("LessonStateToMessage", fields: [lessonStateId], references: [id])
+  lsO             lessonState?     @relation("LessonStateToOldMessage", fields: [lessonStateId], references: [id])
+  lessonStateId   String           @db.ObjectId
+
+  @@map("messages")
+}
+
+model SplitResponse {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  text    String
+  active  Boolean
+  message Message?
+
+  @@map("split_responses")
+}
+
+enum eliResponseType {
+  General
+  WhatComesToMind
+  ChallengeQ
+  System
+}
+
+enum role {
+  user
+  eli
+}
 
 model Tip {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
@@ -41,30 +134,4 @@ model Tip {
   link    String
 
   @@map("tips")
-}
-
-model Lesson {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  //the subject can be a string or null
-  subject String?
-
-  messages                Message[]
-  beganAt                 DateTime  @default(now())
-  updatedAt               DateTime  @default(now())
-  user                    User      @relation(fields: [userId], references: [id])
-  userId                  String    @db.ObjectId
-  currentKnowledgeSummary String
-
-  @@map("lessons")
-}
-
-model Message {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  role     String
-  content  String
-  //relation field below
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
-  lessonId String @db.ObjectId
-
-  @@map("messages")
 }

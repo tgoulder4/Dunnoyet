@@ -45,7 +45,7 @@ export const { auth, signIn, signOut } = NextAuth({
                         console.log("User not found.")
                         return null
                     };
-                    const passwordsMatch = await bcrypt.compare(password, user.password);
+                    const passwordsMatch = await bcrypt.compare(password, user.password!!);
                     if (passwordsMatch) {
                         console.log("Credentials are valid, returning user.", user)
                         return user;

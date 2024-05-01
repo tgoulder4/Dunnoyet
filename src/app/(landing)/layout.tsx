@@ -23,11 +23,11 @@ export default function RootLayout({
         // paddingLeft: spacing.padding.normalY, paddingRight: spacing.padding.normalY
       }
       }
-        className={`grid place-items-center shadow bg-white py-[28px] px-[56px] sticky top-0 z-50`}>
+        className={`grid place-items-center shadow bg-white py-[14px] px-[56px] sticky top-0 z-50`}>
         <div className="flex items-center justify-between w-full" style={{}}>
 
           <div id="brandSide" className={`flex items-center gap-4 h-full`}>
-            <NewButton noAnimation style={{ scale: 2 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
+            <NewButton noAnimation style={{ scale: 1.2 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
             <div className="flex">
               <div className="badge"></div>
             </div>

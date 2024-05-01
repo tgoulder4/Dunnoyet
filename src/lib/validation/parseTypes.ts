@@ -1,3 +1,4 @@
+import { IKnowledge } from './enforceTypes';
 import { z } from 'zod'
 // //TYPES
 // export type IMessage = {
@@ -21,12 +22,59 @@ export const createMessageSchema = z.object({
 //     userId: string;
 // }
 export const createLessonSchema = z.object({
+    id: z.string().optional(),
     userId: z.string(),
-    subject: z.string(),
-    messages: z.array(createMessageSchema),
-    beganAt: z.string(),
-    updatedAt: z.string(),
+    subjects: z.array(z.string()),
+    messages: z.array(createMessageSchema).optional(),
+    updatedAt: z.string().optional(),
+    knowledgePointsFromLesson: z.array(z.object({
+        lessonId: z.string(), pointInSolitude: z.string(), pointInChain: z.string(), source: z.enum(["reinforced", "offered"]), userId: z.string(), TwoDCoOrdinates: z.array(z.number()), confidence: z.number()
+    })),
 })
+const ISplitResponseSchema = z.object({
+    text: z.string(),
+    active: z.boolean()
+});
+
+const IKnowledgeSchema = z.object({
+    id: z.string().optional(),
+    lessonId: z.string().optional(),
+    userId: z.string().optional(),
+    source: z.enum(['reinforced', 'offered']),
+    pointInSolitude: z.string(),
+    pointInChain: z.string(),
+    TwoDCoOrdinates: z.array(z.number()),
+    vectorEmbedding: z.array(z.number()),
+    confidence: z.number()
+});
+const IMessageSchema = z.object({
+    id: z.string().optional(),
+    content: z.string().optional(),
+    splitResponse: ISplitResponseSchema.optional(),
+    eliResponseType: z.enum(["General", "WhatComesToMind", "ChallengeQ", "System"]).optional(),
+    role: z.enum(["user", "eli"]),
+    placeHolderText: z.string().optional()
+});
+export const putLessonSchema = z.object({
+    messages: z.array(z.object({
+        id: z.string().optional(),
+        content: z.string().optional(),
+        splitResponse: ISplitResponseSchema.optional(),
+        eliResponseType: z.enum(["General", "WhatComesToMind", "ChallengeQ", "System"]).optional(),
+        role: z.enum(["user", "eli"]),
+        placeHolderText: z.string().optional()
+    })),
+    metadata: z.object({
+        metadataId: z.string().optional(),
+        lessonID: z.string(),
+        threads: z.array(z.array(IMessageSchema)),
+        subjects: z.array(z.string()),
+        action: z.optional(z.enum(["UNDERSTOOD", "ENDLESSON"])),
+        knowledgePointChain: z.array(IKnowledgeSchema),
+        currentKnowledgePointIndex: z.number(),
+        errorWithTheirInput: z.string().optional()
+    })
+} || { newQuestion: z.string() });
 // export type IUser = {
 //     id: string;
 //     name: string;
@@ -34,7 +82,6 @@ export const createLessonSchema = z.object({
 //     email: string;
 //     password: string;
 //     lessons: ILesson[];
-//     tutorName: string;
 //     knowledgePointsUnderstood: string[];
 // };
 export const createUserSchema = z.object({
