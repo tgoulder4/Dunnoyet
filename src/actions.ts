@@ -34,7 +34,7 @@ export async function getUser(userID?: string,
         return user as any;
     }
     catch (error) {
-        console.error("Couldn't retrieve the user. ", error);
+        console.error("Couldn't retrieve the user. - actions ", error);
     }
     return null;
 }
