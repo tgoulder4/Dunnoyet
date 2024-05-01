@@ -35,7 +35,7 @@ export async function getUser(userID?: string,
         return user as Pick<IUser, "email" | "tutorName" | "username" | "lessons" | "knowledgePointsUnderstood">;
     }
     catch (error) {
-        console.error("Couldn't retrieve the user. ", error);
+        console.error("Couldn't retrieve the user. - actions ", error);
     }
     return null;
 }

@@ -20,7 +20,7 @@ export async function getUser(username: string): Promise<IUser | null> {
         return user as IUser;
     }
     catch (error) {
-        console.error("Couldn't retrieve the user. ", error);
+        console.error("Couldn't retrieve the user - auth.ts ", error);
     }
     return null;
 }

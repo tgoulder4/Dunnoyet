@@ -44,8 +44,10 @@ model Tip {
 }
 
 model Lesson {
-  id                      String    @id @default(auto()) @map("_id") @db.ObjectId
-  subject                 String
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  //the subject can be a string or null
+  subject String?
+
   messages                Message[]
   beganAt                 DateTime  @default(now())
   updatedAt               DateTime  @default(now())
