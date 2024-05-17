@@ -10,10 +10,11 @@ export interface InputProps
     type: 'error' | 'success',
     message: string
   };
+  children?: React.ReactNode;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, responseFromserver, ...props }, ref) => {
+  ({ className, children, type, responseFromserver, ...props }, ref) => {
     const [showMessage, setShowMessage] = React.useState(false);
     return (<>
       {
@@ -24,12 +25,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize, borderColor: showMessage ? responseFromserver?.type === 'error' ? colours.error : responseFromserver?.type === 'success' ? colours.success : colours.inputBorder : colours.inputBorder }}
         type={type}
         className={cn(
-          "flex w-full rounded-md border-2 border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#000000] disabled:cursor-not-allowed disabled:opacity-50",
+          "transition-all flex w-full rounded-md border border-input bg-background pl-[18px] pr-[10px] py-[15px] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus:text-white focus-visible:ring-[#000000] disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         ref={ref}
         {...props}
       />
+      {children}
     </>);
   }
 );

@@ -25,18 +25,19 @@ export async function POST(req: NextRequest) {
             }
         });
         if (!user) return NextResponse.json({ error: "Something went wrong.", link: url + "/api/error&err=4" }, { status: 401 });
-        if (user.lastCreatedLessonAt) {
-            const now = new Date();
-            const last = user.lastCreatedLessonAt;
-            const diff = now.getTime() - last.getTime();
-            //1 lesson every 15 mins for free users, every 5 mins for premium users
-            const diffInMinutes = diff / 1000 / 60;
-            if (user.isPremium) {
-                if (diffInMinutes < 5) return NextResponse.json({ error: "Something went wrong.", link: url + "/learn&msg=too+fast" }, { status: 400 });
-            } else {
-                if (diffInMinutes < 15) return NextResponse.json({ error: "Something went wrong.", link: url + "/learn&msg=too+fast+free" }, { status: 400 });
-            }
-        }
+        //limiter
+        // if (user.lastCreatedLessonAt) {
+        //     const now = new Date();
+        //     const last = user.lastCreatedLessonAt;
+        //     const diff = now.getTime() - last.getTime();
+        //     //1 lesson every 15 mins for free users, every 5 mins for premium users
+        //     const diffInMinutes = diff / 1000 / 60;
+        //     if (user.isPremium) {
+        //         if (diffInMinutes < 5) return NextResponse.json({ error: "Something went wrong.", link: url + "/learn&msg=too+fast" }, { status: 400 });
+        //     } else {
+        //         if (diffInMinutes < 15) return NextResponse.json({ error: "Something went wrong.", link: url + "/learn&msg=too+fast+free" }, { status: 400 });
+        //     }
+        // }
         const less = await prisma.$transaction(async (tx) => {
             console.log("Creating lesson for user: ", userID)
             const createdLesson = tx.lesson.create({

@@ -27,7 +27,7 @@ const UserAuthButton = (props: Props) => {
   const user = { name: "John Doe" };
   return (
     <NewButton noAnimation style={{ padding: 0 }} className="hidden md:flex  relative aspect-square w-[50px]" buttonVariant="ghost" actionOrLink='/settings'>{
-      !imageURL ? <div style={{ backgroundColor: colours.accent }} className="border-4 border-solid border-[#131313] h-full aspect-square rounded-full grid place-items-center text-black">{user?.name ? user.name[0] : null}</div> :
+      !imageURL ? <div style={{ backgroundColor: colours.accent }} className="border-2 border-solid border-[#131313] h-full aspect-square rounded-full grid place-items-center text-black">{user?.name ? user.name[0] : null}</div> :
         <img
           alt='Profile'
           src={imageURL}

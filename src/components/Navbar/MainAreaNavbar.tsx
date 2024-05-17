@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { DunnoyetLogo, changeColour, colours, spacing } from '@/lib/constants'
+import { DunnoyetLogo, changeColour, colours, spacing, uiBorder } from '@/lib/constants'
 import NewButton from '@/components/ui/NewButton'
 import UserAuthButton from '@/components/Navbar/UserAuthButton'
 import { getURL } from 'next/dist/shared/lib/utils'
@@ -9,7 +9,7 @@ import LessonTimer from './LessonTimer'
 
 function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrAdmin', show?: { leftSide?: { lessonTimer?: boolean, links?: boolean }, userSide?: { newQuestion?: boolean, profileButton?: boolean } } }) {
     const theme = {
-        backgroundColour: style == 'normal' ? colours.primary : style == "lesson" ? '#000' : colours.accent,
+        backgroundColour: style == 'normal' ? "#fff" : style == "lesson" ? '#000' : colours.accent,
     }
     console.log("rendering MainAreaNavbar with style: ", style)
     return (<>
@@ -22,19 +22,20 @@ function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrA
 
                 <nav style={{
                     // borderTopWidth: 1, borderTopColor: changeColour(colours.primary).darken(8).toString(), 
-                    backgroundColor: theme.backgroundColour, paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement
+                    borderBottom: uiBorder(0.1), backgroundColor: theme.backgroundColour, paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement
                 }} className="flex flex-row justify-between items-center h-[70px] sticky top-0 z-50">
                     <div className="leftSide flex items-center h-full" style={{ columnGap: spacing.gaps.groupedElement }}>
-                        <NewButton buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: 'white', withText: false })}</NewButton>
-                        <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? changeColour(theme.backgroundColour).darken(8).toString() : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
+                        <NewButton buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: 'black', withText: false })}</NewButton>
+                        <div className="hidden md:block flex-1 w-[1px] h-full" style={{ backgroundColor: style == 'normal' ? "" : changeColour(theme.backgroundColour).lighten(25).toString() }}></div>
                         <div className="flex" style={{ paddingLeft: spacing.padding.normalX, columnGap: spacing.gaps.separateElement }}>
                             {
                                 style == 'lesson' ? show?.leftSide?.lessonTimer !== false ? <NewButton noAnimation textColour='white' buttonVariant="ghost" actionOrLink={getURL()}>
                                     In Lesson: <LessonTimer />
                                 </NewButton> : <></> :
                                     <>
-                                        <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
-                                        <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="white" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/mind">Mind</NewButton></>
+                                        {/* <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="black" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/learn">Home</NewButton>
+                                        <NewButton className="hidden md:flex transition-none hover:scale-100" textColour="black" style={{ padding: 0 }} buttonVariant="ghost" actionOrLink="/mind">Mind</NewButton> */}
+                                    </>
                             }
                         </div>
                     </div>

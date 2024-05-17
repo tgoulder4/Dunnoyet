@@ -5,6 +5,7 @@ import CreatingLesson from '@/components/UserArea/Learn/Lesson/New/CreatingLesso
 import { changeColour, colours, spacing } from '@/lib/constants'
 import prisma from '@/lib/db/prisma';
 import { Loader2 } from 'lucide-react'
+import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import { redirect } from 'next/navigation';
 import React from 'react'
 var equal = require('deep-equal');
@@ -45,9 +46,10 @@ async function CreatingNewLessonLoader({ params }: { params: any }) {
         "Great to see you again! What facts will we discover today? - Eli",
         "Welcome back! Let's continue our journey! - Eli",
     ]
-    return (<CreatingLesson saying={
-        sayings[random]
-    } />
+    return (
+        <CreatingLesson saying={
+            sayings[random]
+        } />
     )
 }
 

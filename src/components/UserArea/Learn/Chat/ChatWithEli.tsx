@@ -1,5 +1,5 @@
 'use client'
-import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/learn/pineconeActions'
+import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/home/pineconeActions'
 import { ILessonState, IMessage, IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import React, { ReactNode, createRef, use, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation'

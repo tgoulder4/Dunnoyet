@@ -25,7 +25,7 @@ export async function getUser(userID?: string,
                 email: true,
                 username: true,
                 name: true,
-                knowledgePoints: true,
+
                 lessons: true,
             },
         });
@@ -105,9 +105,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 email: credentials.email as string,
                 password: hashedPassword as string,
                 name: '',
-                knowledgePoints: {
-                    create: undefined
-                }
+                tutorName: '',
             },
         });
         console.log("User created successfully, ")

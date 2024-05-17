@@ -17,12 +17,12 @@ export const colours = {
     cardForeground: "#3d3d3d",
     popover: "#ffffff",
     popoverForeground: "#0a0a0b",
-    primary: "#315D35",
+    primary: "#438BCE",
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",
     blue: '#9BC9E2',
-    accent: "#E4F2ED",
+    accent: "#E0F4FF",
     destructive: "#f75a72",
     error: "#f75a72",
     success: "#4caf50",
@@ -56,8 +56,9 @@ export const sizing = {
     globalFontSize: '1.2rem',
     largestFontSize: 2.625,
     largerFontSize: 2.25,
-    variableWholePagePadding: 'clamp(24px,6vw,84px)',
+    variableWholePagePadding: 'clamp(24px,12vw,150px)',
 }
+export const uiBorder = (opacity = 0.2) => `1px solid rgba(0, 0, 0, ${opacity})`;
 export const spacing = {
     gaps: {
         groupedElement: 14,
@@ -65,6 +66,7 @@ export const spacing = {
         largest: 56,
     },
     padding: {
+        input: 20,
         normalX: 20,
         normalY: 28,
         smallerX: 10,
