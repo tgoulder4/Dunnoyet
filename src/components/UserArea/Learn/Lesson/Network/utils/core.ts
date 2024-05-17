@@ -64,10 +64,10 @@ export const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingC
     const maxX = Math.max(...xValues);
     const minY = Math.min(...yValues);
     const maxY = Math.max(...yValues);
-    const xRange = maxX - minX;
-    const yRange = maxY - minY;
+    let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
+    let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-    const overallScale = Math.min(ctx.canvas.width * 0.3 / xRange, ctx.canvas.height * 0.3 / yRange);
+    const overallScale = Math.min(ctx.canvas.width * 0.03 / xRange, ctx.canvas.height * 0.03 / yRange);
     console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
