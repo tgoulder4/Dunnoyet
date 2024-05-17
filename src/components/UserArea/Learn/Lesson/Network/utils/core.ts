@@ -34,7 +34,7 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, centerX: numbe
     for (let x = -width / 2; x < width / 2; x += step) {
         for (let y = -height / 2; y < height / 2; y += step) {
             ctx.beginPath();
-            ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
+            ctx.arc(x + centerX, y + centerY, dotSize, 0, 2 * Math.PI);
             ctx.fillStyle = colours.lessonNodes.background;
             ctx.fill();
             ctx.font = "2px Arial";
@@ -70,7 +70,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-    const overallScale = Math.min(ctx.canvas.width * 0.03 / xRange, ctx.canvas.height * 0.03 / yRange);
+    const overallScale = Math.max(ctx.canvas.width * 0.08 / xRange, ctx.canvas.height * 0.08 / yRange);
     console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
