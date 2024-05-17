@@ -15,7 +15,6 @@ export const getRequiredFrameRate = (requestAnimationRef: MutableRefObject<any>,
             resolve(fps);
             return () => cancelAnimationFrame(requestAnimationRef.current);
         } else {
-
             requestAnimationRef.current = requestAnimationFrame(getNext);
         }
     };

@@ -1,4 +1,4 @@
-import { colours } from '@/lib/constants';
+import { changeColour, colours } from '@/lib/constants';
 
 import { IKP } from './../../../../../../lib/validation/enforceTypes';
 import { getColourFromConfidence } from './helpers';
@@ -9,7 +9,7 @@ export function setFrameRate(newFrameRate: number) {
     frameRate = newFrameRate;
 }
 // Function to update the opacity by 1 step for pulsating effect
-export const updatePulsateOpacity = (frameRate: number) => {
+export const updatePulsateOpacity = () => {
     const speed = 1 / frameRate;
     if (pulsateDirection) {
         pulsateOpacity += speed;
@@ -68,6 +68,7 @@ export const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingC
     const yRange = maxY - minY;
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
     const overallScale = Math.min(ctx.canvas.width * 0.3 / xRange, ctx.canvas.height * 0.3 / yRange);
+    console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
     // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
@@ -85,7 +86,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
             //at this point, the context is drawing the line. We can change the opacity of the line here, and then reset it after drawing the line
             if (point.confidence === 5 && nextPoint.confidence === 4) {
                 if (potentialPulsingLinks.find(index => index < i) || potentialPulsingLinks.length === 0) {
-                    updatePulsateOpacity(frameRate);
+                    updatePulsateOpacity();
                     ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
                     potentialPulsingLinks.push(i)
                 }
@@ -102,7 +103,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
             //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node
             if (point.confidence === 4 && nextPoint.confidence === 2) {
                 if (potentialPulsingLinks.find(index => index > i) || potentialPulsingLinks.length === 0) {
-                    updatePulsateOpacity(frameRate);
+                    updatePulsateOpacity();
                     ctx.globalAlpha = pulsateOpacity; // Apply dynamic opacity for pulsating effect
                     potentialPulsingLinks.push(i)
                 }
