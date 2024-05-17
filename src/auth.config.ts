@@ -7,14 +7,14 @@ declare module "next-auth" {
         role?: string;
     }
 }
-declare module "@auth/core/adapters" {
-    interface AdapterUser {
-        // Add your additional properties here:
-        role: string | null;
-        id: string;
-        // preferLanguage: string | null;
-    }
-}
+// declare module "@auth/core/adapters" {
+//     interface AdapterUser {
+//         // Add your additional properties here:
+//         role: string | null;
+//         id: string;
+//         // preferLanguage: string | null;
+//     }
+// }
 export const authConfig: NextAuthConfig = {
     pages: {
         signIn: "/auth/login",
@@ -65,7 +65,7 @@ export const authConfig: NextAuthConfig = {
 
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const isInUserArea = nextUrl.pathname.startsWith("/home");
+            const isInUserArea = nextUrl.pathname.startsWith("/home") || nextUrl.pathname.startsWith("/lesson");
 
             // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
@@ -78,7 +78,7 @@ export const authConfig: NextAuthConfig = {
             } else if (isLoggedIn) {
                 // console.log("Is logged in, and not user area. REDIRECTING TO USER AREA")
                 console.log("redirecitng to /learn")
-                // return Response.redirect(new URL("/home", nextUrl))
+                return Response.redirect(new URL("/home", nextUrl))
             };
 
 

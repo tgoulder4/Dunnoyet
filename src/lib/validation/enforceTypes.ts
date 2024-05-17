@@ -55,9 +55,8 @@ export type IKP = {
     userId?: string,
     source: 'reinforced' | 'offered',
     pointInSolitude: string,
-    pointInChain: string,
-    TwoDCoOrdinates: number[],
-    vectorEmbedding: number[],
+    TwoDvK: number[],
+    // vKP: number[],
     //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
     confidence: number
 
@@ -69,7 +68,7 @@ export type IUser = {
     email: string;
     password?: string;
     role?: string;
-    lessons: ILesson[];
+    lessons?: ILesson[];
     knowledgePoints?: IKP[];
 };
 export type ITip = {
