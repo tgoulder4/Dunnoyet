@@ -25,18 +25,21 @@ export const updatePulsateOpacity = () => {
         }
     }
 };
-export function drawBackgroundDots(ctx: CanvasRenderingContext2D) {
-    const width = 2000;
-    const height = 2000;
-    const dotSize = 3.5;
-    const step = 35;
+export function drawBackgroundDots(ctx: CanvasRenderingContext2D, centerX: number, centerY: number) {
+    const width = 100;
+    const height = 100;
+    const dotSize = 1;
+    const step = 10;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
-    for (let x = 0; x < width; x += dotSize + step) {
-        for (let y = 0; y < height; y += dotSize + step) {
+    for (let x = -width / 2; x < width / 2; x += step) {
+        for (let y = -height / 2; y < height / 2; y += step) {
             ctx.beginPath();
             ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
             ctx.fillStyle = colours.lessonNodes.background;
             ctx.fill();
+            ctx.font = "2px Arial";
+            ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
+            //make font size way smaller
             ctx.closePath();
         }
     }
@@ -55,7 +58,7 @@ export function drawAllKnowledgePointsExceptThoseInChain(ctx: CanvasRenderingCon
     }
 }
 // Function to calculate boundaries
-export const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
+export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = points.map(point => point.TwoDvK[1]);
@@ -74,9 +77,12 @@ export const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingC
     // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)
     return { centerOffsetX, centerOffsetY, overallScale };
 };
+export function addEventListeners(window: Window & typeof globalThis, canvas: HTMLCanvasElement) {
 
+}
 export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: IKP[], centerX: number, centerY: number) {
     //DRAW THE KNOWLDGE POINTS FROM CHAIN
+    const dotSize = 1.2;
     const potentialPulsingLinks: number[] = []; //links of indexes
     if (knowledgePoints.length > 0) {
         for (let i = 0; i < knowledgePoints.length - 1; i++) { // Stop at the second to last element
@@ -113,7 +119,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
             }
             // Now draw the current point
             ctx.beginPath();
-            ctx.arc(point.TwoDvK[0] + centerX, point.TwoDvK[1] + centerY, 5, 0, 2 * Math.PI);
+            ctx.arc(point.TwoDvK[0] + centerX, point.TwoDvK[1] + centerY, dotSize, 0, 2 * Math.PI);
             ctx.fillStyle = getColourFromConfidence(point.confidence); // Use the helper function to get the color
             ctx.fill();
             ctx.closePath();
@@ -126,7 +132,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
         // Draw the last point (since it's not covered in the loop)
         const lastPoint = knowledgePoints[knowledgePoints.length - 1];
         ctx.beginPath();
-        ctx.arc(lastPoint.TwoDvK[0] + centerX, lastPoint.TwoDvK[1] + centerY, 5, 0, 2 * Math.PI);
+        ctx.arc(lastPoint.TwoDvK[0] + centerX, lastPoint.TwoDvK[1] + centerY, dotSize, 0, 2 * Math.PI);
         ctx.fillStyle = getColourFromConfidence(lastPoint.confidence); // Use the helper function to get the color
         ctx.fill();
         ctx.closePath();

@@ -7,7 +7,7 @@ import { getAllReinforcedKnowledgePoints, getRelatedKnowledgePoints } from '@/li
 import { useSession } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import { getRequiredFrameRate } from './utils/optimisations'
-import { calculateOffsetAndScaleToFocusCurrentChain, drawKnowledgePointsInChain, frameRate, pulsateDirection, pulsateOpacity, setFrameRate, updatePulsateOpacity } from './utils/core'
+import { calculateOffsetAndScaleToFocusGivenChain, drawKnowledgePointsInChain, frameRate, pulsateDirection, pulsateOpacity, setFrameRate, updatePulsateOpacity } from './utils/core'
 import { getColourFromConfidence } from './utils/helpers'
 import { drawAllKnowledgePointsExceptThoseInChain, drawBackgroundDots, } from './utils/core'
 
@@ -55,7 +55,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePoints, classNam
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
-        drawBackgroundDots(ctx);
+        drawBackgroundDots(ctx, centerX, centerY);
         drawAllKnowledgePointsExceptThoseInChain(ctx, knowledgePointsExceptFromChain);
         drawKnowledgePointsInChain(ctx, knowledgePoints, centerX, centerY);
 
@@ -159,7 +159,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePoints, classNam
             drag.current.isDragging = false;
             //go back to current knowledge points
             if (knowledgePoints.length > 0) {
-                const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
+                const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, knowledgePoints);
                 const targetOffsetX = -centerOffsetX;
                 const targetOffsetY = -centerOffsetY;
                 animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, scaleMultiplier.current);
@@ -176,17 +176,26 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePoints, classNam
             console.log("Draw called in onWheel")
             draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
-        canvas.addEventListener('mousedown', onMouseDown);
-        canvas.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-        canvas.addEventListener('wheel', onWheel);
+        const onResize = () => {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+        };
+
         if (knowledgePoints.length > 0) {
-            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusCurrentChain(ctx, knowledgePoints);
+            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, knowledgePoints);
             const targetOffsetX = -centerOffsetX;
             const targetOffsetY = -centerOffsetY;
             animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, overallScale);
             console.log("Scale set by knowledgePoints useEffect: ", overallScale)
         }
+        canvas.addEventListener('mousedown', onMouseDown);
+        canvas.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        canvas.addEventListener('wheel', onWheel);
+        window.addEventListener('resize', onResize);
         draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current); // Initial draw
         // Clean up to prevent memory leaks
         return () => {

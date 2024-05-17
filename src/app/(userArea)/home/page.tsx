@@ -74,16 +74,16 @@ function Page({ params }: { params: { params: string } }) {
                     </div>
                     <div className="flex flex-col gap-3 w-4/5">
                         <h1 className=' text-center font-bold'>Examples</h1>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {modeDetails[mode].examples.map((example, index) => {
                                 return (
-                                    loading ? <div className="h-16 w-full bg-slate-200 animate animate-pulse rounded-xl" /> :
+                                    loading ? <div className="xl:h-16 h-24 w-full bg-slate-200 animate animate-pulse rounded-xl" /> :
                                         <Button key={example} onClick={() => {
                                             const textArea = textAreaRef.current;
                                             if (textArea) textArea.value = example;
                                             if (textArea) textArea.focus();
 
-                                        }} className={`${ruda.className} hover:text-white text-[1.2rem] text-black w-full p-10 bg-muted rounded-xl font-bold`}>
+                                        }} className={`${ruda.className} hover:text-white text-[1.2rem] h-auto text-black w-full px-8 py-4 bg-muted rounded-xl font-bold`}>
                                             {example}
                                         </Button>
                                 )
