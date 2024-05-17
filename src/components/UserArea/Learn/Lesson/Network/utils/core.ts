@@ -44,13 +44,13 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, centerX: numbe
         }
     }
 }
-export function drawAllKnowledgePointsExceptThoseInChain(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: IKP[] | null) {
+export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: IKP[] | null, centerX: number, centerY: number) {
     //DRAW ALL OTHER KNOWLEDGE POINTS EXCEPT FROM CHAIN
-    const knowledgePointRadius = 5;
+    const knowledgePointRadius = 1;
     if (knowledgePointsExceptFromChain) {
         knowledgePointsExceptFromChain.forEach((point, i) => {
             ctx.beginPath();
-            ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0], knowledgePointsExceptFromChain[i].TwoDvK[1], knowledgePointRadius, 0, 2 * Math.PI);
+            ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0] + centerX, knowledgePointsExceptFromChain[i].TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
             ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
             ctx.fill();
             ctx.closePath();
