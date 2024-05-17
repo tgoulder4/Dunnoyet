@@ -42,7 +42,7 @@ const updatePulsateOpacity = (frameRate: number) => {
         }
     }
 };
-function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
+const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: string }> = ({ knowledgePoints, className }) => {
     //for each kp to above fn
     const sess = useSession().data!.user!;
     const {
@@ -416,7 +416,7 @@ function NeuralNetwork({ knowledgePoints }: { knowledgePoints: IKnowledge[] }) {
     }, [knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
 
     return (
-        <div className="h-full" style={{ paddingRight: sizing.variableWholePagePadding }}>
+        <div className={`${className} h-full`} style={{ paddingRight: sizing.variableWholePagePadding }}>
             <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ paddingRight: `calc(6* ${sizing.variableWholePagePadding})`, borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
