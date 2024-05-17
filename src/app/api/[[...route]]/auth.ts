@@ -6,10 +6,10 @@ export const runtime = 'edge';
 
 const app = new Hono().basePath('/api/auth')
 
-// app.get('/session', async (c) => {
-//     const session = await auth();
-//     return c.json(session)
-// })
+app.get('/session', async (c) => {
+    const session = await auth();
+    return c.json(session)
+})
 app.get('/[...nextauth]', (c) => {
     const handler = NextAuth(authConfig);
     return c.json(handler)

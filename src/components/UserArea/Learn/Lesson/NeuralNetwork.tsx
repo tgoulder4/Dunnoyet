@@ -9,12 +9,6 @@ import { useSession } from 'next-auth/react'
 // Helper function to get color based on confidence, reused from previous message
 function getColourFromConfidence(confidence: number) {
     switch (confidence) {
-        case 5:
-            return colours.lessonNodes.confidence5;
-        case 4:
-            return colours.lessonNodes.confidence4;
-        case 3:
-            return colours.lessonNodes.confidence3;
         case 2:
             return colours.lessonNodes.confidence2;
         case 1:
@@ -117,14 +111,14 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
         const centerY = ctx.canvas.height / 2;
         //draw a red dot to show the center of scaling
         ctx.save()
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        //add text
-        ctx.font = "20px Arial";
-        ctx.fillText("CENTER_OF_SCALING", centerX + 10, centerY + 10);
-        ctx.closePath();
+        // ctx.beginPath();
+        // ctx.arc(centerX, centerY, 2, 0, 2 * Math.PI);
+        // ctx.fillStyle = "red";
+        // ctx.fill();
+        // //add text
+        // ctx.font = "20px Arial";
+        // ctx.fillText("CENTER_OF_SCALING", centerX + 10, centerY + 10);
+        // ctx.closePath();
         ctx.restore()
         // Drawing lines for visual aid
 
@@ -145,15 +139,15 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
         // ctx.translate(offset.current.x, offset.current.y);
 
         //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
-        const dotSize = 4;
-        const step = 30;
+        const width = 2000;
+        const height = 2000;
+        const dotSize = 3.5;
+        const step = 35;
         for (let x = 0; x < width; x += dotSize + step) {
             for (let y = 0; y < height; y += dotSize + step) {
                 ctx.beginPath();
                 ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
-                ctx.fillStyle = colours.complementary_lightest;
+                ctx.fillStyle = colours.lessonNodes.background;
                 ctx.fill();
                 ctx.closePath();
             }
@@ -168,14 +162,14 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
                 ctx.closePath();
             });
         }
-        //draw a blue dot at 0,0
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = "blue";
-        ctx.fill();
-        ctx.font = "20px Arial";
-        ctx.fillText("ORIGIN", centerX + 10, centerY + 10);
-        ctx.closePath();
+        // //draw a blue dot at 0,0
+        // ctx.beginPath();
+        // ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+        // ctx.fillStyle = "blue";
+        // ctx.fill();
+        // ctx.font = "20px Arial";
+        // ctx.fillText("ORIGIN", centerX + 10, centerY + 10);
+        // ctx.closePath();
         //DRAW THE KNOWLDGE POINTS FROM CHAIN
         const potentialPulsingLinks: number[] = []; //links of indexes
         if (knowledgePoints.length > 0) {
@@ -416,8 +410,8 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
     }, [knowledgePoints]); // Dependency on offset, scale, and knowledgePoints so that 
 
     return (
-        <div className={`${className} h-full`} style={{ paddingRight: sizing.variableWholePagePadding }}>
-            <div className='overflow-hidden w-full h-full rounded-[20px] border-2' style={{ paddingRight: `calc(6* ${sizing.variableWholePagePadding})`, borderColor: '#E8E8E8', backgroundColor: colours.lessonNodes.background }}>
+        <div className={`${className} h-full`} >
+            <div className='overflow-hidden w-full h-full rounded-[20px]' style={{ backgroundColor: colours.lessonNodes.background }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
                 <canvas className='w-full h-full overflow-hidden' id="canvas" ref={canvasRef}>

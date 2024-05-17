@@ -1,7 +1,7 @@
 'use server'
 import { auth } from '@/auth';
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar';
-import CreatingLesson from '@/components/UserArea/Learn/Lesson/New/CreatingLesson';
+import CreatingLesson from '@/components/UserArea/Learn/Lesson/Loading/CreatingLesson';
 import { changeColour, colours, spacing } from '@/lib/constants'
 import prisma from '@/lib/db/prisma';
 import { Loader2 } from 'lucide-react'
@@ -37,14 +37,15 @@ async function CreatingNewLessonLoader({ params }: { params: any }) {
         // Sayings for the first time users
         "What's on your mind?",
         "Get your burning questions ready...",
-        "Let's embark on this learning adventure! - Eli",
+        "Let's embark on this learning adventure!",
         "Knowledge awaits!",
     ] : [
         //sayings for returning users
         "What's on your mind this time?",
         "Enjoying Dunnoyet? Spread the word!",
-        "Great to see you again! What facts will we discover today? - Eli",
-        "Welcome back! Let's continue our journey! - Eli",
+        "Great to see you again! What facts will we discover today?",
+        "Welcome back! Let's continue our journey!",
+        "Tell your teacher about Dunnoyet for 20% off your subscription!"
     ]
     return (
         <CreatingLesson saying={

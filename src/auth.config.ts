@@ -78,7 +78,7 @@ export const authConfig: NextAuthConfig = {
             } else if (isLoggedIn) {
                 // console.log("Is logged in, and not user area. REDIRECTING TO USER AREA")
                 console.log("redirecitng to /learn")
-                return Response.redirect(new URL("/home", nextUrl))
+                // return Response.redirect(new URL("/home", nextUrl))
             };
 
 
