@@ -11,7 +11,7 @@ function Brainmap({ placeholderMode }: { placeholderMode: boolean }) {
                         <div style={{ backgroundColor: colours.border }} className='w-1/3 h-8 animate animate-pulse rounded-lg' />
                         <div style={{ backgroundColor: colours.border }} className="w-full h-full animate animate-pulse rounded-lg"></div>
                     </div> : <div className='flex flex-col gap-3 h-full'>
-                        <h2>Brain map</h2>
+                        <h2 className='font-bold'>Brain map</h2>
                         <NeuralNetwork knowledgePointsToFocus={[
                             {
                                 TwoDvK: [0, 0],

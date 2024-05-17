@@ -39,7 +39,7 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
     let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
-    const dotSize = 1;
+    const dotSize = 0.8;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
     for (let x = -width / 2; x < width / 2; x += step) {
         for (let y = -height / 2; y < height / 2; y += step) {
@@ -61,7 +61,7 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
         knowledgePointsExceptFromChain.forEach((point, i) => {
             ctx.beginPath();
             ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0] + centerX, knowledgePointsExceptFromChain[i].TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = changeColour(colours.primary).lighten(20).toString();
+            ctx.fillStyle = changeColour(colours.primary).lighten(10).toString();
             ctx.fill();
             ctx.closePath();
         });

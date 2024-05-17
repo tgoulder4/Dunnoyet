@@ -11,6 +11,7 @@ function LessonLayout({
 }: {
     children: React.ReactNode
 }) {
+    //i want to receieve multiple updates from the db. when lesson is made, load skeleton ui. when rest payload is received, load the actual ui
     const lessonXPadding: string = 'clamp(24px,4vw,400px)';
     // promise .all for all the data needed for the lesson ui to load. once done setLoading false
     return (
@@ -25,7 +26,7 @@ function LessonLayout({
                         <LearningPathItem confidence={1} text='Placeholder' />
                     </LessonSection>
                     <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: 2 * spacing.gaps.largest }} className='brainMap flex-[2]'>
-                        <Brainmap placeholderMode={false} />
+                        <Brainmap placeholderMode={true} />
                     </LessonSection>
                 </div>
                 <LessonSection className='flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>{children}</LessonSection>
