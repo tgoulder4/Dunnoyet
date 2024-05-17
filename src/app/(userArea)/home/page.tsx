@@ -8,7 +8,7 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import { Input } from "@/components/ui/input"
 import SwitcherButton from '@/components/UserArea/Home/SwitcherButton'
 import { Textarea } from '@/components/ui/textarea'
-import NeuralNetwork from '@/components/UserArea/Learn/Lesson/NeuralNetwork'
+import NeuralNetwork from '@/components/UserArea/Learn/Lesson/Network/NeuralNetwork'
 import Stat from '@/components/UserArea/Learn/Lesson/Stat'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
@@ -96,8 +96,8 @@ function Page({ params }: { params: { params: string } }) {
                         <h1 className='font-bold'>My Brain</h1>
                         <div className="relative w-full flex flex-col gap-3">
                             <NeuralNetwork loading={loading} className='h-72 w-full' knowledgePoints={[
-                                // { confidence: 2, TwoDvK: [0, 1], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                // { confidence: 2, TwoDvK: [0, 2], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
+                                { confidence: 2, TwoDvK: [0, -1], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
+                                { confidence: 2, TwoDvK: [0, 2], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
                             ]} />
                             <div className="flex flex-row gap-3">
                                 <Stat loading={loading} statTitle="Experience" value={0} />
