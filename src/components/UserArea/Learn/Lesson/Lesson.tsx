@@ -6,7 +6,7 @@ import ChatWithEli from '@/components/UserArea/Learn/Chat/ChatWithEli'
 import { responsiveFont, sizing, spacing } from '@/lib/constants'
 
 import { getNextMessage } from '@/lib/chat/Eli/eli'
-import NeuralNetwork from './NeuralNetwork'
+import NeuralNetwork from './Network/NeuralNetwork'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import getResponse from '@/lib/chat/Eli/mockResponses'
 import { NextResponse } from 'next/server'

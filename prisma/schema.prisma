@@ -57,7 +57,7 @@ model Feedback {
 
 model Lesson {
   id      String      @id @default(auto()) @map("_id") @db.ObjectId
-  subject String?
+  targetQ String?
   ls      lessonState @relation("LessonToLessonState", fields: [stateId], references: [id])
   stateId String      @unique @db.ObjectId
   beganAt DateTime    @default(now())

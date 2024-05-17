@@ -2,7 +2,7 @@ import React from 'react'
 
 function Laptop() {
     return (
-        <div className="w-full h-[1000px]">
+        <div className="w-full h-[1000px] drop-shadow-lg">
             <div className="mx-[3%]">
                 <div className="overflow-hidden relative mx-auto  border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-t-xl w-full">
                     <div className="rounded-lg overflow-hidden  bg-white dark:bg-zinc-800">
