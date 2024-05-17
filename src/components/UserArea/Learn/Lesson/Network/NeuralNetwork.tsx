@@ -27,11 +27,11 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     const {
         id: userId,
     } = sess;
-
+    const focusPoints = knowledgePointsToFocus ? knowledgePointsToFocus : otherPoints;
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
-    const scaleMultiplier = useRef<number>(0.7);
+    const scaleMultiplier = useRef<number>(2);
     console.log("INITIAL DEFINITION ScaleMultiplier: ", scaleMultiplier.current);
     const requestAnimationRef = useRef<any>(null);
 
@@ -55,9 +55,10 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
-        drawBackgroundDots(ctx, centerX, centerY);
         drawOtherPoints(ctx, otherPoints, centerX, centerY);
-        if (knowledgePointsToFocus) drawKnowledgePointsInChain(ctx, knowledgePointsToFocus, centerX, centerY);
+        if (!focusPoints) return;
+        drawBackgroundDots(ctx, focusPoints, centerX, centerY);
+        drawKnowledgePointsInChain(ctx, knowledgePointsToFocus ? knowledgePointsToFocus : [], centerX, centerY);
 
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     // Animation loop function
@@ -148,8 +149,8 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         const onMouseUp = () => {
             drag.current.isDragging = false;
             //go back to current knowledge points
-            if (knowledgePointsToFocus && knowledgePointsToFocus.length > 0) {
-                const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, knowledgePointsToFocus);
+            if (focusPoints) {
+                const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, focusPoints);
                 const targetOffsetX = -centerOffsetX;
                 const targetOffsetY = -centerOffsetY;
                 animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, scaleMultiplier.current);
@@ -174,8 +175,8 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
 
-        if (knowledgePointsToFocus && knowledgePointsToFocus.length > 0) {
-            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, knowledgePointsToFocus);
+        if (focusPoints) {
+            const { overallScale, centerOffsetX, centerOffsetY } = calculateOffsetAndScaleToFocusGivenChain(ctx, focusPoints);
             const targetOffsetX = -centerOffsetX;
             const targetOffsetY = -centerOffsetY;
             animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, overallScale);
@@ -194,7 +195,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             window.removeEventListener('mouseup', onMouseUp);
             canvas.removeEventListener('wheel', onWheel);
         };
-    }, [knowledgePointsToFocus]);
+    }, [focusPoints]);
 
     return (
         <div className={`${className} h-full`} >

@@ -102,15 +102,7 @@ function Page({ params }: { params: { params: string } }) {
                                     </div> :
                                     <NeuralNetwork className='h-72 w-full' otherPoints={[{ confidence: 2, TwoDvK: [0, -8], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
                                     { confidence: 2, TwoDvK: [0, 2], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                    { confidence: 2, TwoDvK: [15, 24], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },]} knowledgePointsToFocus={[
-
-                                        { confidence: 2, TwoDvK: [4, 10], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                        { confidence: 2, TwoDvK: [10, 4], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                        { confidence: 2, TwoDvK: [15, 4], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                        { confidence: 2, TwoDvK: [10, 10], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                        { confidence: 2, TwoDvK: [4, 15], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                        { confidence: 2, TwoDvK: [15, 15], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
-                                    ]} />
+                                    { confidence: 2, TwoDvK: [15, 24], source: 'offered', pointInSolitude: 'Energy is the ability to do work' }]} />
                             }
                             <div className="flex flex-row gap-3">
                                 <Stat loading={loading} statTitle="Experience" value={0} />

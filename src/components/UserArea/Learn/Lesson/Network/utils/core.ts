@@ -25,9 +25,19 @@ export const updatePulsateOpacity = () => {
         }
     }
 };
-export function drawBackgroundDots(ctx: CanvasRenderingContext2D, centerX: number, centerY: number) {
-    const width = 100;
-    const height = 100;
+export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: IKP[], centerX: number, centerY: number) {
+    //find the range we need to make the dots
+    const xValues = focusPoints.map(point => point.TwoDvK[0]);
+    // console.log("xValues: ", xValues)
+    const yValues = focusPoints.map(point => point.TwoDvK[1]);
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+    let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
+    let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
+    let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
+    let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
     const dotSize = 1;
     const step = 10;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
@@ -51,13 +61,19 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
         knowledgePointsExceptFromChain.forEach((point, i) => {
             ctx.beginPath();
             ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0] + centerX, knowledgePointsExceptFromChain[i].TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
+            ctx.fillStyle = changeColour(colours.primary).lighten(20).toString();
             ctx.fill();
             ctx.closePath();
         });
     }
 }
 // Function to calculate boundaries
+/**
+ * 
+ * @param ctx 
+ * @param points Scales to focus on these points
+ * @returns 
+ */
 export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
