@@ -25,6 +25,7 @@ export const updatePulsateOpacity = () => {
         }
     }
 };
+export const step = 10;
 export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: IKP[], centerX: number, centerY: number) {
     //find the range we need to make the dots
     const xValues = focusPoints.map(point => point.TwoDvK[0]);
@@ -39,7 +40,6 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
     let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
     const dotSize = 1;
-    const step = 10;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
     for (let x = -width / 2; x < width / 2; x += step) {
         for (let y = -height / 2; y < height / 2; y += step) {
@@ -78,7 +78,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = points.map(point => point.TwoDvK[1]);
-    console.log("Points being focused on: ", points)
+    // console.log("Points being focused on: ", points)
     const minX = Math.min(...xValues);
     const maxX = Math.max(...xValues);
     const minY = Math.min(...yValues);
@@ -87,7 +87,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
     const overallScale = Math.max(ctx.canvas.width * 0.08 / xRange, ctx.canvas.height * 0.08 / yRange);
-    console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
+    // console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
     // console.log("centerOffsetX: ", centerOffsetX, " centerOffsetY: ", centerOffsetY)

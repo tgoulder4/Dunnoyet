@@ -32,7 +32,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     const offset = useRef({ x: 0, y: 0 });
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scaleMultiplier = useRef<number>(2);
-    console.log("INITIAL DEFINITION ScaleMultiplier: ", scaleMultiplier.current);
+    // console.log("INITIAL DEFINITION ScaleMultiplier: ", scaleMultiplier.current);
     const requestAnimationRef = useRef<any>(null);
 
     // Function to draw the canvas
@@ -66,7 +66,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Canvas not found');
-        console.log("Draw called in animate")
+        // console.log("Draw called in animate")
 
         // Calculate the time elapsed since the last frame
         const timeAtCallOfAnimate = performance.now();
@@ -142,7 +142,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
 
             offset.current.x += dx;
             offset.current.y += dy;
-            console.log("Draw called in onMouseMove with centerOffset: ", offset.current.x, offset.current.y, " and mouse position: ", e.clientX, e.clientY, " and scaleMultCurrent: ", scaleMultiplier.current)
+            // console.log("Draw called in onMouseMove with centerOffset: ", offset.current.x, offset.current.y, " and mouse position: ", e.clientX, e.clientY, " and scaleMultCurrent: ", scaleMultiplier.current)
             draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
 
@@ -154,17 +154,17 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
                 const targetOffsetX = -centerOffsetX;
                 const targetOffsetY = -centerOffsetY;
                 animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, scaleMultiplier.current);
-                console.log("Scale set by knowledgePoints onMouseUp: ", overallScale)
+                // console.log("Scale set by knowledgePoints onMouseUp: ", overallScale)
             }
         };
         const onWheel = (e: WheelEvent) => {
             e.preventDefault();
             const zoomFactor: number = 0.1;
             const direction: number = e.deltaY < 0 ? 1 : -1;
-            console.log("Scale set by onWheel: ", scaleMultiplier.current * (1 + zoomFactor * direction))
+            // console.log("Scale set by onWheel: ", scaleMultiplier.current * (1 + zoomFactor * direction))
             scaleMultiplier.current = scaleMultiplier.current * (1 + zoomFactor * direction);
-            console.log("[ONWHEEL] ScaleMultiplier set to: ", scaleMultiplier.current, " zoomFactor: ", zoomFactor, " direction: ", direction)
-            console.log("Draw called in onWheel")
+            // console.log("[ONWHEEL] ScaleMultiplier set to: ", scaleMultiplier.current, " zoomFactor: ", zoomFactor, " direction: ", direction)
+            // console.log("Draw called in onWheel")
             draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
         };
         const onResize = () => {
@@ -180,7 +180,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             const targetOffsetX = -centerOffsetX;
             const targetOffsetY = -centerOffsetY;
             animateToPositionAndScale(ctx, targetOffsetX, targetOffsetY, overallScale);
-            console.log("Scale set by knowledgePoints useEffect: ", overallScale)
+            // console.log("Scale set by knowledgePoints useEffect: ", overallScale)
         }
         canvas.addEventListener('mousedown', onMouseDown);
         canvas.addEventListener('mousemove', onMouseMove);

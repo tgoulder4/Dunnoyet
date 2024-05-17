@@ -10,6 +10,7 @@ import SwitcherButton from '@/components/UserArea/Home/SwitcherButton'
 import { Textarea } from '@/components/ui/textarea'
 import NeuralNetwork from '@/components/UserArea/Learn/Lesson/Network/NeuralNetwork'
 import Stat from '@/components/UserArea/Learn/Lesson/Stat'
+import { redirect } from 'next/navigation'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -37,9 +38,17 @@ function Page({ params }: { params: { params: string } }) {
         if (ta) ta.value = '';
         ta?.focus();
     }
-    const handleSubmit = () => {
+    const handleSubmit = async (e:
+        React.FormEvent<HTMLFormElement>
+    ) => {
         //api call to make a new lesson
+        console.log("submitted")
+        e.preventDefault();
         window.location.href = '/lesson/loading'
+        //mock prom
+        const prom = new Promise(r => setTimeout(r, 2000));
+        await prom;
+        window.location.href = '/home'
     }
     useEffect(() => {
         //gather exampleSayings, stats, experience, and knowledgePoints
@@ -59,9 +68,8 @@ function Page({ params }: { params: { params: string } }) {
                 </div>
                 <section className='transition-all flex flex-col items-center' style={{ borderBottom: uiBorder(0.2), paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.largest - 10 }}>
                     <div className="flex flex-col items-center gap-3 w-full">
-
                         <h1 className='font-black'>{modeDetails[mode].modeDescription}</h1>
-                        <form onSubmit={handleSubmit} className="relative w-full flex flex-row gap-2">
+                        <form onSubmit={handleSubmit} className="animate-in slide-in-from-bottom-4 relative w-full flex flex-row gap-2">
                             <Textarea onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
@@ -105,8 +113,8 @@ function Page({ params }: { params: { params: string } }) {
                                     { confidence: 2, TwoDvK: [15, 24], source: 'offered', pointInSolitude: 'Energy is the ability to do work' }]} />
                             }
                             <div className="flex flex-row gap-3">
-                                <Stat loading={loading} statTitle="Experience" value={0} />
-                                <Stat loading={loading} statTitle="Total concepts learnt" value={0} />
+                                <Stat key="XP" loading={loading} statTitle="Experience" value={0} />
+                                <Stat key="TotalConcepts" loading={loading} statTitle="Total concepts learnt" value={0} />
                             </div>
                         </div>
                     </div>

@@ -68,7 +68,7 @@ export type IUser = {
     email: string;
     password?: string;
     role?: string;
-    lessons: ILesson[];
+    lessons?: ILesson[];
     knowledgePoints?: IKP[];
 };
 export type ITip = {

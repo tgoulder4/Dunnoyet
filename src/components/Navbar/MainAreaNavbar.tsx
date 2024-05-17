@@ -11,7 +11,7 @@ function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrA
     const theme = {
         backgroundColour: style == 'normal' ? "#fff" : style == "lesson" ? '#000' : colours.accent,
     }
-    console.log("rendering MainAreaNavbar with style: ", style)
+    // console.log("rendering MainAreaNavbar with style: ", style)
     return (<>
         {
             style == "authOrAdmin" ? <nav style={{ backgroundColor: colours.accent }} className="flex flex-row justify-start items-center h-[70px]">

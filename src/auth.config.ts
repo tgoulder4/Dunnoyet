@@ -65,7 +65,7 @@ export const authConfig: NextAuthConfig = {
 
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const isInUserArea = nextUrl.pathname.startsWith("/home");
+            const isInUserArea = nextUrl.pathname.startsWith("/home") || nextUrl.pathname.startsWith("/lesson");
 
             // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
