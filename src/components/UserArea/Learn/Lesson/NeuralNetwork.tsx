@@ -1,21 +1,25 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
-import { IKnowledge } from '@/lib/validation/enforceTypes'
+import { IKP } from '@/lib/validation/enforceTypes'
 import { getEmbedding } from '@/lib/chat/openai'
-import { getTwoDCoOrdinatesOfEmbeddings } from './network'
 import { getAllReinforcedKnowledgePoints, getRelatedKnowledgePoints } from '@/lib/chat/Eli/eli'
 import { useSession } from 'next-auth/react'
-// Helper function to get color based on confidence, reused from previous message
-function getColourFromConfidence(confidence: number) {
+import { Loader2 } from 'lucide-react'
+// Helper function to determine the color based on a confidence value
+function getColourFromConfidence(confidence: number): string {
     switch (confidence) {
-        case 2:
-            return colours.lessonNodes.confidence2;
-        case 1:
-            return colours.lessonNodes.confidence1;
-        default:
-            return colours.complementary;
+        case 2: return colours.lessonNodes.confidence2;
+        case 1: return colours.lessonNodes.confidence1;
+        default: return colours.complementary;
     }
+}
+
+// Props interface declaration for type safety
+interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
+    knowledgePoints: IKP[];
+    loading?: boolean;
+    className?: string;
 }
 // Function to calculate the opacity for pulsating effect
 let pulsateOpacity = 1;
@@ -36,7 +40,7 @@ const updatePulsateOpacity = (frameRate: number) => {
         }
     }
 };
-const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: string }> = ({ knowledgePoints, className }) => {
+const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePoints, loading, className }) => {
     //for each kp to above fn
     const sess = useSession().data!.user!;
     const {
@@ -49,7 +53,7 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
     const offset = useRef({ x: 0, y: 0 });
     // console.log("INITIAL DEFINITION Offset: ", offset.current.x, offset.current.y)
     const scaleMultiplier = useRef(0.7)
-    const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKnowledge[]>(null);
+    const [allKnowledgePoints, setAllKnowledgePoints] = useState<null | IKP[]>(null);
     const prevKNowledgePoints = useRef(knowledgePoints);
     const requestAnimationRef = useRef<any>(null);
     var t: Array<number> = [];
@@ -77,10 +81,10 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
 
     let frameRate: number = 60;
     // Function to calculate boundaries
-    const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKnowledge[]) => {
-        const xValues = points.map(point => point.TwoDCoOrdinates[0]);
+    const calculateOffsetAndScaleToFocusCurrentChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
+        const xValues = points.map(point => point.TwoDvK[0]);
         // console.log("xValues: ", xValues)
-        const yValues = points.map(point => point.TwoDCoOrdinates[1]);
+        const yValues = points.map(point => point.TwoDvK[1]);
         const minX = Math.min(...xValues);
         const maxX = Math.max(...xValues);
         const minY = Math.min(...yValues);
@@ -156,7 +160,7 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
         if (allKnowledgePoints) {
             allKnowledgePoints.forEach((point, i) => {
                 ctx.beginPath();
-                ctx.arc(allKnowledgePoints[i].TwoDCoOrdinates[0], allKnowledgePoints[i].TwoDCoOrdinates[1], knowledgePointRadius, 0, 2 * Math.PI);
+                ctx.arc(allKnowledgePoints[i].TwoDvK[0], allKnowledgePoints[i].TwoDvK[1], knowledgePointRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = changeColour(colours.complementary).lighten(4).toString();
                 ctx.fill();
                 ctx.closePath();
@@ -189,8 +193,8 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
                     ctx.globalAlpha = 1; // No pulsating effect, fully opaque
                 }
                 ctx.beginPath();
-                ctx.moveTo(centerX + point.TwoDCoOrdinates[0], point.TwoDCoOrdinates[1] + centerY); // Start at current point
-                ctx.lineTo(centerX + nextPoint.TwoDCoOrdinates[0], nextPoint.TwoDCoOrdinates[1] + centerY); // Draw line to next point
+                ctx.moveTo(centerX + point.TwoDvK[0], point.TwoDvK[1] + centerY); // Start at current point
+                ctx.lineTo(centerX + nextPoint.TwoDvK[0], nextPoint.TwoDvK[1] + centerY); // Draw line to next point
                 ctx.strokeStyle = (nextPoint.confidence <= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
                 ctx.stroke();
                 ctx.globalAlpha = 1; // Reset global alpha if you've changed it
@@ -207,20 +211,20 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
                 }
                 // Now draw the current point
                 ctx.beginPath();
-                ctx.arc(point.TwoDCoOrdinates[0] + centerX, point.TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
+                ctx.arc(point.TwoDvK[0] + centerX, point.TwoDvK[1] + centerY, 5, 0, 2 * Math.PI);
                 ctx.fillStyle = getColourFromConfidence(point.confidence); // Use the helper function to get the color
                 ctx.fill();
                 ctx.closePath();
 
                 //on hover, show the point's info
                 // ctx.font = "20px Arial";
-                // ctx.fillText(point.pointInSolitude, point.TwoDCoOrdinates[0] + offsetX, point.TwoDCoOrdinates[1] + offsetY);
+                // ctx.fillText(point.pointInSolitude, point.TwoDvK[0] + offsetX, point.TwoDvK[1] + offsetY);
 
             }
             // Draw the last point (since it's not covered in the loop)
             const lastPoint = knowledgePoints[knowledgePoints.length - 1];
             ctx.beginPath();
-            ctx.arc(lastPoint.TwoDCoOrdinates[0] + centerX, lastPoint.TwoDCoOrdinates[1] + centerY, 5, 0, 2 * Math.PI);
+            ctx.arc(lastPoint.TwoDvK[0] + centerX, lastPoint.TwoDvK[1] + centerY, 5, 0, 2 * Math.PI);
             ctx.fillStyle = getColourFromConfidence(lastPoint.confidence); // Use the helper function to get the color
             ctx.fill();
             ctx.closePath();
@@ -411,12 +415,13 @@ const NeuralNetwork: React.FC<{ knowledgePoints: IKnowledge[], className?: strin
 
     return (
         <div className={`${className} h-full`} >
-            <div className='overflow-hidden w-full h-full rounded-[20px]' style={{ backgroundColor: colours.lessonNodes.background }}>
+            <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(5).toString() }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
-                <canvas className='w-full h-full overflow-hidden' id="canvas" ref={canvasRef}>
-                    {/* <line x1="0" y1="0" x2="200" y2="100" className="w-1 bg-red-500" /> */}
-                </canvas>
+                {
+                    loading ? <><Loader2 className='animate animate-spin' size={48} color={colours.complementary_lightest}></Loader2><canvas id="canvas" className='hidden h-full bg-slate-200' ref={canvasRef}></canvas></> : <canvas className='w-full h-full overflow-hidden' id="canvas" ref={canvasRef} />
+                }
+                {/* <line x1="0" y1="0" x2="200" y2="100" className="w-1 bg-red-500" /> */}
             </div>
         </div>
     )
