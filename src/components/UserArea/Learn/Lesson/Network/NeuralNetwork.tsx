@@ -14,7 +14,7 @@ import { drawOtherPoints, drawBackgroundDots, } from './utils/core'
 // Props interface declaration for type safety
 interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
     knowledgePointsToFocus?: IKP[];
-    otherPoints: IKP[];
+    otherPoints?: IKP[];
     className?: string;
 }
 
@@ -55,7 +55,8 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
-        drawOtherPoints(ctx, otherPoints, centerX, centerY);
+
+        if (otherPoints) drawOtherPoints(ctx, otherPoints, centerX, centerY);
         if (!focusPoints) return;
         drawBackgroundDots(ctx, focusPoints, centerX, centerY);
         drawKnowledgePointsInChain(ctx, knowledgePointsToFocus ? knowledgePointsToFocus : [], centerX, centerY);

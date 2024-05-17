@@ -48,7 +48,7 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
             ctx.fillStyle = colours.lessonNodes.background;
             ctx.fill();
             ctx.font = "2px Arial";
-            ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
+            // ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
             //make font size way smaller
             ctx.closePath();
         }

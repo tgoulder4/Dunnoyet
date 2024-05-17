@@ -85,7 +85,7 @@ function Page({ params }: { params: { params: string } }) {
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {modeDetails[mode].examples.map((example, index) => {
                                 return (
-                                    loading ? <div className="xl:h-16 h-24 w-full bg-slate-200 animate animate-pulse rounded-xl" /> :
+                                    loading ? <div className="xl:h-16 h-24 w-full bg-gray-200 animate animate-pulse rounded-xl" /> :
                                         <Button key={example} onClick={() => {
                                             const textArea = textAreaRef.current;
                                             if (textArea) textArea.value = example;
@@ -102,18 +102,18 @@ function Page({ params }: { params: { params: string } }) {
                 <section className='flex flex-col items-center' style={{ borderBottom: uiBorder(0.2), paddingTop: spacing.gaps.separateElement, paddingBottom: '20vh', paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.largest - 10 }}>
                     <div className="w-full flex flex-col gap-3 items-center">
                         <h1 className='font-bold'>My Brain</h1>
-                        <div className="relative w-full flex flex-col gap-3">
+                        <div className="relative w-full flex flex-col gap-4">
                             {
                                 loading ?
                                     <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
-                                        <Loader2 size={48} color={changeColour(colours.complementary).lighten(4).toString()}></Loader2>
+                                        <Loader2 className='animate animate-spin' size={48} color={changeColour(colours.complementary).lighten(8).toString()}></Loader2>
                                     </div> :
                                     <NeuralNetwork className='h-72 w-full' otherPoints={[{ confidence: 2, TwoDvK: [0, -8], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
                                     { confidence: 2, TwoDvK: [0, 2], source: 'offered', pointInSolitude: 'Energy is the ability to do work' },
                                     { confidence: 2, TwoDvK: [15, 24], source: 'offered', pointInSolitude: 'Energy is the ability to do work' }]} />
                             }
-                            <div className="flex flex-row gap-3">
-                                <Stat key="XP" loading={loading} statTitle="Experience" value={0} />
+                            <div className="flex flex-row gap-4">
+                                <Stat key="XP" loading={loading} statTitle="Experience" value={0 + ' XP'} />
                                 <Stat key="TotalConcepts" loading={loading} statTitle="Total concepts learnt" value={0} />
                             </div>
                         </div>
