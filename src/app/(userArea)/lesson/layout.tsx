@@ -13,13 +13,13 @@ function LessonLayout({
         <div className={` flex flex-col h-[100vh]`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
             <MainAreaNavbar style='normal' show={{ userSide: { newQuestion: false }, leftSide: { lessonTimer: false } }} />
             {/* the only children would be in the center grid cell */}
-            <div className="grid grid-cols-3 h-full">
-                <div className="flex flex-col" style={{ borderRight: uiBorder(0.1) }}>
-                    <LessonSection style={{ borderBottom: uiBorder(0.1) }} className='learningPath'></LessonSection>
-                    <LessonSection className='brainMap'></LessonSection>
+            <div className="flex h-full">
+                <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
+                    <LessonSection style={{ borderBottom: uiBorder(0.1) }} className='learningPath flex-[3]'></LessonSection>
+                    <LessonSection className='brainMap flex-[2]'></LessonSection>
                 </div>
-                <LessonSection style={{ borderRight: uiBorder(0.1) }} className='lessonChat'>{children}</LessonSection>
-                <LessonSection className='notesArea'></LessonSection>
+                <LessonSection className='flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>{children}</LessonSection>
+                <LessonSection className='flex-[2] notesArea'></LessonSection>
             </div>
         </div>
     )
