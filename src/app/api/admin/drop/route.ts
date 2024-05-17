@@ -17,9 +17,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
                     await prisma.splitResponse.deleteMany();
                     await prisma.knowledgePoint.deleteMany();
                     await prisma.message.deleteMany();
+                    await prisma.lesson.deleteMany({});
                     await prisma.lessonState.deleteMany();
                     await prisma.metadata.deleteMany();
-                    await prisma.lesson.deleteMany({});
                     return NextResponse.json({ message: "All lesson data has been deleted" }, { status: 200 });
                 }
                 catch (e) {

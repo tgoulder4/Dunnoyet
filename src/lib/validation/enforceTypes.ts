@@ -18,7 +18,7 @@ export type IMetadata = {
     threads: IMessage[][];
     subjects: string[];
     action?: "UNDERSTOOD" | 'ENDLESSON',
-    knowledgePointChain: Array<IKnowledge>;
+    knowledgePointChain: Array<IKP>;
     currentKnowledgePointIndex: number;
     errorWithTheirInput?: string;
 }
@@ -49,7 +49,7 @@ export type ILesson = {
 /**
  * @confidence 5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
  */
-export type IKnowledge = {
+export type IKP = {
     id?: string,
     lessonId?: string,
     userId?: string,
@@ -70,7 +70,7 @@ export type IUser = {
     password?: string;
     role?: string;
     lessons: ILesson[];
-    knowledgePoints?: IKnowledge[];
+    knowledgePoints?: IKP[];
 };
 export type ITip = {
     title: string;

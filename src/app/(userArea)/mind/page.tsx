@@ -38,7 +38,7 @@ import { fabric } from "fabric";
 // behaviours: onClick={Neuron() after 500ms}
 // characteristics: bg-primary-500 hover:bg-primary-400 text-white font-bold py-2 px-4 rounded-lg
 type Props = {};
-const page = (props: Props) => {
+const Page = (props: Props) => {
   return (
     <>
       <h1>Coming soon!</h1>
@@ -46,4 +46,4 @@ const page = (props: Props) => {
   );
 };
 
-export default page;
+export default Page;

@@ -17,12 +17,12 @@ export const colours = {
     cardForeground: "#3d3d3d",
     popover: "#ffffff",
     popoverForeground: "#0a0a0b",
-    primary: "#315D35",
+    primary: "#438BCE",
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",
     blue: '#9BC9E2',
-    accent: "#E4F2ED",
+    accent: "#E0F4FF",
     destructive: "#f75a72",
     error: "#f75a72",
     success: "#4caf50",
@@ -36,12 +36,10 @@ export const colours = {
     systemEventMessage: '#3F2962',
     lessonNodes: {
         //5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint aka force correct their knowledge to a position
-        confidence5: "#315D35",
-        confidence4: "#8F8F8F",
-        confidence3: "#8B6326",
-        confidence2: "#D2D2D2",
-        confidence1: '#4D1B8C',
-        background: '#F6F6F6',
+        confidence2: "#438BCE",
+        confidence1: "#8F8F8F",
+        complete: '#4D1B8C',
+        background: 'rgba(0, 0, 0, 0.06)',
     },
     light: {
         textColour: "#131313",
@@ -56,8 +54,9 @@ export const sizing = {
     globalFontSize: '1.2rem',
     largestFontSize: 2.625,
     largerFontSize: 2.25,
-    variableWholePagePadding: 'clamp(24px,6vw,84px)',
+    variableWholePagePadding: 'clamp(24px,20vw,800px)',
 }
+export const uiBorder = (opacity = 0.2) => `1px solid rgba(0, 0, 0, ${opacity})`;
 export const spacing = {
     gaps: {
         groupedElement: 14,
@@ -65,6 +64,7 @@ export const spacing = {
         largest: 56,
     },
     padding: {
+        input: 20,
         normalX: 20,
         normalY: 28,
         smallerX: 10,

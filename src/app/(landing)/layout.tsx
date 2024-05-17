@@ -36,7 +36,7 @@ export default function RootLayout({
             {/* after learning about authentication, put the login component here */}
             <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">Pricing</NewButton>
             <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">How it works</NewButton>
-            <NewButton style={{ fontFamily: merriweather.style.fontFamily }} buttonVariant="black" actionOrLink="/learn">Learn</NewButton>
+            <NewButton style={{ fontFamily: merriweather.style.fontFamily }} buttonVariant="black" actionOrLink="/home">Learn</NewButton>
           </div>
 
         </div>

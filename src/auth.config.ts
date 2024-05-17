@@ -1,8 +1,4 @@
 import type { NextAuthConfig } from "next-auth"
-import prisma from "./lib/db/prisma"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import * as dotenv from 'dotenv/config'
-import { date } from "zod";
 declare module "next-auth" {
     interface User {
         // Add your additional properties here:
@@ -69,7 +65,7 @@ export const authConfig: NextAuthConfig = {
 
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const isInUserArea = nextUrl.pathname.startsWith("/learn");
+            const isInUserArea = nextUrl.pathname.startsWith("/home");
 
             // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
@@ -82,7 +78,7 @@ export const authConfig: NextAuthConfig = {
             } else if (isLoggedIn) {
                 // console.log("Is logged in, and not user area. REDIRECTING TO USER AREA")
                 console.log("redirecitng to /learn")
-                return Response.redirect(new URL("/learn", nextUrl))
+                // return Response.redirect(new URL("/home", nextUrl))
             };
 
 

@@ -31,52 +31,58 @@ export async function GET(req: NextRequest) {
         if (req.body) {
             //find many lessons
             console.log("Finding this user's lessons...")
-            const _userLessons = await prisma.user.findUnique({
-                where: {
-                    id: userID
-                },
-                include: {
-                    lessons: {
-                        include: {
-                            ls: {
-                                include: {
-                                    metadata: {
-                                        include: {
-                                            knowledgePointChain: true,
-                                        }
-                                    },
-                                    newMessages: true,
-                                    oldMessages: true
+            try {
+                const _userLessons = await prisma.user.findUnique({
+                    where: {
+                        id: userID
+                    },
+                    include: {
+                        lessons: {
+                            include: {
+                                ls: {
+                                    include: {
+                                        metadata: {
+                                            include: {
+                                                knowledgePointChain: true,
+                                            }
+                                        },
+                                        newMessages: true,
+                                        oldMessages: true
+                                    }
                                 }
                             }
-                        }
-                    },
-                }
-            }).then((user) => {
-                if (!user) {
-                    console.error("!!!!!!! Returning an empty array as lessons since user wasn't found")
-                    return []
-                };
-                //returns lessons without the metadata
-                return user.lessons;
-            });
-            lesson = _userLessons.map((l) => {
-                return {
-                    id: l.id,
-                    beganAt: l.beganAt,
-                    endedAt: l.endedAt,
-                    lessonState: {
-                        newMessages: l.ls.newMessages as IMessage[],
-                        oldMessages: l.ls.oldMessages as IMessage[],
-                        metadata: {
-                            ...l.ls.metadata,
-                            knowledgePointChain: l.ls.metadata.knowledgePointChain as IKnowledge[],
-                            lessonID: l.id,
-                            threads: l.ls.metadata.threads as IMessage[][]
-                        }
-                    },
-                }
-            });
+                        },
+                    }
+                }).then((user) => {
+                    if (!user) {
+                        console.error("!!!!!!! Returning an empty array as lessons since user wasn't found")
+                        return []
+                    };
+                    //returns lessons without the metadata
+                    return user.lessons;
+                });
+                lesson = _userLessons.map((l) => {
+                    return {
+                        id: l.id,
+                        beganAt: l.beganAt,
+                        endedAt: l.endedAt,
+                        lessonState: {
+                            newMessages: l.ls.newMessages as IMessage[],
+                            oldMessages: l.ls.oldMessages as IMessage[],
+                            metadata: {
+                                ...l.ls.metadata,
+                                knowledgePointChain: l.ls.metadata.knowledgePointChain as IKnowledge[],
+                                lessonID: l.id,
+                                threads: l.ls.metadata.threads as IMessage[][]
+                            }
+                        },
+                    }
+                });
+            }
+            catch (e) {
+                console.error("Error in GET @route finding user lessons: ", e)
+                return NextResponse.json({ error: "An error occurred FINDINGUSERLESSONS" }, { status: 500 });
+            }
 
         } else {
             const body = await req.json();
