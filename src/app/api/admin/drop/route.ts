@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db/prisma';
 export async function POST(req: NextRequest, res: NextResponse) {
     const sess = await getServerSession(authConfig).auth();
-    console.log("sess: ", sess)
     if (!sess || !sess.user || sess.user.role !== 'ADMIN') return NextResponse.json("UNAUTHORIZED", { status: 401 });
     const userID = sess.user?.id;
     if (!userID) return NextResponse.json({ error: "User ID not found in session" }, { status: 400 });
@@ -14,11 +13,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
         switch (body.type) {
             case 'lesson':
                 try {
-                    await prisma.splitResponse.deleteMany();
                     await prisma.knowledgePoint.deleteMany();
                     await prisma.message.deleteMany();
                     await prisma.lesson.deleteMany({});
-                    await prisma.lessonState.deleteMany();
                     await prisma.metadata.deleteMany();
                     return NextResponse.json({ message: "All lesson data has been deleted" }, { status: 200 });
                 }

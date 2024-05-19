@@ -66,7 +66,7 @@ export const authConfig: NextAuthConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isInUserArea = nextUrl.pathname.startsWith("/home") || nextUrl.pathname.startsWith("/lesson");
-
+            const isInAdminArea = nextUrl.pathname.startsWith("/api/admin");
             // IN DEVELOPMENT, DISABLE THIS
             if (isInUserArea) {
                 if (isLoggedIn) {
@@ -75,11 +75,17 @@ export const authConfig: NextAuthConfig = {
                 };
                 console.log("Not logged in, and in user area. Redirecting to /auth/login")
                 return false;
-            } else if (isLoggedIn) {
+            }
+            else if (isLoggedIn) {
                 // console.log("Is logged in, and not user area. REDIRECTING TO USER AREA")
+                if (isInAdminArea) {
+                    //check if their role is admin on the server side
+                    return auth?.user?.role === "ADMIN";
+                }
                 console.log("redirecitng to /learn")
                 return Response.redirect(new URL("/home", nextUrl))
-            };
+            }
+
 
 
             // console.log("Not logged in, and not user area. AUTHORISED")

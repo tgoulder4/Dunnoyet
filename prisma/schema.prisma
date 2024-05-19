@@ -49,6 +49,7 @@ enum kpSource {
 
 model Lesson {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  stage    Stage     @default(Purgatory)
   messages Message[] @relation("LessonToMessage")
   targetQ  String?
   beganAt  DateTime  @default(now())
@@ -92,6 +93,12 @@ enum eliResponseType {
 enum role {
   user
   eli
+}
+
+enum Stage {
+  Purgatory
+  Main
+  End
 }
 
 model Tip {
