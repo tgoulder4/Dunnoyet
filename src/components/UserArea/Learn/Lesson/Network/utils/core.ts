@@ -45,7 +45,10 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
         for (let y = -height / 2; y < height / 2; y += step) {
             ctx.beginPath();
             ctx.arc(x + centerX, y + centerY, dotSize, 0, 2 * Math.PI);
-            ctx.fillStyle = colours.lessonNodes.background;
+            ctx.fillStyle = changeColour(colours.lessonNodes.background).lighten(90).setAlpha(
+                //the further away the dot from the center, the more transparent it is
+                (1 - ((Math.abs(x) + Math.abs(y)) / (width / 2 + height / 2)))
+            ).toString();
             ctx.fill();
             ctx.font = "2px Arial";
             // ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
