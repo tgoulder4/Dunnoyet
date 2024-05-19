@@ -10,7 +10,7 @@ import SwitcherButton from '@/components/UserArea/Home/SwitcherButton'
 import { Textarea } from '@/components/ui/textarea'
 import NeuralNetwork from '@/components/UserArea/Learn/Lesson/Network/NeuralNetwork'
 import Stat from '@/components/UserArea/Learn/Lesson/Stat'
-import { redirect } from 'next/navigation'
+import { Toaster, toast } from 'sonner'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -41,14 +41,16 @@ function Page({ params }: { params: { params: string } }) {
     const handleSubmit = async (e:
         React.FormEvent<HTMLFormElement>
     ) => {
-        //api call to make a new lesson
-        console.log("submitted")
         e.preventDefault();
-        window.location.href = '/lesson/loading'
-        //mock prom
-        const prom = new Promise(r => setTimeout(r, 2000));
-        await prom;
-        window.location.href = '/home'
+        console.log("submitted")
+        if (!textAreaRef.current) {
+            toast.error("Something went wrong. Please reload the page and try again.")
+        } else if (!textAreaRef.current.value) {
+            toast.error("Please" + (mode == 0 ? " ask a question" : " state something you know") + " before submitting.")
+        } else {
+            window.location.href = '/lesson/loading?' + (mode == 0 ? "q=" : "uKP=") + textAreaRef.current?.value;
+        }
+        //lesson/loading?q/uKP=... makes a new lesson
     }
     useEffect(() => {
         //gather exampleSayings, stats, experience, and knowledgePoints
@@ -58,6 +60,7 @@ function Page({ params }: { params: { params: string } }) {
     return (
         <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
             <MainAreaNavbar style="normal" show={{ userSide: { newQuestion: false } }} />
+            <Toaster position="top-center" style={{ fontFamily: ruda.style.fontFamily, fontSize: '1.2rem' }} />
             <main className="flex flex-col bg-white h-[100vh]" >
                 {/* switcher */}
                 <div className="switcher" style={{ paddingTop: spacing.gaps.separateElement, borderBottom: uiBorder(0.2), paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding }}>

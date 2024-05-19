@@ -7,11 +7,6 @@ export type IMessagesEndpointSendPayload = {
     messages: IMessage[];
     metadata: IMetadata;
 }
-export type ILessonState = {
-    oldMessages: IMessage[];
-    newMessages: IMessage[];
-    metadata: IMetadata;
-}
 export type IMetadata = {
     metadataId?: string;
     lessonID: string;
@@ -44,7 +39,6 @@ export type ILesson = {
     messages?: IMessage[];
     beganAt: Date;
     endedAt: Date | null;
-    lessonState: ILessonState;
 }
 /**
  * @confidence 5=wellKnown, 4=currentlyTeaching, 3=failedTest,2=target,1=makeNewKnowledgeAnchorPoint
@@ -77,8 +71,4 @@ export type ITip = {
     link: string;
     uiDetailId?: string;
 
-}
-export type IDetail = {
-    id?: string;
-    tips: ITip[];
 }

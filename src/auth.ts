@@ -24,13 +24,6 @@ export async function getUser(username: string): Promise<IUser | null> {
     }
     return null;
 }
-export async function getLoggedInUser() {
-    const sess = await getServerSession(authConfig).auth();
-    if (!sess || !sess.user) return null;
-    const user = sess.user;
-    if (!user.id) return null;
-    return sess.user as IUser;
-}
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
     basePath: '/auth',

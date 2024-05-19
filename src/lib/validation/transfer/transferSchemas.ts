@@ -1,5 +1,5 @@
-import { z } from "zod"
-const stageType = z.enum(['purgatory', 'main', 'end']);
+import { date, z } from "zod"
+const stageType = z.enum(['loading', 'purgatory', 'main', 'end']);
 export const messagesReceiveSchema = z.object({
     stage: stageType,
     purgDetails: z.object({
@@ -14,7 +14,7 @@ export const messagesReceiveSchema = z.object({
         })),
         targetQuestion: z.string().optional(),
     }).optional(),
-    lastSaved: z.string()
+    lastSaved: z.string().transform((str) => new Date(str)),
 })
 export const messagesPayloadSchema = z.object({
     stage: stageType,
@@ -32,13 +32,14 @@ export const messagesPayloadSchema = z.object({
             references: z.array(z.string()),
             imageURL: z.string().optional(),
         }).optional()
-    })),
+    })).optional(),
     targetQuestion: z.object({
         content: z.string(),
         KP: z.object({
             point: z.string(),
             TwoDvK: z.array(z.number()),
-        }).optional(),
-    }),
+        }),
+        distanceAway: z.number(),
+    }).optional(),
     lastSaved: z.date()
 })

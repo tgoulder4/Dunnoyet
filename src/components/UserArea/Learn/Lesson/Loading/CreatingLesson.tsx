@@ -1,34 +1,30 @@
 'use client'
 import React, { useEffect } from 'react'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
-import { changeColour, colours, spacing } from '@/lib/constants'
-import { Loader2 } from 'lucide-react'
-import { auth } from '@/auth'
+import { colours, spacing } from '@/lib/constants'
 
-function CreatingLesson({ saying }: { saying: string }) {
-    useEffect(() => {
-        async function main() {
-            //make a request to the server to create a new lesson
-            const sess = await auth();
-            if (!sess) return;
-            // const userID = sess.user?.id;
-            // const response = await fetch('/api/lessons/new', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ _userID: userID })
-            // });
-            // const res = await response.json();
-            // console.log("res: ", res)
-            // console.log("Redirecting to: ", res.link)
-            // window.location = res.link;
-        };
-        main();
-    }, []);
+
+function CreatingLesson({ isFirstTimer }: { isFirstTimer: string | null }) {
+    const random = Math.floor(Math.random() * 4);
+    //create sayings for the loading screen - all synonyms for what question do you have. All diferently pharsed. Don't start with WHat's
+    const sayings = isFirstTimer ? [
+        //sayings for the first time users
+        // Sayings for the first time users
+        "What's on your mind?",
+        "Get your burning questions ready...",
+        "Let's embark on this learning adventure!",
+        "Knowledge awaits!",
+    ] : [
+        //sayings for returning users
+        "What's on your mind this time?",
+        "Enjoying Dunnoyet? Spread the word!",
+        "Great to see you again! What facts will we discover today?",
+        "Welcome back! Let's continue our journey!",
+        "Tell your teacher about Dunnoyet for 20% off your subscription!"
+    ]
+    const saying = sayings[random];
     return (
         <>
-            <MainAreaNavbar style='normal' show={{ userSide: { newQuestion: false }, leftSide: { lessonTimer: false } }} />
             <div className='w-full h-4/5 grid place-items-center'><div style={{ rowGap: spacing.gaps.largest }} className="spinner flex flex-col items-center">
                 <div style={{ rowGap: spacing.gaps.largest - 20 }} className='flex flex-col items-center justify-center'>
                     <svg className='h-12 w-12 animate-spin' width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
