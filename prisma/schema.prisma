@@ -33,7 +33,7 @@ model knowledgePoint {
   uid        User     @relation("UserToKnowledgePoint", fields: [userId], references: [id])
   userId     String   @map("_userId") @db.ObjectId
   KP         String   @map("_KP") //string knowledge point
-  2DvK       Float[]  @map("_2DvK") // 2D vector
+  TwoDvK     Float[]  @map("_2DvK") // 2D vector
   vKP        Float[]  @map("_vKP") // vector embedding knowledge point
   confidence Int      @map("_confidence")
   source     kpSource //differentiate between reinforced and offered points
@@ -47,75 +47,45 @@ enum kpSource {
   offered
 }
 
-model Feedback {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  content String
-  userId  String @db.ObjectId // User ID
-
-  @@map("feedbacks")
-}
-
 model Lesson {
-  id      String      @id @default(auto()) @map("_id") @db.ObjectId
-  targetQ String?
-  ls      lessonState @relation("LessonToLessonState", fields: [stateId], references: [id])
-  stateId String      @unique @db.ObjectId
-  beganAt DateTime    @default(now())
-  endedAt DateTime?
-  user    User        @relation(fields: [userId], references: [id])
-  userId  String      @db.ObjectId
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  messages Message[] @relation("LessonToMessage")
+  targetQ  String?
+  beganAt  DateTime  @default(now())
+  endedAt  DateTime?
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String    @db.ObjectId
 
   @@map("lessons")
 }
 
-model lessonState {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  newMessages Message[] @relation("LessonStateToMessage")
-  oldMessages Message[] @relation("LessonStateToOldMessage")
-  metadata    metadata  @relation("LessonStateToMetadata", fields: [metadataId], references: [id])
-  metadataId  String    @unique @db.ObjectId
-  Lesson      Lesson?   @relation("LessonToLessonState")
-
-  @@map("lessonStates")
-}
-
-model metadata {
-  id                         String           @id @default(auto()) @map("_id") @db.ObjectId
-  lessonState                lessonState?     @relation("LessonStateToMetadata")
-  threads                    Json[]
-  subjects                   String[]
-  knowledgePointChain        knowledgePoint[] @relation("MetadataToKnowledgePointChain")
-  currentKnowledgePointIndex Int
-}
-
 model Message {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  role            role
-  rk              String[]
-  content         String? // Make content optional
-  splitResponse   SplitResponse?   @relation(fields: [splitResponseId], references: [id])
-  splitResponseId String?          @unique @db.ObjectId
-  eliResponseType eliResponseType?
-  ls              lessonState?     @relation("LessonStateToMessage", fields: [lessonStateId], references: [id])
-  lsO             lessonState?     @relation("LessonStateToOldMessage", fields: [lessonStateId], references: [id])
-  lessonStateId   String           @db.ObjectId
+  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
+  role               role
+  content            String? // Make content optional
+  eliResponseType    eliResponseType?
+  distanceFromTarget Int?
+  metadata           Metadata         @relation("MessageToMetadata", fields: [metadataId], references: [id])
+  metadataId         String           @unique @db.ObjectId
+  ls                 Lesson?          @relation("LessonToMessage", fields: [lessonStateId], references: [id])
+  lessonStateId      String           @db.ObjectId
 
   @@map("messages")
 }
 
-model SplitResponse {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  text    String
-  active  Boolean
-  message Message?
+model Metadata {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  references String[]
+  imageURL   String
+  message    Message? @relation("MessageToMetadata")
+  messageId  String   @db.ObjectId
 
-  @@map("split_responses")
+  @@map("metadata")
 }
 
 enum eliResponseType {
   General
   WhatComesToMind
-  ChallengeQ
   System
 }
 

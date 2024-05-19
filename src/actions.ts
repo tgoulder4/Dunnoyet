@@ -105,7 +105,6 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 email: credentials.email as string,
                 password: hashedPassword as string,
                 name: '',
-                tutorName: '',
             },
         });
         console.log("User created successfully, ")
