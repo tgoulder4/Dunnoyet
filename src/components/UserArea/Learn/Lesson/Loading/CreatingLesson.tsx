@@ -4,8 +4,9 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import { colours, spacing } from '@/lib/constants'
 
 
-function CreatingLesson({ isFirstTimer }: { isFirstTimer: string | null }) {
+function CreatingLesson() {
     const random = Math.floor(Math.random() * 4);
+    const isFirstTimer = true;
     //create sayings for the loading screen - all synonyms for what question do you have. All diferently pharsed. Don't start with WHat's
     const sayings = isFirstTimer ? [
         //sayings for the first time users

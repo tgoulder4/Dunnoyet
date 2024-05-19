@@ -5,6 +5,7 @@ import NewButton from '@/components/ui/NewButton'
 import UserAuthButton from '@/components/Navbar/UserAuthButton'
 import { getURL } from 'next/dist/shared/lib/utils'
 import LessonTimer from './LessonTimer'
+import { links } from '@/lib/utils'
 
 
 function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrAdmin', show?: { leftSide?: { lessonTimer?: boolean, links?: boolean }, userSide?: { newQuestion?: boolean, profileButton?: boolean } } }) {
@@ -47,9 +48,9 @@ function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrA
           </NewButton> */}
                         {
                             style == 'normal' ? <>
-                                {show?.userSide?.newQuestion !== false && <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="white" actionOrLink="/learn/lesson/new"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6.94407 6.92174L6.83669 3.86087V0H9.16331V3.86087L9.02013 6.92174L11.6689 6.74783H16V9.00869H11.6689L9.02013 8.90435L9.16331 11.8957V16H6.83669V11.8957L6.94407 8.90435L3.86577 9.00869H0V6.74783H3.86577L6.94407 6.92174Z" fill="#323232" />
-                                </svg> <h2>New Question</h2>
+                                {show?.userSide?.newQuestion !== false && <NewButton className="hidden md:flex flex-row items-center" style={{ rowGap: spacing.gaps.groupedElement }} buttonVariant="black" actionOrLink={links.newLesson}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.94407 6.92174L6.83669 3.86087V0H9.16331V3.86087L9.02013 6.92174L11.6689 6.74783H16V9.00869H11.6689L9.02013 8.90435L9.16331 11.8957V16H6.83669V11.8957L6.94407 8.90435L3.86577 9.00869H0V6.74783H3.86577L6.94407 6.92174Z" fill="white" />
+                                </svg> <h2 className='text-white'>New Question</h2>
                                 </NewButton>}
                                 <NewButton buttonVariant='ghost' className='relative block md:hidden'>
                                     <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
