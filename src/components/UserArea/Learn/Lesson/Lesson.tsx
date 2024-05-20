@@ -8,8 +8,9 @@ import { spacing, uiBorder } from '@/lib/constants';
 import { messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
+import { z } from 'zod';
 
-function Lesson({ payload }: { payload: any }) {
+function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> }) {
     const lessonXPadding: string = 'clamp(24px,4vw,400px)';
     const [messageHistory, setMessageHistory] = useState([]);
     const parsed = messagesPayloadSchema.safeParse(payload);

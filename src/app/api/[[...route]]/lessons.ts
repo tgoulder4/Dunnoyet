@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { getLoggedInUser } from './auth';
 import { User } from 'next-auth';
 import { z } from 'zod';
+import { create } from 'domain';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
@@ -16,6 +17,7 @@ export const getLesson = async (id: string) => {
             beganAt: true,
             endedAt: true,
             userId: true,
+            messages: true
         }
     })
     return lessonFound;
@@ -35,8 +37,14 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         const lesson = await prisma.lesson.create({
             data: {
                 userId: userID,
-                targetQ: content,
-                stage: 'Purgatory',
+                targetQ: {
+                    create: {
+                        point: content,
+                        TwoDvK: [] as any
+                    }
+                },
+                stage: 'purgatory',
+                messages: [] as any
             }
         });
         return lesson;
@@ -95,13 +103,12 @@ const app = new Hono()
     .get('/new', async (c) => {
         const user = await getLoggedInUser();
         if (!user || !user.id) return c.status(401);
-        const body = await c.req.json();
-        console.log("Body: ", body)
-        // const parseResult = createLessonSchema.safeParse(body);
-        // if (!parseResult.success) return c.status(400);
-        // const data = parseResult.data;
-        // const lesson = await createLesson(user.id, data);
-        // if (!lesson) return c.status(500);
+        const mode = c.req.query("mode");
+        if (mode !== "New Question" && mode !== "Free Roam") return c.status(400);
+        const content = c.req.query("content");
+        if (!mode || !content) return c.status(400);
+        const lesson = await createLesson(user.id, { mode, content });
+        if (!lesson) return c.status(500);
         return c.json(`/lesson/${"lesson.id"}/loading`)
     })
 

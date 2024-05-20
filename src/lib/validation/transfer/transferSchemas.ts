@@ -31,15 +31,12 @@ export const messagesPayloadSchema = z.object({
         metadata: z.object({
             references: z.array(z.string()),
             imageURL: z.string().optional(),
-        }).optional()
+        }).optional(),
+        distanceAwayFromFinishingLesson: z.number(),
     })).optional(),
     targetQuestion: z.object({
-        content: z.string(),
-        KP: z.object({
-            point: z.string(),
-            TwoDvK: z.array(z.number()),
-        }),
-        distanceAway: z.number(),
+        point: z.string(),
+        TwoDvK: z.array(z.number()),
     }).optional(),
     lastSaved: z.date()
 })

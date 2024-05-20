@@ -48,28 +48,39 @@ enum kpSource {
 }
 
 model Lesson {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  stage    Stage     @default(Purgatory)
-  messages Message[] @relation("LessonToMessage")
-  targetQ  String?
-  beganAt  DateTime  @default(now())
-  endedAt  DateTime?
-  user     User      @relation(fields: [userId], references: [id])
-  userId   String    @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  stage     Stage     @default(purgatory)
+  messages  Message[] @relation("LessonToMessage")
+  targetQ   TargetQ?  @relation("LessonToTargetQ", fields: [targetQId], references: [id])
+  targetQId String?   @unique @db.ObjectId
+  beganAt   DateTime  @default(now())
+  endedAt   DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @db.ObjectId
 
   @@map("lessons")
 }
 
+model TargetQ {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  point    String
+  TwoDvK   Float[]
+  lessonID Lesson? @relation("LessonToTargetQ")
+
+  @@map("targetQs")
+}
+
 model Message {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  role            role
-  content         String? // Make content optional
-  eliResponseType eliResponseType?
-  distanceAway    Int?
-  metadata        Metadata?        @relation("MessageToMetadata", fields: [metadataId], references: [id])
-  metadataId      String?          @unique @db.ObjectId
-  ls              Lesson?          @relation("LessonToMessage", fields: [lessonStateId], references: [id])
-  lessonStateId   String?          @db.ObjectId
+  //one target Q per lesson
+  id                              String           @id @default(auto()) @map("_id") @db.ObjectId
+  role                            role
+  content                         String? // Make content optional
+  eliResponseType                 eliResponseType?
+  distanceAwayFromFinishingLesson Int?
+  metadata                        Metadata?        @relation("MessageToMetadata", fields: [metadataId], references: [id])
+  metadataId                      String?          @unique @db.ObjectId
+  Lesson                          Lesson           @relation("LessonToMessage", fields: [lessonId], references: [id])
+  lessonId                        String           @db.ObjectId
 
   @@map("messages")
 }
@@ -96,9 +107,9 @@ enum role {
 }
 
 enum Stage {
-  Purgatory
-  Main
-  End
+  purgatory
+  main
+  end
 }
 
 model Tip {
