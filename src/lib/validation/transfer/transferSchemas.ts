@@ -47,3 +47,7 @@ export const messagesPayloadSchema = z.object({
 export const lessonStatePayloadSchema = messagesPayloadSchema.extend({
     lessonID: z.string()
 })
+export const createLessonSchema = z.object({
+    mode: z.enum(['New Question', 'Free Roam']),
+    content: z.string(), //uKp or uQ
+})

@@ -40,7 +40,10 @@ function Lesson({ payload }: { payload: any }) {
             <LessonSection className='flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>
                 {stage == 'loading' && <CreatingLesson />}
             </LessonSection>
-            <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'></LessonSection>
+            <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'>
+                <Brainmap placeholderMode={true} />
+
+            </LessonSection>
         </div>
     )
 }

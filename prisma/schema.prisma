@@ -61,15 +61,15 @@ model Lesson {
 }
 
 model Message {
-  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
-  role               role
-  content            String? // Make content optional
-  eliResponseType    eliResponseType?
-  distanceFromTarget Int?
-  metadata           Metadata         @relation("MessageToMetadata", fields: [metadataId], references: [id])
-  metadataId         String           @unique @db.ObjectId
-  ls                 Lesson?          @relation("LessonToMessage", fields: [lessonStateId], references: [id])
-  lessonStateId      String           @db.ObjectId
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  role            role
+  content         String? // Make content optional
+  eliResponseType eliResponseType?
+  distanceAway    Int?
+  metadata        Metadata?        @relation("MessageToMetadata", fields: [metadataId], references: [id])
+  metadataId      String?          @unique @db.ObjectId
+  ls              Lesson?          @relation("LessonToMessage", fields: [lessonStateId], references: [id])
+  lessonStateId   String?          @db.ObjectId
 
   @@map("messages")
 }

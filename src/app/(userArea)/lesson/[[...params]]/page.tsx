@@ -2,7 +2,6 @@
 import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { getLesson } from '@/app/api/[[...route]]/lessons'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
-import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import React from 'react'
 
@@ -16,11 +15,8 @@ async function LessonPage({ params }: { params: { id: string } }) {
     const usp = useSearchParams();
     const performFetch = usp.get('nofetch');
     if (performFetch) {
-        const res = await fetch(`/api/lessons`, {
-            method: 'GET'
-        }
-        )
-        const lesson = await res.json(); //change to lessonStateSchema.safeparse(await res.json())
+        const lesson = await getLesson(params.id)
+        // const lesson = await res.json(); //if client component, change to lessonStateSchema.safeparse(await res.json())
     }
     return (
         <Lesson payload={{ stage: "loading", lastSaved: new Date }} />

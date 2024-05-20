@@ -17,46 +17,28 @@ function page() {
     useEffect(() => {
         async function main() {
             if (!u || !u.data?.user || !u.data?.user?.id) return { status: 401 };
-            const user = u.data.user;
-
-            let param = {
-                type: '',
-                content: ''
-            }
             const givenQ = usp.get('q');
             const givenUkP = usp.get('ukp');
-            if (givenQ) {
-                param = {
-                    type: 'q',
-                    content: givenQ
-                }
-            } else if (givenUkP) {
-                param = {
-                    type: 'ukp',
-                    content: givenUkP
-                }
-            }
-            if (!user.id) return { status: 401 };
-            const parseResult = lessonStatePayloadSchema.safeParse(await fetch(`/api/lesson/new`, {
+            console.log("Creating POST request with body: ", { mode: givenQ ? 'New Question' : 'Free Roam', content: givenQ ? givenQ : givenUkP })
+            const parseResult = await lessonStatePayloadSchema.safeParseAsync(await fetch(`/api/lessons/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user: user.id,
-                    givenQ, givenUkP
+                    mode: givenQ ? 'New Question' : 'Free Roam',
+                    content: givenQ ? givenQ : givenUkP
                 })
             }).then(res => res.json()));
             if (!parseResult.success) return { status: 500 };
             const lesson = parseResult.data;
+            console.log("Lesson created: ", lesson)
             if (!lesson) return { status: 500 };
             //i've got everything here now - how do I send this to /lesson/[id]?
-            window.location.href = `/lesson/${lesson.lessonID}&nofetch=true`
+            window.location.href = `/lesson/${lesson.lessonID}&${givenQ ? "q=" + givenQ : ""}${givenUkP ? "uKP=" + givenUkP : ""}`
         }
         main()
     }, [])
-
-
     return (<Lesson payload={{ stage: "loading", lastSaved: new Date }} />)
 }
 

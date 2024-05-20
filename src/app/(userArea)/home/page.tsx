@@ -48,7 +48,7 @@ function Page({ params }: { params: { params: string } }) {
         } else if (!textAreaRef.current.value) {
             toast.error("Please" + (mode == 0 ? " ask a question" : " state something you know") + " before submitting.")
         } else {
-            window.location.href = '/lesson/loading?' + (mode == 0 ? "q=" : "uKP=") + textAreaRef.current?.value;
+            window.location.href = '/lesson/new?' + (mode == 0 ? "q=" : "uKP=") + textAreaRef.current?.value;
         }
         //lesson/loading?q/uKP=... makes a new lesson
     }
