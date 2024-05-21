@@ -11,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import Chat from './Chat/Chat';
 import { messagesSchema } from '@/lib/validation/primitives';
+import Notes from './Notes/Notes';
 
 function Lesson({ payload, skeletonMode }: { payload: z.infer<typeof messagesPayloadSchema>, skeletonMode?: boolean }) {
     console.log("Payload received: ", payload)
@@ -60,7 +61,6 @@ function Lesson({ payload, skeletonMode }: { payload: z.infer<typeof messagesPay
                                 <LearningPathItem confidence={1} text={"About " + distanceUntilLessonEnd + " more"} />
 
                             </>
-
                     }
                 </LessonSection>
                 <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: 2 * spacing.gaps.largest }} className='brainMap flex-[2]'>
@@ -71,11 +71,11 @@ function Lesson({ payload, skeletonMode }: { payload: z.infer<typeof messagesPay
                     }
                 </LessonSection>
             </div>
-            <LessonSection className='px-0 pt-0 flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>
+            <LessonSection className='p-0 flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>
                 {stage == 'loading' ? <CreatingLesson /> : <Chat messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'>
-                {skeletonMode ? <Brainmap placeholderMode={true} /> : <></>}
+                {skeletonMode ? <Notes placeholderMode={true} /> : <></>}
             </LessonSection>
         </div>
     )

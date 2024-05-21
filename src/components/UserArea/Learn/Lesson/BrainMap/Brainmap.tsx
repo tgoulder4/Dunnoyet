@@ -17,7 +17,6 @@ function Brainmap({ KPsToFocus, OtherKPs, placeholderMode }: { KPsToFocus?: z.in
                         <NeuralNetwork knowledgePointsToFocus={KPsToFocus!} otherPoints={OtherKPs!} />
                     </div>
             }
-            <h2></h2>
         </div>
     )
 }
