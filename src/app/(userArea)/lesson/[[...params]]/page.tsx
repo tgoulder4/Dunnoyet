@@ -11,7 +11,7 @@ async function LessonPage({ params }: { params: { id: string } }) {
     //if there's no '&nofetch' in the url, get the lesson
     const user = getLoggedInUser();
     if (!user) return { status: 401 };
-    // const lesson = await getLesson(params.id);
+    const lesson = await getLesson(params.id);
     if (!lesson) return { status: 401 };
     const {
         stage,

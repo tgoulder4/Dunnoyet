@@ -5,6 +5,7 @@ import { getLoggedInUser } from './auth';
 import { User } from 'next-auth';
 import { z } from 'zod';
 import { create } from 'domain';
+import { connect } from 'http2';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
@@ -34,64 +35,71 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
     } = data;
     if (!content || !mode) return null;
     if (mode == "New Question") {
-        const lesson = await prisma.lesson.create({
-            data: {
-                userId: userID,
-                targetQ: {
-                    create: {
+        const sayings = [
+            "What's the closest thing in this topic that makes complete sense you?",
+            "What's the closest thing you understand around this topic?",
+            "What are you confident about so far in this topic?",
+            "Can you describe what you've grasped so far in this topic?",
+            "What part of this topic do you feel you understand best?",
+            "What have you confidently mastered in this topic?"
+        ]
+        const randomSaying = sayings[Math.floor(Math.random() * sayings.length)];
+        try {
+            const lesson = await prisma.$transaction(async (tx) => {
+                const targetQ = await tx.targetQ.create({
+                    data: {
                         point: content,
-                        TwoDvK: [] as any
                     }
-                },
-                stage: 'purgatory',
-                messages: [] as any
-            }
-        });
-        return lesson;
+                })
+                const less = await tx.lesson.create({
+                    data: {
+                        userId: userID,
+                        targetQId: targetQ.id,
+                        messages: {
+                            create: {
+                                content: randomSaying,
+                                role: "eli",
+                                eliResponseType: "WhatComesToMind"
+                            }
+                        }
+                    }
+                });
+                return less;
+            })
+
+            return lesson;
+        }
+        catch (e) {
+            console.error(e);
+            return null;
+        }
     } else if (mode == "Free Roam") {
         const lesson = await prisma.lesson.create({
             data: {
                 userId: userID,
-                stage: 'Purgatory',
+                messages: {
+                    createMany: {
+                        data: [
+                            {
+                                content: content,
+                                role: "user",
+
+                            },
+                            //REWIND TO HERE.. GENERATE REPLY FROM ELI and enter below
+                            {
+                                content: content,
+                                role: "user",
+                                userResponseType: "UserInput"
+                            }
+                        ]
+                    }
+                }
             }
         });
         return lesson;
     }
     return null;
-    //create lesson function should only perform that action, and return the lesson object.
-    if (mode == "New Question") {
-        // const lesson = await prisma.lesson.create({
-        //     data: {
-        //         userId: userID,
-        //         targetQ: content,
-        //         stage: 'Purgatory',
-        //         messages: {
-        //             create: {
-        //                 role: 'eli',
-        //                 content: 'What comes to mind?',
-        //                 eliResponseType: 'WhatComesToMind',
-        //             }
-        //         }
-        //     }
-        // });
-    }
-    else if (mode == "Free Roam") {
-        // const lesson = await prisma.lesson.create({
-        //     data: {
-        //         userId: userID,
-        //         stage: 'Purgatory',
-        //         messages: {
-        //             create: {
-        //                 role: 'user',
-        //                 content,
-        //             }
-        //         }
-        //     },
-        //     include:{
-        //         messages:true
-        //     }
-        // });
-    }
+
 }
 const app = new Hono()
     // .get('/:id', async (c) => {

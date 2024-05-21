@@ -1,6 +1,6 @@
 
 import { auth } from "@/auth";
-import { getNextMessage } from "@/lib/chat/Eli/eli";
+import { getNextMessage } from "@/lib/chat/Eli/old";
 // import { decodeResponseSystemMessage, getSystemMessageForTeachingResponses } from "@/lib/chat/Eli/instructionsForRetrievingTypeOfTheirMessage";
 import openai from "@/lib/chat/openai";
 import { IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from "@/lib/validation/enforceTypes";

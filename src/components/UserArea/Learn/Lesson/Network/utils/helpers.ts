@@ -9,3 +9,25 @@ export function getColourFromConfidence(confidence: number): string {
         default: return colours.complementary;
     }
 }
+
+import { getEmbedding } from '@/lib/chat/openai';
+import { UMAP } from 'umap-js';
+export async function getTwoDCoOrdinatesOfKPInSolitude(KPInSolitude: string) {
+    const e: number[] = await getEmbedding(KPInSolitude)
+    const ems: number[][] = [e];
+    const umap = new UMAP({
+        nComponents: 2,
+        nEpochs: 400,
+        nNeighbors: 1,
+    });
+    if (ems.length == 1) ems.push([0, 0])
+    console.log("fitting umap to: ", ems)
+    const TwoDCoOrds = umap.fit(ems);
+    //multiply both by 10
+    TwoDCoOrds.forEach((point) => {
+        point[0] = point[0] * 10;
+        point[1] = point[1] * 10;
+    });
+    console.log("TwoDCoOrds generated: ", TwoDCoOrds)
+    return TwoDCoOrds[1];
+}

@@ -6,7 +6,7 @@ import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledg
 import { getEmbedding } from "../openai";
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
-import prisma from "../../../lib/db/prisma";
+import prisma from "../../db/prisma";
 import { authConfig } from '@/auth.config';
 import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
 //handles rerouting of knowledge chains

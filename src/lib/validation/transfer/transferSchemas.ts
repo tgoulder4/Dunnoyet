@@ -1,4 +1,5 @@
 import { date, z } from "zod"
+import { messagesSchema } from "../primitives";
 const stageType = z.enum(['loading', 'purgatory', 'main', 'end']);
 export const messagesReceiveSchema = z.object({
     stage: stageType,
@@ -18,22 +19,7 @@ export const messagesReceiveSchema = z.object({
 })
 export const messagesPayloadSchema = z.object({
     stage: stageType,
-    newMessages: z.array(z.object({
-        role: z.enum(['user', 'eli']),
-        content: z.string(),
-        eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']),
-        KP: z.object({
-            point: z.string(),
-            confidence: z.number(),
-            //twoDvK is an array of length 2
-            TwoDvK: z.array(z.number()),
-        }).optional(),
-        metadata: z.object({
-            references: z.array(z.string()),
-            imageURL: z.string().optional(),
-        }).optional(),
-        distanceAwayFromFinishingLesson: z.number(),
-    })).optional(),
+    newMessages: z.array(messagesSchema).optional(),
     targetQuestion: z.object({
         point: z.string(),
         TwoDvK: z.array(z.number()),
