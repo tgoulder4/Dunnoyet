@@ -5,19 +5,11 @@ export const roleType = z.enum(['user', 'eli']);
 const modeType = z.enum(['New Question', 'Free Roam']);
 export const messagesReceiveSchema = z.object({
     stage: stageType,
-    purgDetails: z.object({
-        mode: modeType,
-        uQ: z.string().optional(),
-        uKP: z.string().optional(),
-    }).optional(),
-    mainDetails: z.object({
-        msgHistory: z.array(z.object({
-            role: roleType,
-            content: z.string(),
-        })),
-        targetQuestion: z.string().optional(),
-    }).optional(),
-    lastSaved: z.string().transform((str) => new Date(str)),
+    msgHistory: z.array(z.object({
+        role: roleType,
+        content: z.string(),
+    })),
+    targetQuestion: z.string().optional(),
 })
 export const messagesPayloadSchema = z.object({
     stage: stageType,

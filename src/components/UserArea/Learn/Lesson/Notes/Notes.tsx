@@ -1,9 +1,9 @@
-import { colours, spacing } from '@/lib/constants'
+import { colours, lessonPaddingBottom, spacing } from '@/lib/constants'
 import React from 'react'
 
 function Notes({ placeholderMode }: { placeholderMode?: boolean }) {
     return (
-        <div style={{ paddingBottom: 2 * spacing.gaps.largest }}>
+        <div style={{ paddingBottom: lessonPaddingBottom }}>
             {placeholderMode ?
                 <div className='flex flex-col gap-3 h-full'>
                     <div style={{ backgroundColor: colours.border }} className='w-1/3 h-8 animate animate-pulse rounded-lg' />

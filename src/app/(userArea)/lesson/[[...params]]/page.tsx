@@ -39,10 +39,14 @@ async function LessonPage({ params, searchParams }: { params: { id: string }, se
             newMessages: [
                 {
                     role: 'eli',
-                    content: 'What have you confidently mastered in this topic?',
+                    content: 'Tell me a fact you understand within this topic!',
                     eliResponseType: 'WhatComesToMind',
                     distanceAwayFromFinishingLesson: 10,
-                }
+                },
+                // {
+                //     role: 'user',
+                //     content: 'Some user reply',
+                // },
             ],
         }} />
     )

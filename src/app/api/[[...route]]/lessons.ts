@@ -1,14 +1,14 @@
 import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
-import { createLessonSchema, lessonStatePayloadSchema } from './../../../lib/validation/transfer/transferSchemas';
+import { createLessonSchema } from './../../../lib/validation/transfer/transferSchemas';
 import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
-import { User } from 'next-auth';
 import { z } from 'zod';
-import { create } from 'domain';
-import { connect } from 'http2';
 import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
-import openai from '@/lib/chat/openai';
 import { simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
+import { checkIsUserRight } from '@/lib/chat/Eli/helpers/correctness';
+import { oopsThatsNotQuiteRight, tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
+import { messagesSchema } from '@/lib/validation/primitives';
+import openai from '@/lib/chat/openai';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
@@ -40,15 +40,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
     } = data;
     if (!content || !mode) return null;
     if (mode == "New Question") {
-        const sayings = [
-            "What's the closest thing in this topic that makes complete sense you?",
-            "What's the closest thing you understand around this topic?",
-            "What are you confident about so far in this topic?",
-            "Can you describe what you've grasped so far in this topic?",
-            "What part of this topic do you feel you understand best?",
-            "What have you confidently mastered in this topic?"
-        ]
-        const randomSaying = sayings[Math.floor(Math.random() * sayings.length)];
+        const randomSaying = tellMeWhatYouKnow();
         console.log("Random saying: ", randomSaying)
         try {
             const lesson = await prisma.$transaction(async (tx) => {
@@ -82,7 +74,6 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                 })
                 return less;
             })
-
             return lesson;
         }
         catch (e) {
@@ -90,13 +81,53 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             return null;
         }
     } else if (mode == "Free Roam") {
-        const reply = await getTeachingResponse([{ role: "user", content: content } as any], [], content);
-        if (!reply) return null;
+        const isRight = await checkIsUserRight([{ role: "user", content: content }], content);
+        //if !right stage="puragtory" else stage="main"
+        let reply: z.infer<typeof messagesSchema>;
         const subject = await simplifyToSubject(content);
         if (!subject) return null;
+        if (isRight) {
+            const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any], [], content);
+            if (!teachingRes) return null;
+            try {
+                const kp = await prisma.knowledgePoint.create({
+                    data: {
+                        KP: teachingRes.KP?.point!,
+                        confidence: 2,
+                        source: 'reinforced',
+                        TwoDvK: teachingRes.KP?.TwoDvK,
+                        user: {
+                            connect: {
+                                id: userID
+                            }
+                        }
+                    }
+                })
+                reply = {
+                    eliResponseType: "General",
+                    content: teachingRes.content,
+                    role: "eli",
+                    KPId: kp.id
+                }
+            }
+            catch (e) {
+                console.error(e);
+
+                return null;
+            }
+        }
+        else {
+            //thery#re not right
+            reply = {
+                eliResponseType: "WhatComesToMind",
+                content: oopsThatsNotQuiteRight(),
+                role: "eli",
+            }
+        }
         const lesson = await prisma.lesson.create({
             data: {
                 userId: userID,
+                stage: isRight ? "main" : "purgatory",
                 subject: subject,
                 messages: {
                     createMany: {
@@ -106,21 +137,14 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                                 role: "user",
 
                             },
-                            //REWIND TO HERE.. GENERATE REPLY FROM ELI and enter below
-                            {
-                                content: reply.content,
-                                role: "user",
-                                eliResponseType: reply.eliResponseType,
-                                distanceAwayFromFinishingLesson: reply.distanceAwayFromFinishingLesson
-                            }
+                            reply
                         ]
                     }
                 }
             }
         });
-        return lesson;
     }
-    return null;
+
 }
 const app = new Hono()
     .get('/new', async (c) => {
@@ -144,6 +168,4 @@ const app = new Hono()
         console.log("Returning lesson: ", lesson)
         return c.json(lesson)
     })
-
-
 export default app;

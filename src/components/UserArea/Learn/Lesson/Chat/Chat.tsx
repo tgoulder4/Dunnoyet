@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MessagePrimitive from './MessagePrimitive'
 import { z } from 'zod'
 import { messagesSchema } from '@/lib/validation/primitives'
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
-import { colours, sizing, spacing } from '@/lib/constants';
+import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
+import { LessonTimer } from './Timer';
 
 function Chat({ messages, subject, targetQContent }: { messages: z.infer<typeof messagesSchema>[], subject?: string, targetQContent?: string }) {
     const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -18,14 +19,21 @@ function Chat({ messages, subject, targetQContent }: { messages: z.infer<typeof 
         //send the message
         setLoading(false);
     }
-
+    useEffect(() => {
+        //if it's their turn, focus the textArea
+        if (messages[messages.length - 1].role == 'eli') {
+            textAreaRef.current?.focus();
+        }
+    }, [messages])
     return (
-        <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: 2 * spacing.gaps.largest }}>
-            <section className='titleAndReplies flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
+            <section className='titleAndReplies flex flex-col'>
 
-                <div className="outlineArea grid place-items-center pt-1 h-16 w-full px-12 bg-[#F4F4F4]">
-                    <h1 className='w-full font-extrabold'>{subject ? subject : targetQContent}
-                    </h1>
+                <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
+                    <div className="flex gap-2">
+                        <h1 className='w-full font-extrabold'>{subject ? subject : targetQContent}</h1>
+                        <LessonTimer />
+                    </div>
                 </div>
                 <div className="mainChat">
                     {

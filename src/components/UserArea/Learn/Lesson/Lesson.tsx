@@ -4,7 +4,7 @@ import LessonSection from './LessonSection';
 import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
-import { spacing, uiBorder } from '@/lib/constants';
+import { lessonPaddingBottom, spacing, uiBorder } from '@/lib/constants';
 import { messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
@@ -69,7 +69,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                             </>
                     }
                 </LessonSection>
-                <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: 2 * spacing.gaps.largest }} className='brainMap flex-[2]'>
+                <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[2]'>
                     {stage == 'loading' ?
                         <Brainmap placeholderMode={true} />
                         : stage !== "purgatory" &&

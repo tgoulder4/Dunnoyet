@@ -10,6 +10,9 @@ export const messagesSchema = z.object({
     content: z.string(),
     eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']).optional(),
     KP: KPSchema.optional(),
+    //this is only used for conditional creation of lesson
+    KPId: z.string().optional(),
+
     metadata: z.object({
         references: z.array(z.string()),
         imageURL: z.string().optional(),

@@ -72,6 +72,7 @@ export const spacing = {
         largest: 56
     },
 }
+export const lessonPaddingBottom = 2 * spacing.gaps.separateElement;
 export const maxLandingWidth = "1320px";
 
 export const DunnoyetLogo = ({ colour, withText }: { colour: string, withText?: boolean }) => {

@@ -9,7 +9,7 @@ function MessagePrimitive({ message, focused, lastMessageInLesson, username }: {
         role, content, eliResponseType
     } = message;
     return (
-        <div className={`w-full border-b-[rgba(0,0,0,0.05)] border-b px-24 pt-[0.938rem] pb-[1.25rem] items-center flex flex-row gap-4 ${eliResponseType == "WhatComesToMind" ? "bg-[#461167] text-white" : ""}`}>
+        <div className={`animate-in slide-in-from-bottom-4  w-full border-b-[rgba(0,0,0,0.05)] border-b pl-16 pr-24 pt-[0.938rem] pb-[1.25rem] items-center flex flex-row gap-4 ${eliResponseType == "WhatComesToMind" ? "bg-[#461167] text-white" : ""}`}>
             <div className="grid place-items-center w-12 aspect-square rounded-full border border-[rgba(0,0,0,0.1)]">
                 {
                     role == "user" ? <h2>{username ? username[0] : "U"}</h2> :
@@ -24,7 +24,6 @@ function MessagePrimitive({ message, focused, lastMessageInLesson, username }: {
                 }
             </div>
             <div className="flex flex-col gap-5">
-
                 <div className="flex flex-col gap-1">
                     <h2 className='font-normal opacity-70'>
                         {
