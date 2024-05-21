@@ -1,7 +1,7 @@
 import { changeColour, colours } from '@/lib/constants';
-
-import { IKP } from './../../../../../../lib/validation/enforceTypes';
 import { getColourFromConfidence } from './helpers';
+import { z } from 'zod';
+import { KPSchema } from '@/lib/validation/primitives';
 export let pulsateOpacity = 1;
 export let pulsateDirection = true; // true for increasing, false for decreasing
 export let frameRate = 60; // Default frame rate
@@ -26,7 +26,7 @@ export const updatePulsateOpacity = () => {
     }
 };
 export const step = 10;
-export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: IKP[], centerX: number, centerY: number) {
+export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: z.infer<typeof KPSchema>[], centerX: number, centerY: number) {
     //find the range we need to make the dots
     const xValues = focusPoints.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
@@ -39,6 +39,10 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
     let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
+    if (focusPoints.length === 0) {
+        width = ctx.canvas.width;
+        height = ctx.canvas.height;
+    }
     const dotSize = 0.8;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
     for (let x = -width / 2; x < width / 2; x += step) {
@@ -57,7 +61,7 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: I
         }
     }
 }
-export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: IKP[] | null, centerX: number, centerY: number) {
+export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: z.infer<typeof KPSchema>[] | null, centerX: number, centerY: number) {
     //DRAW ALL OTHER KNOWLEDGE POINTS EXCEPT FROM CHAIN
     const knowledgePointRadius = 1;
     if (knowledgePointsExceptFromChain) {
@@ -77,7 +81,7 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
  * @param points Scales to focus on these points
  * @returns 
  */
-export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
+export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: z.infer<typeof KPSchema>[]) => {
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = points.map(point => point.TwoDvK[1]);
@@ -99,7 +103,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
 export function addEventListeners(window: Window & typeof globalThis, canvas: HTMLCanvasElement) {
 
 }
-export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: IKP[], centerX: number, centerY: number) {
+export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: z.infer<typeof KPSchema>[], centerX: number, centerY: number) {
     //DRAW THE KNOWLDGE POINTS FROM CHAIN
     const dotSize = 1.2;
     const potentialPulsingLinks: number[] = []; //links of indexes

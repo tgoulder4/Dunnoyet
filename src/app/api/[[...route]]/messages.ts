@@ -18,10 +18,11 @@ const app = new Hono()
             mainDetails
         } = c.req.valid('form');
         if (stage === 'purgatory') {
-            let payload = {};
             if (!purgDetails) return c.status(400);
             const { mode } = purgDetails;
-
+            //check their reply is right,
+            //if right save KP to db and pinecone, stage is now main
+            //if wrong, ask them to try again
 
             if (!mode) { }
         }

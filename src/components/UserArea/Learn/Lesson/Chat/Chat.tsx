@@ -21,7 +21,7 @@ function Chat({ messages, subject, targetQContent }: { messages: z.infer<typeof 
 
     return (
         <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: 2 * spacing.gaps.largest }}>
-            <section className='titleAndReplies'>
+            <section className='titleAndReplies flex flex-col gap-3'>
 
                 <div className="outlineArea grid place-items-center pt-1 h-16 w-full px-12 bg-[#F4F4F4]">
                     <h1 className='w-full font-extrabold'>{subject ? subject : targetQContent}

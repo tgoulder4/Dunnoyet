@@ -141,7 +141,7 @@ const app = new Hono()
         };
         const lesson = await createLesson(user.id, { mode, content });
         if (!lesson) return c.status(500);
-        console.log("Returning lesson")
+        console.log("Returning lesson: ", lesson)
         return c.json(lesson)
     })
 

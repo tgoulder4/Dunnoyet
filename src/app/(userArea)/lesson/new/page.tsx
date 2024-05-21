@@ -24,24 +24,26 @@ function page() {
             const givenUkP = usp.get('ukp');
             console.log("Creating GET request to /api/lessons/new")
             try {
-                const response = await axios.get(`/api/lessons/new`, {
-                    params: {
-                        mode: givenQ ? 'New Question' : 'Free Roam',
-                        content: givenQ ? givenQ : givenUkP
-                    }
-                })
-                console.log("Response from /api/lessons/new: ", response)
-                const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(response.data)
+                // const response = await axios.get(`/api/lessons/new`, {
+                //     params: {
+                //         mode: givenQ ? 'New Question' : 'Free Roam',
+                //         content: givenQ ? givenQ : givenUkP
+                //     }
+                // })
+                // const lessID = response.data.id;
+                // if (!lessID) return { status: 500 };
+                // console.log("Response from /api/lessons/new: ", response)
+                // const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(lessID)
 
-                if (!parseResult.success) {
-                    console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
-                    return { status: 500 };
-                }
-                const lesson = parseResult.data;
-                if (!lesson) return { status: 500 };
-                console.log("Successfully receieved & parsed lesson: ", lesson);
-                window.location.href = `/lesson/${lesson}&initiate=true`
-
+                // if (!parseResult.success) {
+                //     console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
+                //     return { status: 500 };
+                // }
+                // console.log("Successfully receieved & parsed lesson: ", lessID);
+                // window.location.href = `/lesson/${lessID}&initiate=true`
+                //await a mock promsie of 2s
+                await new Promise((res) => setTimeout(res, 2000));
+                window.location.href = `/lesson/mock&initiate=true`
                 //i've got everything here now - how do I send this to /lesson/[id]?
             }
             catch (e) {
