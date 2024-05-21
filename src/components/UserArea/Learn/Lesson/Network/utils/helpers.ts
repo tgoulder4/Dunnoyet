@@ -10,11 +10,9 @@ export function getColourFromConfidence(confidence: number): string {
     }
 }
 
-import { getEmbedding } from '@/lib/chat/openai';
+//split into server function which gets embeddings as number[][]
 import { UMAP } from 'umap-js';
-export async function getTwoDCoOrdinatesOfKPInSolitude(KPInSolitude: string) {
-    const e: number[] = await getEmbedding(KPInSolitude)
-    const ems: number[][] = [e];
+export async function getTwoDCoOrdinatesOfKPInSolitude(ems: number[][]) {
     const umap = new UMAP({
         nComponents: 2,
         nEpochs: 400,

@@ -1,6 +1,7 @@
+'use server'
 import { KPSchema, messagesSchema } from "@/lib/validation/primitives"
 import { z } from "zod"
-import openai from "../../openai"
+import openai, { getEmbedding } from "../../openai"
 import { simplifyToKnowledgePointInSolitude } from "../helpers/simplify-message"
 import { getTwoDCoOrdinatesOfKPInSolitude } from "@/components/UserArea/Learn/Lesson/Network/utils/helpers"
 
@@ -23,7 +24,8 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
     //parse the response
     const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
     if (!simplifiedKP) return null;
-    const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude(simplifiedKP)
+    const em = await getEmbedding(simplifiedKP);
+    const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude([em])
     const KP: z.infer<typeof KPSchema> = {
         confidence: 1,
         point: simplifiedKP,

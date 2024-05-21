@@ -22,10 +22,11 @@ async function LessonPage({ params }: { params: { id: string } }) {
     const payload: z.infer<typeof lessonStatePayloadSchema> = {
         lastSaved: beganAt,
         stage,
-        targetQuestion: targetQ,
+        targetQuestion: targetQ || undefined,
         newMessages: messages ? messages : [] as any,
         lessonID: params.id
     }
+    console.log("LessonPage payload: ", payload)
     return (
         <Lesson payload={payload} />
     )

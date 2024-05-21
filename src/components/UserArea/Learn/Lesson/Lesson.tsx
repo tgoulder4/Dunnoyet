@@ -11,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
 function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> }) {
+    console.log("Payload received: ", payload)
     const lessonXPadding: string = 'clamp(24px,4vw,400px)';
     const [messageHistory, setMessageHistory] = useState([]);
     const parsed = messagesPayloadSchema.safeParse(payload);
@@ -19,7 +20,6 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
         parsed.error
         return <></>
     }
-    console.log("PARSE PASSED: ", payload)
     const {
         stage,
         lastSaved,

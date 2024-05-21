@@ -7,6 +7,8 @@ import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react'
 import axios from 'axios';
+import { client } from '@/lib/db/hono';
+import { z } from 'zod';
 // import { AppTypes } from '@/app/api/[[...route]]/route';
 // import { hc } from 'hono/client';
 // const client = hc<AppTypes['lessonRoute']>('');
@@ -20,7 +22,7 @@ function page() {
             if (!u || !u.data?.user || !u.data?.user?.id) return { status: 401 };
             const givenQ = usp.get('q');
             const givenUkP = usp.get('ukp');
-            console.log("Creating POST request to /api/lessons/new")
+            console.log("Creating GET request to /api/lessons/new")
             try {
                 const response = await axios.get(`/api/lessons/new`, {
                     params: {
@@ -29,13 +31,18 @@ function page() {
                     }
                 })
                 console.log("Response from /api/lessons/new: ", response)
-                const parseResult = lessonStatePayloadSchema.safeParse(response.data);
-                if (!parseResult.success) return { status: 500 };
+                const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(response.data)
+
+                if (!parseResult.success) {
+                    console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
+                    return { status: 500 };
+                }
                 const lesson = parseResult.data;
-                console.log("Lesson created: ", lesson)
                 if (!lesson) return { status: 500 };
+                console.log("Successfully receieved & parsed lesson: ", lesson);
+                window.location.href = `/lesson/${lesson}`
+
                 //i've got everything here now - how do I send this to /lesson/[id]?
-                window.location.href = `/lesson/${lesson.lessonID}`
             }
             catch (e) {
                 console.error(e)

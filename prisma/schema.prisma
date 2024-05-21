@@ -51,8 +51,8 @@ model Lesson {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   stage     Stage     @default(purgatory)
   messages  Message[] @relation("LessonToMessage")
-  targetQ   TargetQ   @relation("LessonToTargetQ", fields: [targetQId], references: [id])
-  targetQId String    @unique @db.ObjectId
+  targetQ   TargetQ?  @relation("LessonToTargetQ", fields: [targetQId], references: [id])
+  targetQId String?   @unique @db.ObjectId
   beganAt   DateTime  @default(now())
   endedAt   DateTime?
   user      User      @relation(fields: [userId], references: [id])

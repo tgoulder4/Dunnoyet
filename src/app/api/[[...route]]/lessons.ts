@@ -1,24 +1,24 @@
+import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { createLessonSchema, lessonStatePayloadSchema } from './../../../lib/validation/transfer/transferSchemas';
 import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
-import { getLoggedInUser } from './auth';
 import { User } from 'next-auth';
 import { z } from 'zod';
 import { create } from 'domain';
 import { connect } from 'http2';
+import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
+import openai from '@/lib/chat/openai';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
     console.log("getLesson called with id: ", id)
-    const lessonFound = prisma.lesson.findUnique({
+    const lessonFound = prisma.lesson.findFirst({
         where: { id: id },
         select: {
-            stage: true,
+            messages: true,
             targetQ: true,
-            beganAt: true,
-            endedAt: true,
-            userId: true,
-            messages: true
+            stage: true,
+            beganAt: true
         }
     })
     return lessonFound;
@@ -44,8 +44,10 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             "What have you confidently mastered in this topic?"
         ]
         const randomSaying = sayings[Math.floor(Math.random() * sayings.length)];
+        console.log("Random saying: ", randomSaying)
         try {
             const lesson = await prisma.$transaction(async (tx) => {
+                console.log("Transaction started")
                 const targetQ = await tx.targetQ.create({
                     data: {
                         point: content,
@@ -74,6 +76,8 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             return null;
         }
     } else if (mode == "Free Roam") {
+        const reply = await getTeachingResponse([{ role: "user", content: content } as any], [], content);
+        if (!reply) return null;
         const lesson = await prisma.lesson.create({
             data: {
                 userId: userID,
@@ -87,9 +91,10 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                             },
                             //REWIND TO HERE.. GENERATE REPLY FROM ELI and enter below
                             {
-                                content: content,
+                                content: reply.content,
                                 role: "user",
-                                userResponseType: "UserInput"
+                                eliResponseType: reply.eliResponseType,
+                                distanceAwayFromFinishingLesson: reply.distanceAwayFromFinishingLesson
                             }
                         ]
                     }
@@ -102,22 +107,18 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
 
 }
 const app = new Hono()
-    // .get('/:id', async (c) => {
-    //     const id = c.req.param('id');
-    //     const lesson = await getLesson(id);
-    //     if (!lesson) return c.status(404);
-    //     return c.json(lesson)
-    // })
     .get('/new', async (c) => {
+        console.log("GET /api/lessons/new called")
         const user = await getLoggedInUser();
         if (!user || !user.id) return c.status(401);
-        const mode = c.req.query("mode");
-        if (mode !== "New Question" && mode !== "Free Roam") return c.status(400);
-        const content = c.req.query("content");
-        if (!mode || !content) return c.status(400);
-        const lesson = await createLesson(user.id, { mode, content });
-        if (!lesson) return c.status(500);
-        return c.json(`/lesson/${"lesson.id"}/loading`)
+        console.log("User logged in: ", user)
+        // const mode = c.req.query("mode");
+        // if (mode !== "New Question" && mode !== "Free Roam") return c.status(400);
+        // const content = c.req.query("content");
+        // if (!mode || !content) return c.status(400);
+        // const lesson = await createLesson(user.id, { mode, content });
+        // if (!lesson) return c.status(500);
+        return c.json("lesson.id")
     })
 
 
