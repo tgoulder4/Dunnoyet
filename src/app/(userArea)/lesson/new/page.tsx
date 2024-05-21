@@ -40,7 +40,7 @@ function page() {
                 const lesson = parseResult.data;
                 if (!lesson) return { status: 500 };
                 console.log("Successfully receieved & parsed lesson: ", lesson);
-                window.location.href = `/lesson/${lesson}`
+                window.location.href = `/lesson/${lesson}&initiate=true`
 
                 //i've got everything here now - how do I send this to /lesson/[id]?
             }

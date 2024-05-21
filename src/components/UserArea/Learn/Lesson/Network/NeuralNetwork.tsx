@@ -1,7 +1,6 @@
 import React, { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
-import { IKP } from '@/lib/validation/enforceTypes'
 import { getEmbedding } from '@/lib/chat/openai'
 import { getRelatedKnowledgePoints } from '@/lib/chat/Eli/old'
 import { useSession } from 'next-auth/react'
@@ -10,11 +9,13 @@ import { getRequiredFrameRate } from './utils/optimisations'
 import { calculateOffsetAndScaleToFocusGivenChain, drawKnowledgePointsInChain, frameRate, pulsateDirection, pulsateOpacity, setFrameRate, updatePulsateOpacity } from './utils/core'
 import { getColourFromConfidence } from './utils/helpers'
 import { drawOtherPoints, drawBackgroundDots, } from './utils/core'
+import { z } from 'zod'
+import { KPSchema } from '@/lib/validation/primitives'
 
 // Props interface declaration for type safety
 interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
-    knowledgePointsToFocus?: IKP[];
-    otherPoints?: IKP[];
+    knowledgePointsToFocus?: z.infer<typeof KPSchema>[];
+    otherPoints?: z.infer<typeof KPSchema>[];
     className?: string;
 }
 

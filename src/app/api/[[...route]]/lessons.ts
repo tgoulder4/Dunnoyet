@@ -8,6 +8,7 @@ import { create } from 'domain';
 import { connect } from 'http2';
 import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
 import openai from '@/lib/chat/openai';
+import { simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
@@ -18,10 +19,14 @@ export const getLesson = async (id: string) => {
             messages: true,
             targetQ: true,
             stage: true,
-            beganAt: true
+            beganAt: true,
+            subject: true
         }
     })
     return lessonFound;
+}
+export const initiateLesson = async (id: string) => {
+    //if there's a targetQ
 }
 export const createLesson = async (userID: string, data: z.infer<typeof createLessonSchema>) => {
     console.log("createLesson called")
@@ -57,15 +62,24 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                     data: {
                         userId: userID,
                         targetQId: targetQ.id,
-                        messages: {
-                            create: {
-                                content: randomSaying,
-                                role: "eli",
-                                eliResponseType: "WhatComesToMind"
-                            }
-                        }
                     }
                 });
+                //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
+                const metadata = await tx.metadata.create({
+                    data: {
+                        imageURL: "",
+                    }
+                })
+                const msg = await tx.message.create({
+                    data: {
+                        lessonId: less.id,
+                        content: randomSaying,
+                        role: "eli",
+                        eliResponseType: "WhatComesToMind",
+                        metadataId: metadata.id,
+                        distanceAwayFromFinishingLesson: 10
+                    }
+                })
                 return less;
             })
 
@@ -78,9 +92,12 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
     } else if (mode == "Free Roam") {
         const reply = await getTeachingResponse([{ role: "user", content: content } as any], [], content);
         if (!reply) return null;
+        const subject = await simplifyToSubject(content);
+        if (!subject) return null;
         const lesson = await prisma.lesson.create({
             data: {
                 userId: userID,
+                subject: subject,
                 messages: {
                     createMany: {
                         data: [
@@ -104,7 +121,6 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         return lesson;
     }
     return null;
-
 }
 const app = new Hono()
     .get('/new', async (c) => {
@@ -112,13 +128,21 @@ const app = new Hono()
         const user = await getLoggedInUser();
         if (!user || !user.id) return c.status(401);
         console.log("User logged in: ", user)
-        // const mode = c.req.query("mode");
-        // if (mode !== "New Question" && mode !== "Free Roam") return c.status(400);
-        // const content = c.req.query("content");
-        // if (!mode || !content) return c.status(400);
-        // const lesson = await createLesson(user.id, { mode, content });
-        // if (!lesson) return c.status(500);
-        return c.json("lesson.id")
+        console.log("Request received: ", c.req.url)
+        const mode = c.req.query("mode");
+        if (mode !== "New Question" && mode !== "Free Roam") {
+            console.log("Invalid mode, " + mode)
+            return c.status(400)
+        };
+        const content = c.req.query("content");
+        if (!mode || !content) {
+            console.log("No mode or content")
+            return c.status(400)
+        };
+        const lesson = await createLesson(user.id, { mode, content });
+        if (!lesson) return c.status(500);
+        console.log("Returning lesson")
+        return c.json(lesson)
     })
 
 

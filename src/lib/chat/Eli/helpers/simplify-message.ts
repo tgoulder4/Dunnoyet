@@ -24,13 +24,13 @@ export const simplifyToKnowledgePointInSolitude = async (messageHistory: z.infer
         return null;
     }
 }
-export const simplifyToSubject = async (messageHistory: z.infer<typeof messagesSchema>[]): Promise<string | null> => {
+export const simplifyToSubject = async (statement: string): Promise<string | null> => {
     console.log("simplifyToSubject called")
     try {
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together. Given the chat history: ' + (messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify the subject of their reply to maximum 3 words which make sense on their own.'
+                content: 'We are teaching a student together. Given the student said ' + statement + ', Simplify the subject of their reply to maximum 3 words which make sense on their own.'
             },],
             model: "gpt-3.5-turbo"
         })

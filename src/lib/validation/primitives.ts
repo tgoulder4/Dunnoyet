@@ -8,11 +8,11 @@ export const KPSchema = z.object({
 export const messagesSchema = z.object({
     role: z.enum(['user', 'eli']),
     content: z.string(),
-    eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']),
+    eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']).optional(),
     KP: KPSchema.optional(),
     metadata: z.object({
         references: z.array(z.string()),
         imageURL: z.string().optional(),
     }).optional(),
-    distanceAwayFromFinishingLesson: z.number(),
+    distanceAwayFromFinishingLesson: z.number().optional(),
 })

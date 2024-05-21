@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import LessonSection from './LessonSection';
 import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
@@ -9,11 +9,12 @@ import { messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
+import Chat from './Chat/Chat';
+import { messagesSchema } from '@/lib/validation/primitives';
 
-function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> }) {
+function Lesson({ payload, skeletonMode }: { payload: z.infer<typeof messagesPayloadSchema>, skeletonMode?: boolean }) {
     console.log("Payload received: ", payload)
     const lessonXPadding: string = 'clamp(24px,4vw,400px)';
-    const [messageHistory, setMessageHistory] = useState([]);
     const parsed = messagesPayloadSchema.safeParse(payload);
     if (!parsed.success) {
         console.error("Invalid format, failed parse IF@LSK: ", payload, " error: ", parsed.error)
@@ -24,26 +25,57 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
         stage,
         lastSaved,
         newMessages,
-        targetQuestion
+        targetQuestion,
+        subject
     } = parsed.data;
+    const [messageHistory, setMessageHistory] = useState(newMessages as z.infer<typeof messagesSchema>[]);
+    const [distanceUntilLessonEnd, setDistanceUntilLessonEnd] = useState(findDistanceUntilLessonEnd(newMessages || []));
+    const [KPs, setKPs] = useState(messageHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!))
+    function findDistanceUntilLessonEnd(messages: z.infer<typeof messagesSchema>[]): number {
+        let distance = 0;
+        for (let i = messages.length - 1; i >= 0; i--) {
+            const dist = messages[i].distanceAwayFromFinishingLesson;
+            if (dist) {
+                distance = dist;
+                break;
+            }
+        }
+        return distance;
+    }
     return (
-        <div className="flex h-full">
+        <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
                 <LessonSection style={{ paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='learningPath flex flex-col gap-3 flex-[3]'>
-                    <LearningPathItem confidence={1} text='Placeholder' />
-                    <LearningPathItem confidence={1} text='Placeholder' />
-                    <LearningPathItem confidence={1} text='Placeholder' />
+                    {/* for each of the messages sent by eli */}
+                    {
+                        skeletonMode ?
+                            <>
+                                <LearningPathItem confidence={1} text="Placeholder" />
+                                <LearningPathItem confidence={1} text="Placeholder" />
+                                <LearningPathItem confidence={1} text="Placeholder" />
+                            </> : <>
+                                {KPs.map((KP, index) => {
+                                    <LearningPathItem confidence={KP.confidence!} text={KP.point!} />
+                                })}
+                                <LearningPathItem confidence={1} text={"About " + distanceUntilLessonEnd + " more"} />
+
+                            </>
+
+                    }
                 </LessonSection>
                 <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: 2 * spacing.gaps.largest }} className='brainMap flex-[2]'>
-                    <Brainmap placeholderMode={true} />
+                    {skeletonMode ?
+                        <Brainmap placeholderMode={true} />
+                        :
+                        <Brainmap KPsToFocus={KPs} />
+                    }
                 </LessonSection>
             </div>
-            <LessonSection className='flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' && <CreatingLesson />}
+            <LessonSection className='px-0 pt-0 flex-[5] learningChatArea' style={{ borderRight: uiBorder(0.1) }}>
+                {stage == 'loading' ? <CreatingLesson /> : <Chat messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'>
-                <Brainmap placeholderMode={true} />
-
+                {skeletonMode ? <Brainmap placeholderMode={true} /> : <></>}
             </LessonSection>
         </div>
     )

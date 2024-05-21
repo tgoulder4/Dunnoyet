@@ -25,7 +25,7 @@ function LearningPathItemTitle({ confidence, text }: { confidence: number, text:
         }
     }
     return (
-        <div className='flex flex-row gap-3'>
+        <div className='flex flex-row gap-3 items-center'>
             <div style={{ backgroundColor: mainColour }} className={`${placeholderMode ? 'animate animate-pulse' : ''} w-8 h-8 shrink-0 rounded-full`} />
             {placeholderMode ? <div style={{ backgroundColor: mainColour }} className='w-full h-8 animate animate-pulse rounded-lg' /> : <h2 style={{ color: textColour }}>{text}</h2>}
         </div>

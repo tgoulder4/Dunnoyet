@@ -1,27 +1,37 @@
 'use server'
 import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
-import { getLesson } from '@/app/api/[[...route]]/lessons'
+import { getLesson, initiateLesson } from '@/app/api/[[...route]]/lessons'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
-import { lessonStatePayloadSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonSchema } from '@/lib/validation/general/types';
+import { lessonStatePayloadSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import { useSearchParams } from 'next/navigation';
 import React from 'react'
 import { z } from 'zod';
 
-async function LessonPage({ params }: { params: { id: string } }) {
-    //if there's no '&nofetch' in the url, get the lesson
-    const user = getLoggedInUser();
-    if (!user) return { status: 401 };
-    const lesson = await getLesson(params.id);
+async function LessonPage({ params, searchParams }: { params: { id: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
+    const lesson = await getLesson("664cdadd149022456b034b4f");
     if (!lesson) return { status: 401 };
+    //get the url query 'initiate'
+    // let lesson: z.infer<typeof lessonStatePayloadSchema> = {} as any;
+    // if (searchParams?.initiate){
+    //     lesson = await initiateLesson(params.id)
+    // }else{
+    //     const less = await getLesson(params.id);
+    //     if (!less) return { status: 401 };
+    //     lesson = less;
+    // }
+    // if (!lesson) return { status: 401 };
     const {
         stage,
         targetQ,
         beganAt,
+        subject,
         messages
     } = lesson;
     const payload: z.infer<typeof lessonStatePayloadSchema> = {
         lastSaved: beganAt,
         stage,
+        subject: subject || undefined,
         targetQuestion: targetQ || undefined,
         newMessages: messages ? messages : [] as any,
         lessonID: params.id

@@ -82,7 +82,7 @@ export const authConfig: NextAuthConfig = {
                     //check if their role is admin on the server side
                     return auth?.user?.role === "ADMIN";
                 }
-                // return Response.redirect(new URL("/home", nextUrl))
+                return Response.redirect(new URL("/home", nextUrl))
             }
 
 

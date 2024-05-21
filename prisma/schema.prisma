@@ -50,6 +50,7 @@ enum kpSource {
 model Lesson {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   stage     Stage     @default(purgatory)
+  subject   String?
   messages  Message[] @relation("LessonToMessage")
   targetQ   TargetQ?  @relation("LessonToTargetQ", fields: [targetQId], references: [id])
   targetQId String?   @unique @db.ObjectId
@@ -90,7 +91,7 @@ model Metadata {
   references String[]
   imageURL   String
   message    Message? @relation("MessageToMetadata")
-  messageId  String   @db.ObjectId
+  messageId  String?  @db.ObjectId
 
   @@map("metadata")
 }
