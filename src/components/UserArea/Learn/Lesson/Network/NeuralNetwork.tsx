@@ -24,10 +24,12 @@ function easeInOut(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
 const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className }) => {
+    console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
     const sess = useSession().data!.user!;
     const {
         id: userId,
     } = sess;
+    if (!knowledgePointsToFocus && !otherPoints) return <h1>Brainmap initialised incorrectly</h1>
     const focusPoints = knowledgePointsToFocus ? knowledgePointsToFocus : otherPoints;
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
@@ -57,10 +59,10 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
 
+        // if (!focusPoints) return;
         if (otherPoints) drawOtherPoints(ctx, otherPoints, centerX, centerY);
-        if (!focusPoints) return;
-        drawBackgroundDots(ctx, focusPoints, centerX, centerY);
-        drawKnowledgePointsInChain(ctx, knowledgePointsToFocus ? knowledgePointsToFocus : [], centerX, centerY);
+        drawBackgroundDots(ctx, focusPoints!, centerX, centerY);
+        if (knowledgePointsToFocus) drawKnowledgePointsInChain(ctx, knowledgePointsToFocus, centerX, centerY);
 
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     // Animation loop function

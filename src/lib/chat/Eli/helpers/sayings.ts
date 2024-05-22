@@ -13,7 +13,7 @@ export function tellMeWhatYouKnow() {
 
 export function oopsThatsNotQuiteRight() {
     const sayings = [
-        "That's not quite right, try again. ! What's a different fact you've got?",
+        "That's not quite right, try again! What's a different fact you've got?",
         "Close, but not quite.  What else do you know about this?",
         "Almost there, try again. Got another fact you can share?",
         "Not quite, try again. What's another fact you recall?",

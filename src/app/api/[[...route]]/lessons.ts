@@ -13,7 +13,7 @@ const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string) => {
     console.log("getLesson called with id: ", id)
-    const lessonFound = prisma.lesson.findFirst({
+    const lessonFound = await prisma.lesson.findFirst({
         where: { id: id },
         select: {
             messages: true,
@@ -23,6 +23,10 @@ export const getLesson = async (id: string) => {
             subject: true
         }
     })
+    //due to caveats in prisma and mongodb, if there's a subject then there ISN'T a targetQ. This is a workaround
+    if (lessonFound && lessonFound.subject) {
+        lessonFound.targetQ = null
+    }
     return lessonFound;
 }
 export const initiateLesson = async (id: string) => {
@@ -146,10 +150,19 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                                 {
                                     content: content,
                                     role: "user",
+                                    KPId: isRight ? reply.KPId : null
                                 },
                                 reply
                             ]
                         }
+                    }
+                },
+                include: {
+                    messages: {
+                        include: {
+                            KP: true
+                        }
+
                     }
                 }
             });

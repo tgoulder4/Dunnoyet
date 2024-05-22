@@ -8,7 +8,7 @@ import { Send } from 'lucide-react';
 import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 
-function Chat({ messages, subject, targetQContent }: { messages: z.infer<typeof messagesSchema>[], subject?: string, targetQContent?: string }) {
+function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { messages: z.infer<typeof messagesSchema>[], subject?: string, targetQContent?: string, distanceUntilLessonEnd: number }) {
     const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +38,7 @@ function Chat({ messages, subject, targetQContent }: { messages: z.infer<typeof 
                 <div className="mainChat">
                     {
                         messages.map((message, index) => {
-                            return <MessagePrimitive key={message.content + index} focused={index == messages.length} lastMessageInLesson={false} message={message} />
+                            return <MessagePrimitive key={message.content + index} focused={index == messages.length - 1} lastMessageInLesson={distanceUntilLessonEnd === 0} message={message} />
                         })
                     }
                 </div>

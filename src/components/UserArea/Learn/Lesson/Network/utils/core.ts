@@ -35,8 +35,8 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: z
     const maxX = Math.max(...xValues);
     const minY = Math.min(...yValues);
     const maxY = Math.max(...yValues);
-    let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
-    let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
+    let xRange = maxX - minX; if (xRange < 1) xRange = 15; // Prevent division by zero (or close to zero)
+    let yRange = maxY - minY; if (yRange < 1) yRange = 15; // Prevent division by zero (or close to zero)
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
     let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
     if (focusPoints.length === 0) {
@@ -93,7 +93,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-    const overallScale = Math.max(ctx.canvas.width * 0.08 / xRange, ctx.canvas.height * 0.08 / yRange);
+    const overallScale = Math.min(ctx.canvas.width * 0.8 / xRange, ctx.canvas.height * 0.8 / yRange);
     // console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
@@ -125,8 +125,9 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
             }
             ctx.beginPath();
             ctx.moveTo(centerX + point.TwoDvK[0], point.TwoDvK[1] + centerY); // Start at current point
+            ctx.lineWidth = 0.5;
             ctx.lineTo(centerX + nextPoint.TwoDvK[0], nextPoint.TwoDvK[1] + centerY); // Draw line to next point
-            ctx.strokeStyle = (nextPoint.confidence <= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
+            ctx.strokeStyle = (nextPoint.confidence >= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : changeColour("#8F8F8F").lighten(25).toString(); // Use the helper function to get the color
             ctx.stroke();
             ctx.globalAlpha = 1; // Reset global alpha if you've changed it
             //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node

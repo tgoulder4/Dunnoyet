@@ -32,16 +32,16 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
     const [messageHistory, setMessageHistory] = useState(newMessages as z.infer<typeof messagesSchema>[]);
     const [distanceUntilLessonEnd, setDistanceUntilLessonEnd] = useState(findDistanceUntilLessonEnd(newMessages || []));
     const [KPs, setKPs] = useState(messageHistory ? messageHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : [])
+    console.log("KPs in lesson: ", KPs)
     function findDistanceUntilLessonEnd(messages: z.infer<typeof messagesSchema>[]): number {
-        let distance = 0;
+        if (messages.length == 0) return -1;
         for (let i = messages.length - 1; i >= 0; i--) {
             const dist = messages[i].distanceAwayFromFinishingLesson;
             if (dist) {
-                distance = dist;
-                break;
+                return dist;
             }
         }
-        return distance;
+        return -1;
     }
     return (
         <div className="flex h-full font-bold">
@@ -55,10 +55,14 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                                 <LearningPathItem confidence={1} text="Placeholder" />
                                 <LearningPathItem confidence={1} text="Placeholder" />
                             </> : stage !== "purgatory" && <>
-                                {KPs.map((KP, index) => {
-                                    <LearningPathItem key={KP.confidence + index} confidence={KP.confidence!} text={KP.point!} />
+                                {messageHistory.map((msg, index) => {
+                                    //if there's a kp, show it. last one is current
+                                    if (msg.KP) {
+                                        return <LearningPathItem key={msg.KP.point + index} lastItem={index + 2 > messageHistory.length} confidence={msg.KP.confidence!} text={msg.KP.point!} />
+                                    }
                                 })}
                                 {
+
                                     targetQuestion ?
                                         <>
                                             <LearningPathItem confidence={0} text={"About " + distanceUntilLessonEnd + " more"} />
@@ -78,7 +82,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                 </LessonSection>
             </div>
             <LessonSection className='flex-[5] learningChatArea' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : <Chat messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
+                {stage == 'loading' ? <CreatingLesson /> : <Chat distanceUntilLessonEnd={distanceUntilLessonEnd} messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'>
                 {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <></>}
