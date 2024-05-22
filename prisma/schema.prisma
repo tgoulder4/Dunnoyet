@@ -81,7 +81,7 @@ model Message {
   eliResponseType                 eliResponseType?
   distanceAwayFromFinishingLesson Int?
   metadata                        Metadata?        @relation("MessageToMetadata", fields: [metadataId], references: [id])
-  metadataId                      String?          @unique @db.ObjectId
+  metadataId                      String?          @db.ObjectId
   Lesson                          Lesson           @relation("LessonToMessage", fields: [lessonId], references: [id])
   lessonId                        String           @db.ObjectId
 
@@ -89,11 +89,11 @@ model Message {
 }
 
 model Metadata {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   references String[]
   imageURL   String
-  message    Message? @relation("MessageToMetadata")
-  messageId  String?  @db.ObjectId
+  message    Message[] @relation("MessageToMetadata")
+  messageId  String?   @db.ObjectId
 
   @@map("metadata")
 }

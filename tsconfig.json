@@ -14,7 +14,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    
     "plugins": [
       {
         "name": "next"
@@ -22,8 +21,12 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "jest.config.js", "src/app/api/auth/[...nextauth].js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "jest.config.js", "src/app/api/auth/[...nextauth].js","/**/*.ts", "src/lib/chat/Eli/Testing/Eli.test.ts"],
+  "ts-node": {
+    "esm": true, /* ... Line to be added ... */
+  } ,
   "exclude": ["node_modules"]
 }

@@ -5,6 +5,7 @@
     "version": "0.2.0",
     //i want to launch chrome and nodejs server at the same time
     "configurations": [
+        
         {
             "name": "Launch Chrome",
             "request": "launch",
@@ -12,6 +13,6 @@
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
         },
-        
+
     ]
 }

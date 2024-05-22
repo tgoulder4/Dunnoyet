@@ -5,7 +5,7 @@ import { z } from "zod";
 export const simplifyToKnowledgePointInSolitude = async (messageHistory: z.infer<typeof messagesSchema>[], subject?: string): Promise<string | null> => {
     try {
         const prompt = 'Given the most recent chat history: ' + (messageHistory.slice(-2).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify the knowledge behind the latest message to 10 words. Send one sentence only. It should be comprehensible on its own.'
-        console.log("\n [CALL] SIMPLIFY_TO_KP, prompt: " + prompt)
+        console.log("Simplify KP prompt: " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
@@ -14,7 +14,7 @@ export const simplifyToKnowledgePointInSolitude = async (messageHistory: z.infer
             model: "gpt-3.5-turbo"
         })
         const pointInSolitude = res.choices[0].message.content;
-        console.log("\n FROM SIMPLIFY_TO_KP: " + pointInSolitude, " \nif this is 'NULL', they didn't have any knowledge to extract.")
+        console.log("PointInSolitude: " + pointInSolitude)
         if (pointInSolitude === null) throw new Error("simplifyToKnowledgePointInSolitude completion returned null, the completion failed.")
         if (pointInSolitude === "NULL") return null;
         return pointInSolitude as string;
@@ -34,8 +34,15 @@ export const simplifyToSubject = async (statement: string): Promise<string | nul
             },],
             model: "gpt-3.5-turbo"
         })
+        let subject = res.choices[0].message.content;
+        if (!subject) {
+            console.error("simplifyToSubject returned null, the completion failed.")
+            return null;
+        }
+        //remove ending punctuation
+        if (subject.endsWith(".") || subject.endsWith("?")) subject = subject.slice(0, -1)
         console.log("simplifyToSubject returned: " + res.choices[0].message.content)
-        return res.choices[0].message.content
+        return subject
     }
     catch (e) {
         console.log(e);

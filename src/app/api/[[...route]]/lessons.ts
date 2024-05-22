@@ -85,9 +85,12 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         //if !right stage="puragtory" else stage="main"
         let reply: z.infer<typeof messagesSchema>;
         const subject = await simplifyToSubject(content);
+        console.log("Subject: ", subject)
         if (!subject) return null;
         if (isRight) {
-            const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any], [], content);
+            console.log("User was right.")
+            const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any], []);
+            console.log("Teaching response: ", teachingRes)
             if (!teachingRes) return null;
             try {
                 const kp = await prisma.knowledgePoint.create({
@@ -124,25 +127,36 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                 role: "eli",
             }
         }
-        const lesson = await prisma.lesson.create({
-            data: {
-                userId: userID,
-                stage: isRight ? "main" : "purgatory",
-                subject: subject,
-                messages: {
-                    createMany: {
-                        data: [
-                            {
-                                content: content,
-                                role: "user",
-
-                            },
-                            reply
-                        ]
+        //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
+        const lesson = await prisma.$transaction(async (tx) => {
+            const targetQ = await tx.targetQ.create({
+                data: {
+                    point: "DELETEME",
+                }
+            })
+            const less = await tx.lesson.create({
+                data: {
+                    userId: userID,
+                    stage: isRight ? "main" : "purgatory",
+                    subject: subject,
+                    targetQId: targetQ.id,
+                    messages: {
+                        createMany: {
+                            data: [
+                                {
+                                    content: content,
+                                    role: "user",
+                                },
+                                reply
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            });
+            return less;
+        })
+        console.log("Lesson created: ", lesson)
+        return lesson;
     }
 
 }

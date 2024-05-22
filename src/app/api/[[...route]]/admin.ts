@@ -15,6 +15,8 @@ const app = new Hono()
             await prisma.message.deleteMany();
             await prisma.lesson.deleteMany({});
             await prisma.metadata.deleteMany();
+            await prisma.targetQ.deleteMany();
+            console.log("Dropped all tables")
             return c.status(200);
         }
         catch (e) {

@@ -1,5 +1,4 @@
 import { changeColour, colours } from "@/lib/constants";
-import { IKP } from "@/lib/validation/enforceTypes";
 
 // get colour from kp confidence
 export function getColourFromConfidence(confidence: number): string {
@@ -26,6 +25,6 @@ export async function getTwoDCoOrdinatesOfKPInSolitude(ems: number[][]) {
         point[0] = point[0] * 10;
         point[1] = point[1] * 10;
     });
-    console.log("TwoDCoOrds generated: ", TwoDCoOrds)
+    console.log("TwoDCoOrds generated: ", TwoDCoOrds, " using", TwoDCoOrds[1])
     return TwoDCoOrds[1];
 }

@@ -30,7 +30,6 @@ const app = new Hono()
             //if right save KP to db and pinecone, stage is now main
             //if wrong, ask them to try again
 
-            if (!mode) { }
         }
         else if (stage === 'main') { }
         else if (stage === 'end') { }

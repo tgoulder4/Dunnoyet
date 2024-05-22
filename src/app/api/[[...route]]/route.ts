@@ -11,7 +11,7 @@ const app = new Hono().basePath('/api')
     .route('/lessons', lessons)
     .route('/kps', kps)
     .route('/auth', auth)
-// const adminRoute = app.route('/admin', admin)
+    .route('/admin', admin)
 // app.route('/admin', admin)
 
 export const GET = handle(app)
