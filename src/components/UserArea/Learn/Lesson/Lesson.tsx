@@ -46,7 +46,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
-                <LessonSection style={{ paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='learningPath flex flex-col gap-3 flex-[3]'>
+                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='learningPath flex flex-col gap-3 flex-[3]'>
                     {/* for each of the messages sent by eli */}
                     {
                         stage == 'loading' ?
@@ -73,7 +73,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                             </>
                     }
                 </LessonSection>
-                <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[2]'>
+                <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[3]'>
                     {stage == 'loading' ?
                         <Brainmap placeholderMode={true} />
                         : stage !== "purgatory" &&

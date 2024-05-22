@@ -203,7 +203,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
 
     return (
         <div className={`${className} h-full`} >
-            <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
+            <div className='overflow-hidden w-full h-full rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
                 <canvas className='w-full h-full overflow-hidden' id="canvas" />
