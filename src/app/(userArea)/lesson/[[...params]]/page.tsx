@@ -62,7 +62,7 @@ async function LessonPage({ params, searchParams }: { params: { id: string }, se
                     KP: {
                         confidence: 2,
                         point: 'The spinal cavity holds the spinal cord',
-                        TwoDvK: [80.73157922699662, 42.399578771299815]
+                        TwoDvK: [80.73157922699662, 0.399578771299815]
                     }
                 },
                 {

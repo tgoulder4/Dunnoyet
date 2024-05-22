@@ -13,7 +13,7 @@ import { z } from 'zod'
 import { KPSchema } from '@/lib/validation/primitives'
 
 // Props interface declaration for type safety
-interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
+interface NeuralNetworkProps extends React.HTMLAttributes<HTMLDivElement> {
     knowledgePointsToFocus?: z.infer<typeof KPSchema>[];
     otherPoints?: z.infer<typeof KPSchema>[];
     className?: string;
@@ -23,7 +23,7 @@ interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
 function easeInOut(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
-const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className }) => {
+const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className, ...props }) => {
     console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
     const sess = useSession().data!.user!;
     const {
@@ -202,7 +202,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     }, [focusPoints]);
 
     return (
-        <div className={`${className} h-full`} >
+        <div {...props} className={`${className} h-full`} >
             <div className='overflow-hidden w-full h-full rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
