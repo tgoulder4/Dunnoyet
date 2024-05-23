@@ -1,3 +1,4 @@
+import { experiencePerKnowledgePoint } from './../../../lib/chat/Eli/helpers/constants';
 
 import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
@@ -5,36 +6,125 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod';
 import { lessonStatePayloadSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import { checkIsUserRight } from '@/lib/chat/Eli/helpers/correctness';
+import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
+import { connect } from 'http2';
+import { create } from 'domain';
+import { oopsThatsNotQuiteRight } from '@/lib/chat/Eli/helpers/sayings';
+import { messagesSchema } from '@/lib/validation/primitives';
 
 const prisma = prismaClient;
 export const runtime = 'edge';
 const purgPayload = z.object({});
 const app = new Hono()
-    .get('/', zValidator('form',
+    .get('/', zValidator('json',
         messagesReceiveSchema
     ), async (c) => {
-        const { stage, msgHistory, targetQuestion } = c.req.valid('form');
+        const { stage, msgHistory, targetQuestion, lessonId, userId, action } = c.req.valid('json');
+        if (!msgHistory || !stage || !lessonId || !userId) {
+            console.error("Missing info in GET /api/messages. stage: ", stage, " msgHistory: ", msgHistory, " lessonId: ", lessonId, " userId: ", userId)
+            return c.status(500)
+        }
+        //define the payload to be sent back
         let payload: z.infer<typeof messagesPayloadSchema> = {
             newMessages: [],
             stage: 'purgatory',
             lastSaved: new Date(),
         }
+        const isRight = await checkIsUserRight(msgHistory);
+        //if right save KP to db and pinecone, stage is now main
+        //free roam:
         if (stage === 'purgatory') {
-            if (!msgHistory) {
-                console.error("No message history in GET /api/messages purgatory stage")
-                return c.status(400)
-            };
-
             //check their reply is right,
-            const isRight = checkIsUserRight
-            //if right save KP to db and pinecone, stage is now main
-            //if wrong, ask them to try again
+            if (isRight) {
+                payload.stage = 'main';
+                const eliReply = await getTeachingResponse(msgHistory, [], targetQuestion)
+                if (!eliReply) {
+                    console.error("Failed to get teaching response")
+                    return c.status(500)
+                };
+                //client needs to change confidence of last message
+                payload.newMessages!.push({
+                    ...eliReply,
+                    eliResponseType: "General"
+                });
 
+                payload.lastSaved = new Date();
+            } else {
+                //don't save
+                payload.newMessages?.push({
+                    role: 'eli',
+                    eliResponseType: 'General',
+                    content: oopsThatsNotQuiteRight(),
+                })
+            }
+            //if wrong, ask them to try again
         }
-        else if (stage === 'main') { }
-        else if (stage === 'end') { }
-        return c.json({
-            payload: {} as typeof messagesPayloadSchema
-        })
+        else if (stage === 'main') {
+            //could be free roam/newq
+            const msgHistoryToUseToGetResponse = action == "reply" ? msgHistory : [...msgHistory, {
+                role: 'user' as "user" | "eli",
+                content: "I understand!"
+            }]
+            const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion)
+            if (!eliReply) {
+                console.error("Failed to get teaching response")
+                return c.status(500)
+            };
+            //doesn't matter if it's understood or reply, you'll be dealing with understood client side
+            payload.newMessages!.push({
+                ...eliReply,
+                eliResponseType: eliReply.content.includes("?") ? "WhatComesToMind" : "General"
+            });
+        }
+        else if (stage === 'end') {
+            //save kps to user kp list
+            await prisma.$transaction(async (tx) => {
+                const savedKPs = await tx.knowledgePoint.createMany({
+                    data: msgHistory.map(msg => ({
+                        confidence: 2,
+                        KP: msg.content,
+                        lessonId,
+                        userId,
+                        source: "offered"
+                    }))
+                })
+                if (!savedKPs) {
+                    console.error("Failed to save KPs to user")
+                    return c.status(500)
+                }
+                //update user experience
+
+                const updatedUser = await tx.user.update({
+                    where: {
+                        id: userId
+                    },
+                    data: {
+                        experience: {
+                            increment: experiencePerKnowledgePoint * savedKPs.count
+                        }
+                    }
+                })
+                payload.experiencePrior = updatedUser.experience - experiencePerKnowledgePoint * savedKPs.count;
+                return payload;
+            })
+            //if last saved is greater than 5 mins & stage!==purg, save messagehistory to db
+            if (payload.stage !== 'purgatory' && payload.lastSaved && new Date().getTime() - payload.lastSaved.getTime() > 300000) {
+                //save all messages to db
+                const savedMessages = await prisma.message.createMany({
+                    data: msgHistory.map(msg => ({
+                        role: msg.role,
+                        content: msg.content,
+                        eliResponseType: msg.eliResponseType,
+                        lessonId,
+                        KPId: msg.KPId
+                    }))
+                })
+                console.log("Saved messages: ", savedMessages)
+            }
+
+            return c.json({
+                payload
+            } as { payload: z.infer<typeof messagesPayloadSchema> })
+        }
     })
 export default app;

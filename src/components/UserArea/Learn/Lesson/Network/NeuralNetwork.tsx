@@ -116,7 +116,6 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         return () => cancelAnimationFrame(requestAnimationRef.current);
     }
     useEffect(() => {
-        console.log("initial render or re-rendering due to changein KPS")
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Canvas not found');

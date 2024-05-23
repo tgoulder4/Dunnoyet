@@ -13,14 +13,14 @@ export const noteSchema = z.object({
 export const messagesSchema = z.object({
     role: z.enum(['user', 'eli']),
     content: z.string(),
-    eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']).optional(),
-    KP: KPSchema.optional(),
+    eliResponseType: z.enum(['General', 'WhatComesToMind', 'System']).nullable().optional(),
+    KP: KPSchema.nullable().optional(),
     //this is only used for conditional creation of lesson
-    KPId: z.string().optional(),
+    KPId: z.string().nullable().optional(),
 
     metadata: z.object({
         references: z.array(z.string()),
         imageURL: z.string().optional(),
     }).optional(),
-    distanceAwayFromFinishingLesson: z.number().optional(),
+    distanceAwayFromFinishingLesson: z.number().nullable().optional(),
 })

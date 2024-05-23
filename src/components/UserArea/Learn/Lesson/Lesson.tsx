@@ -1,17 +1,19 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import LessonSection from './LessonSection';
 import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
 import { lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
-import { messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
+import { messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import Chat from './Chat/Chat';
 import { messagesSchema } from '@/lib/validation/primitives';
 import Notes from './Notes/Notes';
+import { toast } from 'sonner';
+import { findDistanceUntilLessonEnd } from './Chat/Helpers';
 
 function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> }) {
     const user = useSession().data?.user!
@@ -28,37 +30,27 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
         lastSaved,
         newMessages,
         targetQuestion,
-        subject
     } = parsed.data;
-    const [messageHistory, setMessageHistory] = useState(newMessages as z.infer<typeof messagesSchema>[]);
-    console.log("messageHistory: ", messageHistory)
+
     const [currentLessonState, setCurrentLessonState] = useState({
         stage: stage,
-        messageHistory: newMessages, //contains the KPs
-        distanceUntilLessonEnd: findDistanceUntilLessonEnd(newMessages || []),
-    })
-    function findDistanceUntilLessonEnd(messages: z.infer<typeof messagesSchema>[]): number {
-        if (messages.length == 0) return -1;
-        for (let i = messages.length - 1; i >= 0; i--) {
-            const dist = messages[i].distanceAwayFromFinishingLesson;
-            if (dist) {
-                return dist;
-            }
-        }
-        return -1;
-    }
+        msgHistory: newMessages, //contains the KPs
+        // distanceUntilLessonEnd: findDistanceUntilLessonEnd(newMessages || []),
+        targetQuestion: targetQuestion,
+    } as z.infer<typeof messagesReceiveSchema>);
+    const subject = useRef<string | undefined>(parsed.data.subject);
     useEffect(() => {
-        setTimeout(() => {
-            setMessageHistory(prev => {
-                return [...prev, { role: 'user', content: 'The spinal cavity holds the spinal cord' }]
-            })
+        // setTimeout(() => {
+        //     setMessageHistory(prev => {
+        //         return [...prev, { role: 'user', content: 'The spinal cavity holds the spinal cord' }]
+        //     })
 
-        }, 2000);
+        // }, 2000);
     }, [])
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
-                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='learningPath flex flex-col gap-3 flex-[3]'>
+                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-all learningPath flex flex-col gap-3 flex-[3]'>
                     {/* for each of the messages sent by eli */}
                     {
                         stage == 'loading' ?
@@ -67,17 +59,17 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                                 <LearningPathItem confidence={1} text="Placeholder" />
                                 <LearningPathItem confidence={1} text="Placeholder" />
                             </> : stage !== "purgatory" && <>
-                                {messageHistory.map((msg, index) => {
+                                {currentLessonState.msgHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index + 2 > messageHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index + 2 > currentLessonState.msgHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {
 
                                     targetQuestion ?
                                         <>
-                                            <LearningPathItem confidence={0} text={"About " + currentLessonState.distanceUntilLessonEnd + " more"} />
+                                            <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />
                                             <LearningPathItem confidence={0} lastItem={true} text={"Finish 🏁"} />
                                         </> : <></>
                                 }
@@ -89,12 +81,12 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                     {stage == 'loading' ?
                         <Brainmap placeholderMode={true} />
                         : stage !== "purgatory" &&
-                        <Brainmap KPsToFocus={messageHistory ? messageHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : []} />
+                        <Brainmap KPsToFocus={currentLessonState.msgHistory ? currentLessonState.msgHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : []} />
                     }
                 </LessonSection>
             </div>
             <LessonSection className='flex-[5] learningChatArea h-full' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : <Chat distanceUntilLessonEnd={currentLessonState.distanceUntilLessonEnd} messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
+                {stage == 'loading' ? <CreatingLesson /> : <Chat lessonState={currentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0 }} className='flex-[2] notesArea h-full'>
                 {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <Notes />}

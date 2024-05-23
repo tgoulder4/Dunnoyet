@@ -5,11 +5,10 @@ import { Loader2 } from 'lucide-react'
 import React from 'react'
 import { z } from 'zod'
 
-function MessagePrimitive({ message, focused, lastMessageInLesson, username, loadingNextMsg }: { message: z.infer<typeof messagesSchema>, focused: boolean, lastMessageInLesson: boolean, username?: string, loadingNextMsg: boolean }) {
+function MessagePrimitive({ dispatch, message, focused, lastMessageInLesson, username, loadingNextMsg }: { dispatch: (action: "reply" | "understood") => Promise<null | undefined>, message: z.infer<typeof messagesSchema>, focused: boolean, lastMessageInLesson: boolean, username?: string, loadingNextMsg: boolean }) {
     const {
         role, content, eliResponseType
     } = message;
-    console.log("Rendering message " + message.content + " with properties lastMsg:" + lastMessageInLesson)
     return (
         <div className={`animate-in slide-in-from-bottom-4  w-full border-b-[rgba(0,0,0,0.05)] border-b pl-16 pr-24 pt-[0.938rem] pb-[1.25rem] items-start flex flex-row gap-4 ${eliResponseType == "WhatComesToMind" && focused ? "bg-[#461167] text-white" : ""}`}>
             <div className="grid place-items-center w-12 aspect-square rounded-full border border-[rgba(0,0,0,0.1)]">
@@ -36,7 +35,7 @@ function MessagePrimitive({ message, focused, lastMessageInLesson, username, loa
                     <h2 className={`${focused ? 'font-bold' : ''}`}>{content}</h2>
                 </div>
                 {role == "eli" && focused &&
-                    <NewButton type="submit" disabled={loadingNextMsg} buttonVariant='black' className='px-[1.4rem] py-[0.9rem] w-max font-bold'>{
+                    <NewButton type="button" onClick={() => dispatch("understood")} disabled={loadingNextMsg} buttonVariant='black' className='px-[1.4rem] py-[0.9rem] w-max font-bold'>{
                         eliResponseType == "General" ? lastMessageInLesson ? "Finish lesson 🏁 (Enter)" : "I understand! (Enter)" : "SystemCTA"
                     }
                         {loadingNextMsg && <Loader2 className='w-4 h-4 animate-spin'></Loader2>}

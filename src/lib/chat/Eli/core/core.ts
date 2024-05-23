@@ -4,7 +4,6 @@ import { z } from "zod"
 import openai, { getEmbedding } from "../../openai"
 import { simplifyToKnowledgePointInSolitude } from "../helpers/simplify-message"
 import { getTwoDCoOrdinatesOfKPInSolitude } from "@/components/UserArea/Learn/Lesson/Network/utils/helpers"
-
 export async function getTeachingResponse(messageHistory: z.infer<typeof messagesSchema>[], rKPs: string[], targetQuestion?: string) {
     const prompt = `your name is Eli and you’re teaching a student${rKPs.length > 0 ? ` who has knowledge of ${rKPs.slice(-6).map((rKP, i) => i + ". " + rKP).join(",")}.` : `.`}
     ${targetQuestion ? 'the target question to answer is: ' + targetQuestion + '. Say the approx. number of messages we are away from answering this with each response, and always try and link back to this to get it answered quicker. Say ‘END’ when it’s fully answered. directly continue your previous response. E.g. I say ‘electrons are negatively charged’, and you say ‘which means they repel each other 5’ (as we’re approx. 5 msgs away from lesson finish).'
