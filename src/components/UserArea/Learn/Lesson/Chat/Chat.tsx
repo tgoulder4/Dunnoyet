@@ -24,9 +24,10 @@ function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { m
         if (messages[messages.length - 1].role == 'eli') {
             textAreaRef.current?.focus();
         }
+        // setLoading(true)
     }, [messages])
     return (
-        <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
             <section className='titleAndReplies flex flex-col'>
 
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
@@ -38,13 +39,14 @@ function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { m
                 <div className="mainChat">
                     {
                         messages.map((message, index) => {
-                            return <MessagePrimitive key={message.content + index} focused={index == messages.length - 1} lastMessageInLesson={distanceUntilLessonEnd === 0} message={message} />
+                            return <MessagePrimitive loadingNextMsg={loading} key={message.content + index} focused={index == messages.length - 1} lastMessageInLesson={distanceUntilLessonEnd === 0} message={message} />
                         })
                     }
                 </div>
             </section>
-            <div className="replyArea px-8">
-                <form onSubmit={handleSubmit} className=" animate-in slide-in-from-bottom-4 relative w-full flex flex-row gap-2">
+            <div className="replyArea px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">
+                <div className="relative w-full">
+
                     <Textarea onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
@@ -53,9 +55,9 @@ function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { m
                     <Button type='submit' disabled={loading} className='absolute h-fit bottom-[0.5rem] right-2 p-2 grid place-items-center rounded-xl' style={{ backgroundColor: colours.black }}>
                         <Send size={24} color='white'></Send>
                     </Button>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     )
 }
 

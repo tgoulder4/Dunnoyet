@@ -1,10 +1,11 @@
 import NewButton from '@/components/ui/NewButton'
 import { messagesSchema } from '@/lib/validation/primitives'
 import { roleType } from '@/lib/validation/transfer/transferSchemas'
+import { Loader2 } from 'lucide-react'
 import React from 'react'
 import { z } from 'zod'
 
-function MessagePrimitive({ message, focused, lastMessageInLesson, username }: { message: z.infer<typeof messagesSchema>, focused: boolean, lastMessageInLesson: boolean, username?: string }) {
+function MessagePrimitive({ message, focused, lastMessageInLesson, username, loadingNextMsg }: { message: z.infer<typeof messagesSchema>, focused: boolean, lastMessageInLesson: boolean, username?: string, loadingNextMsg: boolean }) {
     const {
         role, content, eliResponseType
     } = message;
@@ -34,9 +35,10 @@ function MessagePrimitive({ message, focused, lastMessageInLesson, username }: {
                     <h2 className={`${focused ? 'font-bold' : ''}`}>{content}</h2>
                 </div>
                 {role == "eli" && focused &&
-                    <NewButton type="button" buttonVariant='black' className='px-[1.4rem] py-[0.9rem] w-max font-bold'>{
+                    <NewButton type="submit" disabled={loadingNextMsg} buttonVariant='black' className='px-[1.4rem] py-[0.9rem] w-max font-bold'>{
                         eliResponseType == "General" ? lastMessageInLesson ? "Finish lesson 🏁 (Enter)" : "I understand! (Enter)" : "SystemCTA"
                     }
+                        {loadingNextMsg && <Loader2 className='w-4 h-4 animate-spin'></Loader2>}
                     </NewButton>
                 }
             </div>
