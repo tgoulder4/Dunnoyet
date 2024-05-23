@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import MessagePrimitive from './MessagePrimitive'
 import { z } from 'zod'
 import { messagesSchema } from '@/lib/validation/primitives'
@@ -9,7 +9,7 @@ import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 
 function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { messages: z.infer<typeof messagesSchema>[], subject?: string, targetQContent?: string, distanceUntilLessonEnd: number }) {
-    const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,8 +23,9 @@ function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { m
         //if it's their turn, focus the textArea
         if (messages[messages.length - 1].role == 'eli') {
             textAreaRef.current?.focus();
+        } else {
+            setLoading(true)
         }
-        // setLoading(true)
     }, [messages])
     return (
         <form onSubmit={handleSubmit} className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>

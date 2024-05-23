@@ -3,6 +3,8 @@ import { messagesSchema } from "../primitives";
 const stageType = z.enum(['loading', 'purgatory', 'main', 'end']);
 export const roleType = z.enum(['user', 'eli']);
 const modeType = z.enum(['New Question', 'Free Roam']);
+
+//the client sends this to the server
 export const messagesReceiveSchema = z.object({
     stage: stageType,
     msgHistory: z.array(z.object({
@@ -11,6 +13,8 @@ export const messagesReceiveSchema = z.object({
     })),
     targetQuestion: z.string().optional(),
 })
+
+//the server sends this to the client
 export const messagesPayloadSchema = z.object({
     stage: stageType,
     newMessages: z.array(messagesSchema).optional(),

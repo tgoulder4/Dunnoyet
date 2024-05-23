@@ -6,11 +6,14 @@ export const getUser = async (id: string) => {
             id
         },
         include: {
-            lessons: true,
+            lessons: {
+                select: {
+                    id: true
+                }
+            },
             knowledgePoints: true
         }
     });
-    console.log("User which getUser returned: ", user)
     return user;
 }
 const checkDuplicateUser = async (username: string, email: string) => {

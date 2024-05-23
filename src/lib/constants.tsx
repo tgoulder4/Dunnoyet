@@ -74,7 +74,7 @@ export const spacing = {
 }
 export const lessonPaddingBottom = 2 * spacing.gaps.separateElement;
 export const maxLandingWidth = "1320px";
-
+export const lessonXPadding: string = 'clamp(24px,4vw,400px)';
 export const DunnoyetLogo = ({ colour, withText }: { colour: string, withText?: boolean }) => {
     return (
         <div className="flex flex-row items-center" style={{ columnGap: spacing.gaps.groupedElement }}>

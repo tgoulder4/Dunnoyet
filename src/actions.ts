@@ -107,7 +107,7 @@ export async function createUser(prevState: string | undefined, formData: FormDa
                 knowledgePoints: {
                     create: {
                         confidence: 0,
-                        KP: "",
+                        KP: "I can learn 5x faster with Dunnoyet",
                         source: 'reinforced',
                         TwoDvK: [0, 0]
                     }

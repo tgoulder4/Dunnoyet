@@ -14,12 +14,9 @@ import { z } from 'zod';
 // const client = hc<AppTypes['lessonRoute']>('');
 var equal = require('deep-equal');
 function page() {
-    //redirect them before even  sending response to client to eliminate flickering
-    const u = useSession();
     const usp = useSearchParams();
     useEffect(() => {
         async function main() {
-            if (!u || !u.data?.user || !u.data?.user?.id) return { status: 401 };
             const givenQ = usp.get('q');
             const givenUkP = usp.get('ukp');
             console.log("Creating GET request to /api/lessons/new")

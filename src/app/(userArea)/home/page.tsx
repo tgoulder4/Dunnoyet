@@ -140,8 +140,8 @@ function Page({ params }: { params: { params: string } }) {
                         <div className="relative w-full flex flex-col gap-4">
                             {
                                 loading ?
-                                    <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
-                                        <Loader2 className='animate animate-spin' size={48} color={changeColour(colours.complementary).lighten(8).toString()}></Loader2>
+                                    <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center bg-gray-100' >
+                                        <Loader2 className='animate animate-spin' size={48} color='rgb(229 231 235 / var(--tw-bg-opacity))'></Loader2>
                                     </div> :
                                     <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={knowledgePoints || [{
                                         confidence: 0,

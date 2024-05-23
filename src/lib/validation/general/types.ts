@@ -14,7 +14,7 @@ export const userHomeInfoSchema = z.object({
     id: z.string(),
     name: z.string(),
     experience: z.number(),
-    lessons: z.array(lessonSchema).optional(),
+    lessons: z.array(z.object({ id: z.string() })).optional(),
     isPremium: z.boolean(),
     knowledgePoints: z.array(KPSchema)
 })

@@ -13,6 +13,19 @@ function LessonLayout({
 }) {
     //i want to receieve multiple updates from the db. when lesson is made, load skeleton ui. when rest payload is received, load the actual ui
     // promise .all for all the data needed for the lesson ui to load. once done setLoading false
+    const { status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            return {
+                redirect: {
+                    destination: '/api/auth/signin',
+                    permanent: false,
+                },
+            }
+        },
+    })
+    if (status === 'loading') return <></>
+
     return (
         <div className={` flex flex-col h-[100vh]`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
             <MainAreaNavbar style='normal' show={{ userSide: { newQuestion: false }, leftSide: { lessonTimer: false } }} />
