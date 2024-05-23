@@ -127,7 +127,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
             ctx.moveTo(centerX + point.TwoDvK[0], point.TwoDvK[1] + centerY); // Start at current point
             ctx.lineWidth = 0.5;
             ctx.lineTo(centerX + nextPoint.TwoDvK[0], nextPoint.TwoDvK[1] + centerY); // Draw line to next point
-            ctx.strokeStyle = (nextPoint.confidence >= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : changeColour("#8F8F8F").lighten(25).toString(); // Use the helper function to get the color
+            ctx.strokeStyle = (nextPoint.confidence >= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : changeColour("#8F8F8F").lighten(35).toString(); // Use the helper function to get the color
             ctx.stroke();
             ctx.globalAlpha = 1; // Reset global alpha if you've changed it
             //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node

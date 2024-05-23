@@ -11,6 +11,9 @@ import { Textarea } from '@/components/ui/textarea'
 import NeuralNetwork from '@/components/UserArea/Learn/Lesson/Network/NeuralNetwork'
 import Stat from '@/components/UserArea/Learn/Lesson/Stat'
 import { Toaster, toast } from 'sonner'
+import { client } from '@/lib/db/hono'
+import { z } from 'zod'
+import { userHomeInfoSchema } from '@/lib/validation/general/types'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -31,7 +34,8 @@ function Page({ params }: { params: { params: string } }) {
     }];
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [mode, setMode] = useState(0);
-    const [loading, setLoading] = useState(true);
+    const [userInfo, setUserInfo] = useState(null as null | z.infer<typeof userHomeInfoSchema>);
+    const loading = userInfo == null;
     const handleSetMode = (mode: number) => {
         const ta = textAreaRef.current;
         setMode(mode);
@@ -54,8 +58,14 @@ function Page({ params }: { params: { params: string } }) {
     }
     useEffect(() => {
         //gather exampleSayings, stats, experience, and knowledgePoints
-        setLoading(false);
-
+        async function main() {
+            // const user = await client.api.users[':id'].$get({ param: { id: "" } });
+            // if (user) {
+            //     setUserInfo(user);
+            // }
+            // setLoading(false);
+        }
+        main()
     }, [])
     return (
         <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>

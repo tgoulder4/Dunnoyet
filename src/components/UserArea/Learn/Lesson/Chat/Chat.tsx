@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { messagesSchema } from '@/lib/validation/primitives'
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
 import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 
@@ -52,8 +52,8 @@ function Chat({ messages, subject, targetQContent, distanceUntilLessonEnd }: { m
                             e.preventDefault();
                         }
                     }} ref={textAreaRef} disabled={loading} className={`${loading ? '' : ''} p-[15px] px-[20px] h-14 text-base overflow-hidden rounded-xl resize-none text`} placeholder="Reply to Eli..." />
-                    <Button type='submit' disabled={loading} className='absolute h-fit bottom-[0.5rem] right-2 p-2 grid place-items-center rounded-xl' style={{ backgroundColor: colours.black }}>
-                        <Send size={24} color='white'></Send>
+                    <Button type='submit' disabled={loading} className='absolute aspect-square bottom-[0.5rem] right-2 p-2 grid place-items-center rounded-xl' style={{ backgroundColor: colours.black }}>
+                        {loading ? <Loader2 className='w-4 h-4 animate-spin'></Loader2> : <Send size={24} color='white'></Send>}
                     </Button>
                 </div>
             </div>
