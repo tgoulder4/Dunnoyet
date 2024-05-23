@@ -9,9 +9,11 @@ export const messagesReceiveSchema = z.object({
     stage: stageType,
     msgHistory: z.array(messagesSchema),
     targetQuestion: z.string().optional(),
+    subject: z.string().optional(),
     lessonId: z.string().optional(),
     userId: z.string().optional(),
-    action: actionType.optional()
+    action: actionType.optional(),
+    lastSaved: z.date().optional(),
 })
 
 //the server sends this to the client

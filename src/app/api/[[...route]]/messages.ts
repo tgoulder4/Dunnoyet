@@ -14,13 +14,15 @@ import { messagesSchema } from '@/lib/validation/primitives';
 
 const prisma = prismaClient;
 export const runtime = 'edge';
-const purgPayload = z.object({});
 const app = new Hono()
-    .get('/', zValidator('json',
-        messagesReceiveSchema
-    ), async (c) => {
-        const { stage, msgHistory, targetQuestion, lessonId, userId, action } = c.req.valid('json');
-        if (!msgHistory || !stage || !lessonId || !userId) {
+    .get('/', async (c) => {
+        const parseResult = await messagesReceiveSchema.safeParseAsync(await c.req.json());
+        if (!parseResult.success) {
+            console.error("Failed to parse messagesReceiveSchema: ", parseResult.error)
+            return c.status(500)
+        }
+        const { stage, msgHistory, targetQuestion, lastSaved, subject, lessonId, userId, action } = parseResult.data;
+        if (!msgHistory || !stage || !lessonId || !userId || !lastSaved) {
             console.error("Missing info in GET /api/messages. stage: ", stage, " msgHistory: ", msgHistory, " lessonId: ", lessonId, " userId: ", userId)
             return c.status(500)
         }
@@ -37,7 +39,7 @@ const app = new Hono()
             //check their reply is right,
             if (isRight) {
                 payload.stage = 'main';
-                const eliReply = await getTeachingResponse(msgHistory, [], targetQuestion)
+                const eliReply = await getTeachingResponse(msgHistory, [], targetQuestion, subject)
                 if (!eliReply) {
                     console.error("Failed to get teaching response")
                     return c.status(500)
@@ -65,7 +67,7 @@ const app = new Hono()
                 role: 'user' as "user" | "eli",
                 content: "I understand!"
             }]
-            const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion)
+            const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion, subject)
             if (!eliReply) {
                 console.error("Failed to get teaching response")
                 return c.status(500)
@@ -108,7 +110,7 @@ const app = new Hono()
                 return payload;
             })
             //if last saved is greater than 5 mins & stage!==purg, save messagehistory to db
-            if (payload.stage !== 'purgatory' && payload.lastSaved && new Date().getTime() - payload.lastSaved.getTime() > 300000) {
+            if (payload.stage !== 'purgatory' && lastSaved && new Date().getTime() - lastSaved.getTime() > 300000) {
                 //save all messages to db
                 const savedMessages = await prisma.message.createMany({
                     data: msgHistory.map(msg => ({

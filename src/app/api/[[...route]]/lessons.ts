@@ -54,28 +54,20 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                         point: content,
                     }
                 })
+                const note = await tx.note.create({
+                    data: {
+                        content: "",
+
+                    }
+                })
                 const less = await tx.lesson.create({
                     data: {
                         userId: userID,
                         targetQId: targetQ.id,
+                        noteId: note.id,
                     }
                 });
                 //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
-                const metadata = await tx.metadata.create({
-                    data: {
-                        imageURL: "",
-                    }
-                })
-                const msg = await tx.message.create({
-                    data: {
-                        lessonId: less.id,
-                        content: randomSaying,
-                        role: "eli",
-                        eliResponseType: "WhatComesToMind",
-                        metadataId: metadata.id,
-                        distanceAwayFromFinishingLesson: 10
-                    }
-                })
                 return less;
             })
             return lesson;
@@ -97,24 +89,10 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             console.log("Teaching response: ", teachingRes)
             if (!teachingRes) return null;
             try {
-                const kp = await prisma.knowledgePoint.create({
-                    data: {
-                        KP: teachingRes.KP?.point!,
-                        confidence: 2,
-                        source: 'reinforced',
-                        TwoDvK: teachingRes.KP?.TwoDvK,
-                        user: {
-                            connect: {
-                                id: userID
-                            }
-                        }
-                    }
-                })
                 reply = {
                     eliResponseType: "General",
                     content: teachingRes.content,
                     role: "eli",
-                    KPId: kp.id
                 }
             }
             catch (e) {
@@ -133,29 +111,11 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         }
         //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
         const lesson = await prisma.$transaction(async (tx) => {
-            const targetQ = await tx.targetQ.create({
-                data: {
-                    point: "DELETEME",
-                }
-            })
             const less = await tx.lesson.create({
                 data: {
                     userId: userID,
                     stage: isRight ? "main" : "purgatory",
                     subject: subject,
-                    targetQId: targetQ.id,
-                    messages: {
-                        createMany: {
-                            data: [
-                                {
-                                    content: content,
-                                    role: "user",
-                                    KPId: isRight ? reply.KPId : null
-                                },
-                                reply
-                            ]
-                        }
-                    }
                 },
                 include: {
                     messages: {

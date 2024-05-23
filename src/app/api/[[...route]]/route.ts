@@ -7,6 +7,7 @@ import kps from './KPs'
 import admin from './admin'
 import notes from './notes'
 import users from './user'
+import test from './testingArbitraryFns'
 // export const runtime = 'edge'; //there are issues with bcrypt and running on the edge
 const app = new Hono().basePath('/api')
     .route('/messages', messages)
@@ -16,6 +17,7 @@ const app = new Hono().basePath('/api')
     .route('/admin', admin)
     .route('/notes', notes)
     .route('/users', users)
+    .route("/test", test)
 // app.route('/admin', admin)
 
 export const GET = handle(app)
