@@ -151,7 +151,7 @@ function Page({ params }: { params: { params: string } }) {
                             }
                             <div className="flex flex-row gap-4">
                                 <Stat key="XP" loading={loading} statTitle="Experience" value={experience + ' XP'} />
-                                <Stat key="TotalConcepts" loading={loading} statTitle="Total concepts learnt" value={knowledgePoints?.length || 0} />
+                                <Stat key="TotalConcepts" loading={loading} statTitle="Total concept(s) learnt" value={knowledgePoints?.length || 0} />
                             </div>
                         </div>
                     </div>

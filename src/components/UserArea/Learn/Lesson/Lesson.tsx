@@ -58,7 +58,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                                 {messageHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.point + index} lastItem={index + 2 > messageHistory.length} confidence={msg.KP.confidence!} text={msg.KP.point!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index + 2 > messageHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {

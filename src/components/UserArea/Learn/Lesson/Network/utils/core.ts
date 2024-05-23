@@ -8,6 +8,7 @@ export let frameRate = 60; // Default frame rate
 export function setFrameRate(newFrameRate: number) {
     frameRate = newFrameRate;
 }
+const dotSize = 1.2;
 // Function to update the opacity by 1 step for pulsating effect
 export const updatePulsateOpacity = () => {
     const speed = 1 / frameRate;
@@ -81,6 +82,7 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
  * @param points Scales to focus on these points
  * @returns 
  */
+
 export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: z.infer<typeof KPSchema>[]) => {
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
@@ -93,7 +95,9 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-    const overallScale = Math.min(ctx.canvas.width * 0.8 / xRange, ctx.canvas.height * 0.8 / yRange);
+    let overallScale = Math.min(ctx.canvas.width * 0.8 / xRange, ctx.canvas.height * 0.8 / yRange);
+    // minimum needs to be relative to dotsize
+    if (overallScale > dotSize * 10) overallScale = dotSize * 10;
     // console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
@@ -105,7 +109,6 @@ export function addEventListeners(window: Window & typeof globalThis, canvas: HT
 }
 export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: z.infer<typeof KPSchema>[], centerX: number, centerY: number) {
     //DRAW THE KNOWLDGE POINTS FROM CHAIN
-    const dotSize = 1.2;
     const potentialPulsingLinks: number[] = []; //links of indexes
     if (knowledgePoints.length > 0) {
         for (let i = 0; i < knowledgePoints.length - 1; i++) { // Stop at the second to last element

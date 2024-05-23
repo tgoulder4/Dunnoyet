@@ -55,36 +55,36 @@ async function LessonPage({ params, searchParams }: { params: { id: string }, se
             {
                 subject: 'Spinal Cord',
                 lastSaved: new Date(),
-                //was right
-                stage: 'main',
-                newMessages: [{
-                    role: 'user', content: 'The spinal cavity holds the spinal cord',
-                    KP: {
-                        confidence: 2,
-                        point: 'The spinal cavity holds the spinal cord',
-                        TwoDvK: [80.73157922699662, 0.399578771299815]
-                    }
-                },
-                {
-                    role: 'eli',
-                    content: 'which is protected by the vertebrae bones',
-                    eliResponseType: "General",
-                    KP: {
-                        confidence: 1,
-                        point: 'The vertebrae bones protect the spinal cord in the spine.',
-                        TwoDvK: [2.73157922699662, 42.399578771299815]
-                    }
-                }]
-                // //was wrong
-                // stage: 'purgatory',
+                // //was right
+                // stage: 'main',
                 // newMessages: [{
-                //     role: 'user', content: 'The spinal cavity doesn\'t hold the spinal cord'
+                //     role: 'user', content: 'The spinal cavity holds the spinal cord',
+                //     KP: {
+                //         confidence: 2,
+                //         KP: 'The spinal cavity holds the spinal cord',
+                //         TwoDvK: [80.73157922699662, 0.399578771299815]
+                //     }
                 // },
                 // {
                 //     role: 'eli',
-                //     content: 'That wasn\'t quite right. What\'s a different fact you\'ve got?',
-                //     eliResponseType: "WhatComesToMind"
+                //     content: 'which is protected by the vertebrae bones',
+                //     eliResponseType: "General",
+                //     KP: {
+                //         confidence: 1,
+                //         KP: 'The vertebrae bones protect the spinal cord in the spine.',
+                //         TwoDvK: [2.73157922699662, 42.399578771299815]
+                //     }
                 // }]
+                //was wrong
+                stage: 'purgatory',
+                newMessages: [{
+                    role: 'user', content: 'The spinal cavity doesn\'t hold the spinal cord'
+                },
+                {
+                    role: 'eli',
+                    content: 'That wasn\'t quite right. What\'s a different fact you\'ve got?',
+                    eliResponseType: "WhatComesToMind"
+                }]
             }
 
         } />
