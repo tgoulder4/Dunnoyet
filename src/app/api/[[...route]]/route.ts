@@ -5,6 +5,7 @@ import lessons from './lessons'
 import auth from './auth'
 import kps from './KPs'
 import admin from './admin'
+import notes from './notes'
 // export const runtime = 'edge'; //there are issues with bcrypt and running on the edge
 const app = new Hono().basePath('/api')
     .route('/messages', messages)
@@ -12,6 +13,7 @@ const app = new Hono().basePath('/api')
     .route('/kps', kps)
     .route('/auth', auth)
     .route('/admin', admin)
+    .route('/notes', notes)
 // app.route('/admin', admin)
 
 export const GET = handle(app)

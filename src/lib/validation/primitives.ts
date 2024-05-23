@@ -5,6 +5,11 @@ export const KPSchema = z.object({
     //twoDvK is an array of length 2
     TwoDvK: z.array(z.number()),
 })
+export const noteSchema = z.object({
+    content: z.string(),
+    id: z.string().optional(),
+    lessonID: z.string().optional(),
+})
 export const messagesSchema = z.object({
     role: z.enum(['user', 'eli']),
     content: z.string(),

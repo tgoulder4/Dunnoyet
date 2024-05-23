@@ -58,8 +58,18 @@ model Lesson {
   endedAt   DateTime?
   user      User      @relation(fields: [userId], references: [id])
   userId    String    @db.ObjectId
+  note      Note?     @relation("LessonToNotes", fields: [noteId], references: [id])
+  noteId    String?   @unique @db.ObjectId
 
   @@map("lessons")
+}
+
+model Note {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  lesson  Lesson? @relation("LessonToNotes")
+
+  @@map("notes")
 }
 
 model TargetQ {

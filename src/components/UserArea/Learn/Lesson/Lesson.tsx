@@ -81,11 +81,11 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                     }
                 </LessonSection>
             </div>
-            <LessonSection className='flex-[5] learningChatArea' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
+            <LessonSection className='flex-[5] learningChatArea h-full' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
                 {stage == 'loading' ? <CreatingLesson /> : <Chat distanceUntilLessonEnd={distanceUntilLessonEnd} messages={messageHistory} subject={subject} targetQContent={targetQuestion?.point} />}
             </LessonSection>
-            <LessonSection style={{ paddingRight: lessonXPadding }} className='flex-[2] notesArea'>
-                {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <></>}
+            <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0 }} className='flex-[2] notesArea h-full'>
+                {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <Notes />}
             </LessonSection>
         </div>
     )
