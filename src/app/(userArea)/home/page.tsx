@@ -14,6 +14,7 @@ import { Toaster, toast } from 'sonner'
 import { client } from '@/lib/db/hono'
 import { z } from 'zod'
 import { userHomeInfoSchema } from '@/lib/validation/general/types'
+import axios from 'axios'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -36,6 +37,12 @@ function Page({ params }: { params: { params: string } }) {
     const [mode, setMode] = useState(0);
     const [userInfo, setUserInfo] = useState(null as null | z.infer<typeof userHomeInfoSchema>);
     const loading = userInfo == null;
+    const {
+        experience,
+        knowledgePoints,
+        isPremium,
+        name,
+    } = userInfo ?? {};
     const handleSetMode = (mode: number) => {
         const ta = textAreaRef.current;
         setMode(mode);
@@ -59,11 +66,26 @@ function Page({ params }: { params: { params: string } }) {
     useEffect(() => {
         //gather exampleSayings, stats, experience, and knowledgePoints
         async function main() {
-            // const user = await client.api.users[':id'].$get({ param: { id: "" } });
-            // if (user) {
-            //     setUserInfo(user);
-            // }
-            // setLoading(false);
+            // const res = await client.api.users[':id'].$get({ param: { id: "65dbe7799c9c2a30ecbe6193" } });
+            const sess = await axios.get('/api/auth/session');
+            if (!sess.data.user) {
+                toast.error("You need to be logged in to access this page.")
+                window.location.href = '/auth/login';
+                return;
+            }
+            const userID = sess.data.user.id;
+            const res = await axios.get(`/api/users/${userID}`);
+            console.log("Response from /api/users/:id ", res.data)
+            // const json = await res.json()
+            const json = await res.data;
+            console.log("res.data: ", json)
+            const userInfo = userHomeInfoSchema.safeParse(json);
+            if (!userInfo.success) {
+                toast.error("Something went wrong. Please reload the page and try again.")
+                console.error("Failed to parse user info: ", userInfo.error.message)
+            } else {
+                setUserInfo(userInfo.data);
+            }
         }
         main()
     }, [])
@@ -121,13 +143,15 @@ function Page({ params }: { params: { params: string } }) {
                                     <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
                                         <Loader2 className='animate animate-spin' size={48} color={changeColour(colours.complementary).lighten(8).toString()}></Loader2>
                                     </div> :
-                                    <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={[{ confidence: 2, TwoDvK: [0, -8], point: 'Energy is the ability to do work' },
-                                    { confidence: 2, TwoDvK: [0, 2], point: 'Energy is the ability to do work' },
-                                    { confidence: 2, TwoDvK: [15, 24], point: 'Energy is the ability to do work' }]} />
+                                    <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={knowledgePoints || [{
+                                        confidence: 0,
+                                        KP: 'Loading...',
+                                        TwoDvK: [0, 0],
+                                    }]} />
                             }
                             <div className="flex flex-row gap-4">
-                                <Stat key="XP" loading={loading} statTitle="Experience" value={0 + ' XP'} />
-                                <Stat key="TotalConcepts" loading={loading} statTitle="Total concepts learnt" value={0} />
+                                <Stat key="XP" loading={loading} statTitle="Experience" value={experience + ' XP'} />
+                                <Stat key="TotalConcepts" loading={loading} statTitle="Total concepts learnt" value={knowledgePoints?.length || 0} />
                             </div>
                         </div>
                     </div>

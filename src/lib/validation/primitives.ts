@@ -1,6 +1,6 @@
 import { date, z } from "zod"
 export const KPSchema = z.object({
-    point: z.string(),
+    KP: z.string(),
     confidence: z.number(),
     //twoDvK is an array of length 2
     TwoDvK: z.array(z.number()),

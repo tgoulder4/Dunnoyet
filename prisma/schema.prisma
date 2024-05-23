@@ -20,6 +20,7 @@ model User {
   name                String           @default("") @map("_name")
   lessons             Lesson[]
   isPremium           Boolean          @default(false)
+  experience          Int              @default(0)
   // sessions                  Session[]
   //collection id or something? idk
   knowledgePoints     knowledgePoint[] @relation("UserToKnowledgePoint")
