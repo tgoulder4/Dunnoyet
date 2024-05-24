@@ -35,7 +35,7 @@ const app = new Hono()
             stage,
             lastSaved: new Date(),
         }
-        const isRight = await checkIsUserRight(msgHistory);
+        const isRight = await checkIsUserRight(msgHistory, targetQuestion, subject);
         console.log("isRight: ", isRight)
         //if right save KP to db and pinecone, stage is now main
         //free roam:

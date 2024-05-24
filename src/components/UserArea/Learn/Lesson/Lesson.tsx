@@ -19,6 +19,10 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     // const user = useSession().data?.user!
     // session is always non-null inside this page, all the way down the React tree.
     console.log("Payload received: ", payload)
+    const [currentLessonState, setCurrentLessonState] = useState({
+        ...payload,
+        msgHistory: payload.newMessages, //contains the KPs
+    } as z.infer<typeof lessonStateSchema>);
     const {
         stage,
         lastSaved,
@@ -26,7 +30,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         targetQuestion,
         lessonID,
         userID
-    } = payload;
+    } = currentLessonState;
     if (!stage) {
         //missing stage in lesson payload
         toast.error("An error occurred: MSILP@Lesson")
@@ -36,10 +40,6 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         //missing info in lesson payload
         toast.error("Something went wrong: MIILP@Lesson")
     }
-    const [currentLessonState, setCurrentLessonState] = useState({
-        ...payload,
-        msgHistory: newMessages, //contains the KPs
-    } as z.infer<typeof lessonStateSchema>);
     const subject = useRef<string | undefined>(payload.subject);
     return (
         <div className="flex h-full font-bold">

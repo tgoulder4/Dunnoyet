@@ -60,6 +60,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     }]
                 })
                 try {
+                    // //prod
                     // const res = await axios({
                     //     method: 'POST',
                     //     url: '/api/messages/response',
@@ -72,7 +73,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     //         }],
                     //         stage,
                     //         subject,
-                    //         targetQuestion,
+                    //         targetQuestion: targetQuestion?.point,
                     //         userId: userID,
                     //         lastSaved
                     //     }
@@ -81,41 +82,47 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     await new Promise((resolve) => setTimeout(resolve, 1000));
                     const res = {
                         data: {
-                            newMessages: [
-                                {
-                                    role: 'eli',
-                                    content: 'Yes, they provide structural support for the spinal cord',
-                                    KP: {
-                                        KP: "Vertebrae provide structural support for the spinal cord",
-                                        confidence: 1,
-                                        TwoDvK: [2, 12]
-                                    },
-                                    eliResponseType: 'General'
-                                }
-                            ],
-                            stage: 'purgatory',
-                            lastSaved: "2024-05-24T01:48:24.571Z"
+                            payload: {
+                                newMessages: [
+                                    {
+                                        role: 'eli',
+                                        content: 'which are intrinsically negative',
+                                        KP: {
+                                            KP: "Electrons are intrinsically negative",
+                                            confidence: 1,
+                                            TwoDvK: [2, 12]
+                                        },
+                                        eliResponseType: 'General'
+                                    }
+                                ],
+                                stage: 'main',
+                                lastSaved: "2024-05-24T01:48:24.571Z"
+                            }
                         }
                     }
 
                     console.log("Response: ", res)
-                    const parseResult = messagesPayloadSchema.safeParse(res.data);
+                    const parseResult = messagesPayloadSchema.safeParse(res.data.payload);
                     if (!parseResult.success) {
                         console.error("Failed to parse messagesPayloadSchema: " + parseResult.error)
                         //parse wrong @ chat
                         toast.error("An error occurred, please try again later PR@Chat")
                         return null;
                     }
+                    console.log("Parse result: ", parseResult.data)
                     //messagesPayloadSchema -> lessonStateSchema
                     const nextState = {
+
                         ...lessonState,
                         ...parseResult.data,
+                        stage: parseResult.data.stage,
                         //if their response is missing, add it before ...msgHistory
                         msgHistory: [...msgHistory, {
                             role: 'user' as "user" | "eli",
                             content: text,
                         }, ...parseResult.data.newMessages!]
                     };
+                    console.log("Next state: ", nextState)
                     setLessonState(nextState);
                 } catch (e) {
                     console.error("Error sending message: ", e)
@@ -134,7 +141,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         if (latestMsg && latestMsg.role == 'eli') {
             textAreaRef.current?.focus();
             //dev only
-            if (textAreaRef.current) textAreaRef.current.value = 'Are they the backbone of the body?'
+            if (textAreaRef.current) textAreaRef.current.value = 'Electrons are fundamental particles'
         }
     }, [msgHistory])
     useEffect(() => {

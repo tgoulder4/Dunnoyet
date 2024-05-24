@@ -2,10 +2,12 @@ import { z } from "zod";
 import openai from "../../openai";
 import { messagesSchema } from "@/lib/validation/primitives";
 
-export const checkIsUserRight = async (messageHistory: z.infer<typeof messagesSchema>[], subject?: string,)
+export const checkIsUserRight = async (messageHistory: z.infer<typeof messagesSchema>[], subject?: string, targetQuestion?: string)
     : Promise<boolean | null> => {
+    const subjOrTarget = subject || targetQuestion;
+    // console.log("checkIsUserRight, subjOrTarget is " + subjOrTarget, "subject is " + subject, "targetQuestion is " + targetQuestion)
     try {
-        const prompt = (subject ? 'We are teaching a student together about ' + subject + "." : '') + 'Given your knowledge and the chat history: "' + messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n') + '\n" Is the student correct in their latest response? respond either TRUE or FALSE.'
+        const prompt = `${subjOrTarget ? 'We are teaching a student together about ' + subjOrTarget + "." : ''} Given your knowledge and the chat history: "' ${messageHistory.slice(-6).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n')} \n Is the student correct in their latest response? respond either TRUE or FALSE.`;
         console.log("checkIsUserRight, prompt is " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{
