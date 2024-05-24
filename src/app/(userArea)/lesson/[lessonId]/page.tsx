@@ -2,6 +2,7 @@
 import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { getLesson } from '@/app/api/[[...route]]/lessons'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
+import { tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
 import { lessonSchema } from '@/lib/validation/general/types';
 import { lessonStatePayloadSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import { useSearchParams } from 'next/navigation';
@@ -30,7 +31,14 @@ async function LessonPage({ params, searchParams }: { params: { lessonId: string
         stage,
         subject: subject || undefined,
         targetQuestion: targetQ || undefined,
-        newMessages: messages ? messages : [] as any,
+        newMessages: messages.length ? messages :
+            //if its newQ tehn ask what they know
+            [{
+                role: "eli",
+                content: tellMeWhatYouKnow(),
+                eliResponseType: "WhatComesToMind",
+
+            }],
         lessonID: lessonId,
         userID: userId
     }

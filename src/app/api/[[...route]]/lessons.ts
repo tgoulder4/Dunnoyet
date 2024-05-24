@@ -53,12 +53,12 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         const randomSaying = tellMeWhatYouKnow();
         console.log("Random saying: ", randomSaying)
         try {
-            const res = await getTeachingResponse([{ role: 'user', content }], []);
-            if (!res) {
-                console.error("No response from Eli")
-                return null;
-            }
-            const reply: z.infer<typeof messagesSchema> = res;
+            // const res = await getTeachingResponse([{ role: 'user', content }], []);
+            // if (!res) {
+            //     console.error("No response from Eli")
+            //     return null;
+            // }
+            // const reply: z.infer<typeof messagesSchema> = res;
             const lesson = await prisma.$transaction(async (tx) => {
                 console.log("Transaction started")
                 const targetQ = await tx.targetQ.create({
@@ -78,26 +78,37 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                         noteId: note.id,
                     }
                 });
-                //save eli response msg only
-                const msg = await tx.message.create({
+                const met = await tx.metadata.create({
                     data: {
-                        content: reply.content,
-                        role: "eli",
-                        KP: {
-                            create: {
-                                confidence: 1,
-                                KP: reply.content,
-                                source: "offered" as "offered" | "reinforced",
-                                userId: userID,
-                            }
-                        },
-                        Lesson: {
-                            connect: {
-                                id: less.id
-                            }
-                        }
+                        imageURL: "",
+                        references: [],
                     }
                 });
+                // //save eli response msg only
+                // const msg = await tx.message.create({
+                //     data: {
+                //         content: reply.content,
+                //         role: "eli",
+                //         KP: {
+                //             create: {
+                //                 confidence: 1,
+                //                 KP: reply.content,
+                //                 source: "offered" as "offered" | "reinforced",
+                //                 userId: userID,
+                //             }
+                //         },
+                //         Lesson: {
+                //             connect: {
+                //                 id: less.id
+                //             }
+                //         },
+                //         metadata: {
+                //             connect: {
+                //                 id: met.id
+                //             }
+                //         }
+                //     }
+                // });
                 //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
                 return less;
             })
