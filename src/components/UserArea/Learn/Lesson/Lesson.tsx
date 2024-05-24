@@ -67,7 +67,6 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                                             <LearningPathItem confidence={0} lastItem={true} text={"Finish 🏁"} />
                                         </> : <></>
                                 }
-
                             </>
                     }
                 </LessonSection>

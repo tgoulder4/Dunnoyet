@@ -93,7 +93,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                                             TwoDvK: [2, 12]
                                         },
                                         eliResponseType: 'General'
-                                    }
+                                    },
                                 ],
                                 stage: 'main',
                                 lastSaved: "2024-05-24T01:48:24.571Z"

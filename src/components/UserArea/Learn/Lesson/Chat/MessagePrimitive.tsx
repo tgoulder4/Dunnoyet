@@ -34,7 +34,7 @@ function MessagePrimitive({ dispatch, message, focused, lastMessageInLesson, use
                     </h2>
                     <h2 className={`${focused ? 'font-bold' : ''}`}>{content}</h2>
                 </div>
-                {role == "eli" && focused &&
+                {role == "eli" && focused && eliResponseType !== "WhatComesToMind" &&
                     <NewButton type="button" onClick={() => dispatch("understood")} disabled={loadingNextMsg} buttonVariant='black' className='px-[1.4rem] py-[0.9rem] w-max font-bold'>{
                         eliResponseType == "General" ? lastMessageInLesson ? "Finish lesson 🏁 (Enter)" : "I understand! (Enter)" : "SystemCTA"
                     }

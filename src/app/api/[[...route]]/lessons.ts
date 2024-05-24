@@ -154,11 +154,17 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
         const lesson = await prisma.$transaction(async (tx) => {
             //we MUST save on lesson creation as the redirect to /lesson/lid fetches the lesson by id
+            const note = await tx.note.create({
+                data: {
+                    content: "",
+                }
+            });
             const less = await tx.lesson.create({
                 data: {
                     userId: userID,
                     stage: isRight ? "main" : "purgatory",
                     subject: subject,
+                    noteId: note.id,
                 },
             });
             if (isRight) {
