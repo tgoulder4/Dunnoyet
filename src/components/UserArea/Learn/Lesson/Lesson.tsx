@@ -5,7 +5,7 @@ import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
 import { lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
-import { lessonStatePayloadSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStatePayloadSchema, lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -19,26 +19,24 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     // const user = useSession().data?.user!
     // session is always non-null inside this page, all the way down the React tree.
     console.log("Payload received: ", payload)
-    const parsed = messagesPayloadSchema.safeParse(payload);
-    if (!parsed.success) {
-        console.error("Invalid format, failed parse IF@LSK: ", payload, " error: ", parsed.error)
-        parsed.error
-        return <></>
-    }
     const {
         stage,
         lastSaved,
         newMessages,
         targetQuestion,
-    } = parsed.data;
-
+        lessonID,
+        userID
+    } = payload;
+    if (!stage || !lastSaved || !newMessages || !lessonID || !userID) {
+        //missing info in lesson payload
+        toast.error("An error occurred: MIILP@Lesson")
+        return <></>
+    }
     const [currentLessonState, setCurrentLessonState] = useState({
-        stage: stage,
+        ...payload,
         msgHistory: newMessages, //contains the KPs
-        // distanceUntilLessonEnd: findDistanceUntilLessonEnd(newMessages || []),
-        targetQuestion: targetQuestion,
-    } as z.infer<typeof messagesReceiveSchema>);
-    const subject = useRef<string | undefined>(parsed.data.subject);
+    } as z.infer<typeof lessonStateSchema>);
+    const subject = useRef<string | undefined>(payload.subject);
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>

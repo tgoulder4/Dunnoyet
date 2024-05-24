@@ -34,6 +34,7 @@ async function LessonPage({ params, searchParams }: { params: { lessonId: string
         lessonID: lessonId,
         userID: userId
     }
+
     console.log("LessonPage payload: ", payload)
     return (
         <Lesson payload={

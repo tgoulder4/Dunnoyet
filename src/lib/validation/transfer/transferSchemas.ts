@@ -35,6 +35,9 @@ export const lessonStatePayloadSchema = messagesPayloadSchema.extend({
     subject: z.string().optional(),
     userID: z.string().optional()
 })
+export const lessonStateSchema = lessonStatePayloadSchema.extend({
+    msgHistory: z.array(messagesSchema),
+})
 export const createLessonSchema = z.object({
     mode: modeType,
     content: z.string(), //uKp or uQ

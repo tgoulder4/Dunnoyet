@@ -8,18 +8,18 @@ import { Loader2, Send } from 'lucide-react';
 import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 import { toast } from 'sonner';
-import { messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStateSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import { findDistanceUntilLessonEnd } from './Helpers'
 import { client } from '@/lib/db/hono';
 import axios from 'axios';
-function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<typeof messagesReceiveSchema>, setLessonState: React.Dispatch<React.SetStateAction<z.infer<typeof messagesReceiveSchema>>>, subject?: string, targetQContent?: string }) {
+function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<typeof lessonStateSchema>, setLessonState: React.Dispatch<React.SetStateAction<z.infer<typeof lessonStateSchema>>>, subject?: string, targetQContent?: string }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const {
         msgHistory,
         stage,
         targetQuestion,
-        lessonId,
-        userId
+        lessonID,
+        userID
     } = lessonState;
     const [loading, setLoading] = useState(false);
     const dispatch = async (action: "reply" | "understood") => {
@@ -45,7 +45,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 //     }
                 // })
                 console.log("SENDING MESSAGE")
-                if (!lessonId || !userId) {
+                if (!lessonID || !userID) {
                     toast.error("An error occurred, please try again later")
                     console.error("Missing lessonId or userId in lessonState")
                     return null;
@@ -55,12 +55,12 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     url: '/api/messages/response',
                     data: {
                         action: 'reply',
-                        lessonId,
+                        lessonID,
                         msgHistory,
                         stage,
                         subject,
                         targetQuestion,
-                        userId
+                        userID
                     }
                 })
 
@@ -84,7 +84,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
 
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
-                        <h1 className='w-full font-extrabold'>{subject ? subject : targetQuestion}</h1>
+                        <h1 className='w-full font-extrabold'>{subject ? subject : targetQuestion?.point ?? "Error"}</h1>
                         <LessonTimer />
                     </div>
                 </div>
