@@ -129,6 +129,7 @@ h6 {
 html,
 body,main {
   min-height: 100%;
+  max-height: 100%;
   /* width: 100vw; */
 }
 ::selection {

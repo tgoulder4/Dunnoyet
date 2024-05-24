@@ -8,7 +8,8 @@ import { simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
 import { checkIsUserRight } from '@/lib/chat/Eli/helpers/correctness';
 import { oopsThatsNotQuiteRight, tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
 import { messagesSchema } from '@/lib/validation/primitives';
-import openai from '@/lib/chat/openai';
+import openai, { getEmbedding } from '@/lib/chat/openai';
+import { getTwoDCoOrdinatesOfKPInSolitude } from '@/components/UserArea/Learn/Lesson/Network/utils/helpers';
 const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string, noAuthCheck?: boolean) => {
@@ -52,6 +53,12 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         const randomSaying = tellMeWhatYouKnow();
         console.log("Random saying: ", randomSaying)
         try {
+            const res = await getTeachingResponse([{ role: 'user', content }], []);
+            if (!res) {
+                console.error("No response from Eli")
+                return null;
+            }
+            const reply: z.infer<typeof messagesSchema> = res;
             const lesson = await prisma.$transaction(async (tx) => {
                 console.log("Transaction started")
                 const targetQ = await tx.targetQ.create({
@@ -63,12 +70,32 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                     data: {
                         content: "",
                     }
-                })
+                });
                 const less = await tx.lesson.create({
                     data: {
                         userId: userID,
                         targetQId: targetQ.id,
                         noteId: note.id,
+                    }
+                });
+                //save eli response msg only
+                const msg = await tx.message.create({
+                    data: {
+                        content: reply.content,
+                        role: "eli",
+                        KP: {
+                            create: {
+                                confidence: 1,
+                                KP: reply.content,
+                                source: "offered" as "offered" | "reinforced",
+                                userId: userID,
+                            }
+                        },
+                        Lesson: {
+                            connect: {
+                                id: less.id
+                            }
+                        }
                     }
                 });
                 //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
@@ -89,6 +116,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         if (!subject) return null;
         if (isRight) {
             console.log("User was right.")
+            //change their msg to confidence 2
             const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any], []);
             console.log("Teaching response: ", teachingRes)
             if (!teachingRes) return null;
@@ -101,7 +129,6 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             }
             catch (e) {
                 console.error(e);
-
                 return null;
             }
         }
@@ -115,23 +142,57 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         }
         //optional 1-1 relations are not yet available via mongodb and prisma. This is a workaround
         const lesson = await prisma.$transaction(async (tx) => {
+            //we MUST save on lesson creation as the redirect to /lesson/lid fetches the lesson by id
             const less = await tx.lesson.create({
                 data: {
                     userId: userID,
                     stage: isRight ? "main" : "purgatory",
                     subject: subject,
                 },
-                include: {
-                    messages: {
-                        include: {
-                            KP: true
-                        }
-
-                    }
-                }
             });
+            if (isRight) {
+                const twoD = await getTwoDCoOrdinatesOfKPInSolitude([await getEmbedding(content)]);
+                const createdKP = await tx.knowledgePoint.create({
+                    data: {
+                        confidence: 2,
+                        KP: content,
+                        TwoDvK: twoD,
+                        lessonId: less.id,
+                        source: "reinforced",
+                        userId: userID,
+                    }
+                });
+                const met = await tx.metadata.create({
+                    data: {
+                        imageURL: "",
+                        references: [],
+                    }
+                });
+                const msg = await tx.message.create({
+                    data: {
+                        content: content,
+                        role: "user",
+                        lessonId: less.id,
+                        KPId: createdKP.id,
+                        metadataId: met.id,
+                    }
+                });
+                //update lesson with msg
+                await tx.lesson.update({
+                    where: { id: less.id },
+                    data: {
+                        messages: {
+                            connect: {
+                                id: msg.id
+                            }
+                        }
+                    }
+                })
+            }
             return less;
-        })
+            //if wasRight save their msg as confidence 2
+        });
+
         console.log("Lesson created: ", lesson)
         return lesson;
     }

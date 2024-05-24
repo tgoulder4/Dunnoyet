@@ -27,10 +27,14 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         lessonID,
         userID
     } = payload;
-    if (!stage || !lastSaved || !newMessages || !lessonID || !userID) {
-        //missing info in lesson payload
-        toast.error("An error occurred: MIILP@Lesson")
+    if (!stage) {
+        //missing stage in lesson payload
+        toast.error("An error occurred: MSILP@Lesson")
         return <></>
+    }
+    if (!lastSaved || !newMessages || !lessonID || !userID) {
+        //missing info in lesson payload
+        toast.error("Something went wrong: MIILP@Lesson")
     }
     const [currentLessonState, setCurrentLessonState] = useState({
         ...payload,

@@ -32,10 +32,10 @@ const checkDuplicateUser = async (username: string, email: string) => {
     return false;
 }
 export const createUser = async (formData: FormData) => {
-    const username = formData.get("username");
-    const password = formData.get("password");
-    const email = formData.get("email");
-    if (!username || !password || !email) return c.status(400);
+    const username = formData.get("username")?.toString();
+    const password = formData.get("password")?.toString();
+    const email = formData.get("email")?.toString();
+    if (!username || !password || !email) return null
     const duplicateUser = await checkDuplicateUser(username, email);
     if (duplicateUser) return duplicateUser;
     const user = await prisma.user.create({
@@ -58,7 +58,6 @@ const app = new Hono()
         const user = await createUser(await c.req.json());
         if (user === 'username') return c.status(409);
         if (user === 'email') return c.status(409);
-        if (user === 400) return c.status(400);
         return c.json(user);
     });
 

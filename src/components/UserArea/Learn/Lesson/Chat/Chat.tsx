@@ -8,7 +8,7 @@ import { Loader2, Send } from 'lucide-react';
 import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 import { toast } from 'sonner';
-import { lessonStateSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import { findDistanceUntilLessonEnd } from './Helpers'
 import { client } from '@/lib/db/hono';
 import axios from 'axios';
@@ -26,8 +26,9 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
     const dispatch = async (action: "reply" | "understood") => {
         setLoading(true);
         if (action == "reply") {
-            const text = textAreaRef.current?.value;
+            let text = textAreaRef.current?.value;
             if (!text) {
+                if (msgHistory.length == 1) text = msgHistory[0].content;
                 toast.error("Please enter a message")
                 setLoading(false);
                 return null;
@@ -54,28 +55,73 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 setLessonState({
                     ...lessonState,
                     msgHistory: [...msgHistory, {
-                        role: 'user',
+                        role: 'user' as "user" | "eli",
                         content: text,
                     }]
                 })
-                const res = await axios({
-                    method: 'POST',
-                    url: '/api/messages/response',
-                    data: {
-                        action: 'reply',
-                        lessonId: lessonID,
-                        msgHistory: [...msgHistory, {
-                            role: 'user',
-                            content: text,
-                        }],
-                        stage,
-                        subject,
-                        targetQuestion,
-                        userId: userID,
-                        lastSaved
+                try {
+                    // const res = await axios({
+                    //     method: 'POST',
+                    //     url: '/api/messages/response',
+                    //     data: {
+                    //         action: 'reply',
+                    //         lessonId: lessonID,
+                    //         msgHistory: [...msgHistory, {
+                    //             role: 'user',
+                    //             content: text,
+                    //         }],
+                    //         stage,
+                    //         subject,
+                    //         targetQuestion,
+                    //         userId: userID,
+                    //         lastSaved
+                    //     }
+                    // });
+                    //mock res
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    const res = {
+                        data: {
+                            newMessages: [
+                                {
+                                    role: 'eli',
+                                    content: 'Yes, they provide structural support for the spinal cord',
+                                    KP: {
+                                        KP: "Vertebrae provide structural support for the spinal cord",
+                                        confidence: 1,
+                                        TwoDvK: [2, 12]
+                                    },
+                                    eliResponseType: 'General'
+                                }
+                            ],
+                            stage: 'purgatory',
+                            lastSaved: "2024-05-24T01:48:24.571Z"
+                        }
                     }
-                })
 
+                    console.log("Response: ", res)
+                    const parseResult = messagesPayloadSchema.safeParse(res.data);
+                    if (!parseResult.success) {
+                        console.error("Failed to parse messagesPayloadSchema: " + parseResult.error)
+                        //parse wrong @ chat
+                        toast.error("An error occurred, please try again later PR@Chat")
+                        return null;
+                    }
+                    //messagesPayloadSchema -> lessonStateSchema
+                    const nextState = {
+                        ...lessonState,
+                        ...parseResult.data,
+                        //if their response is missing, add it before ...msgHistory
+                        msgHistory: [...msgHistory, {
+                            role: 'user' as "user" | "eli",
+                            content: text,
+                        }, ...parseResult.data.newMessages!]
+                    };
+                    setLessonState(nextState);
+                } catch (e) {
+                    console.error("Error sending message: ", e)
+                    //post request failed @ chat
+                    toast.error("An error occurred, please try again later POSTRF@Chat")
+                }
                 setLoading(false);
             }
         } else if (action == "understood") {
@@ -84,15 +130,27 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
     }
     useEffect(() => {
         //if it's their turn, focus the textArea
-        if (msgHistory[msgHistory.length - 1].role == 'eli') {
+        const latestMsg = msgHistory[msgHistory.length - 1]
+        if (latestMsg && latestMsg.role == 'eli') {
             textAreaRef.current?.focus();
-        } else {
-            setLoading(true)
+            //dev only
+            if (textAreaRef.current) textAreaRef.current.value = 'Are they the backbone of the body?'
         }
     }, [msgHistory])
+    useEffect(() => {
+        //if it's their turn, focus the textArea
+        async function main() {
+            if (msgHistory[msgHistory.length - 1].role == 'user') {
+                setLoading(true);
+                //get the response
+                await dispatch('reply')
+            }
+        }
+        main()
+    }, [])
     return (
         <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
-            <section className='titleAndReplies flex flex-col'>
+            <section className='titleAndReplies flex flex-col h-full'>
 
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
@@ -100,7 +158,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                         <LessonTimer />
                     </div>
                 </div>
-                <div className="mainChat">
+                <div className="mainChat max-h-full h-full overflow-y-auto">
                     {
                         msgHistory.map((message, index) => {
                             return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={message.content + index} focused={index == msgHistory.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 0} message={message} />

@@ -37,7 +37,7 @@ model knowledgePoint {
   KP         String   @map("_KP") //string knowledge point
   TwoDvK     Float[]  @map("_2DvK") // 2D vector
   confidence Int      @map("_confidence")
-  lessonId   String   @db.ObjectId
+  lessonId   String?  @db.ObjectId
   source     kpSource //differentiate between reinforced and offered points
   // linksTo         String[]
 

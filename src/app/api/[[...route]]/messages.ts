@@ -32,7 +32,7 @@ const app = new Hono()
         console.log("PARSE PASSED");
         let payload: z.infer<typeof messagesPayloadSchema> = {
             newMessages: [],
-            stage: 'purgatory',
+            stage,
             lastSaved: new Date(),
         }
         const isRight = await checkIsUserRight(msgHistory);
@@ -41,7 +41,6 @@ const app = new Hono()
         //free roam:
         if (stage === 'purgatory') {
             //check their reply is right,
-
             if (isRight) {
                 payload.stage = 'main';
                 console.log("Payload stage is now main")

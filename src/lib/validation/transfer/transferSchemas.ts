@@ -31,7 +31,7 @@ export const messagesPayloadSchema = z.object({
 })
 //lessonStateSchema is an extension of messagesPayloadSchema, with lessonID: string
 export const lessonStatePayloadSchema = messagesPayloadSchema.extend({
-    lessonID: z.string(),
+    lessonID: z.string().optional(),
     subject: z.string().optional(),
     userID: z.string().optional()
 })
