@@ -11,7 +11,7 @@ import { messagesSchema } from '@/lib/validation/primitives';
 import openai from '@/lib/chat/openai';
 const prisma = prismaClient;
 export const runtime = 'edge';
-export const getLesson = async (id: string) => {
+export const getLesson = async (id: string, noAuthCheck?: boolean) => {
     console.log("getLesson called with id: ", id)
     const lessonFound = await prisma.lesson.findFirst({
         where: { id: id },
@@ -20,17 +20,22 @@ export const getLesson = async (id: string) => {
             targetQ: true,
             stage: true,
             beganAt: true,
-            subject: true
+            subject: true,
+            id: true,
+            userId: true,
         }
     })
+    console.log("Lesson found: ", lessonFound)
+    if (!noAuthCheck) {
+        const user = await getLoggedInUser();
+        if (!user || !user.id) return null;
+        if (!noAuthCheck && lessonFound && lessonFound.userId !== user.id) return null;
+    }
     //due to caveats in prisma and mongodb, if there's a subject then there ISN'T a targetQ. This is a workaround
     if (lessonFound && lessonFound.subject) {
         lessonFound.targetQ = null
     }
     return lessonFound;
-}
-export const initiateLesson = async (id: string) => {
-    //if there's a targetQ
 }
 export const createLesson = async (userID: string, data: z.infer<typeof createLessonSchema>) => {
     console.log("createLesson called")

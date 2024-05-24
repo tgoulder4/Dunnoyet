@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const simplifyToKnowledgePointInSolitude = async (messageHistory: z.infer<typeof messagesSchema>[], subject?: string): Promise<string | null> => {
     try {
-        const prompt = 'Given the most recent chat history: ' + (messageHistory.slice(-2).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify the knowledge behind the latest message to 10 words. Send one sentence only. It should be comprehensible on its own.'
+        const prompt = 'Given the most recent chat history: ' + (messageHistory.slice(-2).map(m => m.role == "eli" ? "Assistant: '" + (m.content) + "'" : "Student: '" + m.content + "'").join('\n')) + '\n Simplify the knowledge behind the latest message to 8 words. Send one sentence only. It should be concise and comprehensible on its own.'
         console.log("Simplify KP prompt: " + prompt)
         const res = await openai.chat.completions.create({
             messages: [{

@@ -14,8 +14,8 @@ export const checkIsUserRight = async (messageHistory: z.infer<typeof messagesSc
             },],
             model: "gpt-3.5-turbo"
         })
-        console.log("checkIsUserRight, response is " + JSON.stringify(res))
         if (res.choices[0].message.content == 'TRUE') return true;
+        console.log("checkIsUserRight, response is " + res.choices[0].message.content)
         return false;
     }
     catch (e) {

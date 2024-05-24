@@ -13,7 +13,7 @@ export const messagesReceiveSchema = z.object({
     lessonId: z.string().optional(),
     userId: z.string().optional(),
     action: actionType.optional(),
-    lastSaved: z.date().optional(),
+    lastSaved: z.coerce.date().optional(),
 })
 
 //the server sends this to the client
@@ -25,14 +25,15 @@ export const messagesPayloadSchema = z.object({
         TwoDvK: z.array(z.number()),
     }).optional(),
     subject: z.string().optional(),
-    lastSaved: z.date().optional(),
+    lastSaved: z.coerce.date().optional(),
     //only used for ending the lesson
     experiencePrior: z.number().optional()
 })
 //lessonStateSchema is an extension of messagesPayloadSchema, with lessonID: string
 export const lessonStatePayloadSchema = messagesPayloadSchema.extend({
     lessonID: z.string(),
-    subject: z.string().optional()
+    subject: z.string().optional(),
+    userID: z.string().optional()
 })
 export const createLessonSchema = z.object({
     mode: modeType,

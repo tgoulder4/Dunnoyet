@@ -5,7 +5,7 @@ import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
 import { lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
-import { messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStatePayloadSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -15,8 +15,8 @@ import Notes from './Notes/Notes';
 import { toast } from 'sonner';
 import { findDistanceUntilLessonEnd } from './Chat/Helpers';
 
-function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> }) {
-    const user = useSession().data?.user!
+function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema> }) {
+    // const user = useSession().data?.user!
     // session is always non-null inside this page, all the way down the React tree.
     console.log("Payload received: ", payload)
     const parsed = messagesPayloadSchema.safeParse(payload);
@@ -39,14 +39,6 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
         targetQuestion: targetQuestion,
     } as z.infer<typeof messagesReceiveSchema>);
     const subject = useRef<string | undefined>(parsed.data.subject);
-    useEffect(() => {
-        // setTimeout(() => {
-        //     setMessageHistory(prev => {
-        //         return [...prev, { role: 'user', content: 'The spinal cavity holds the spinal cord' }]
-        //     })
-
-        // }, 2000);
-    }, [])
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
@@ -86,7 +78,7 @@ function Lesson({ payload }: { payload: z.infer<typeof messagesPayloadSchema> })
                 </LessonSection>
             </div>
             <LessonSection className='flex-[5] learningChatArea h-full' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : <Chat lessonState={currentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} />}
+                {stage == 'loading' ? <CreatingLesson /> : <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0 }} className='flex-[2] notesArea h-full'>
                 {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <Notes />}

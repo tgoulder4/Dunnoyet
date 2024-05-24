@@ -10,14 +10,17 @@ import { LessonTimer } from './Timer';
 import { toast } from 'sonner';
 import { messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import { findDistanceUntilLessonEnd } from './Helpers'
-function Chat({ lessonState, subject, }: { lessonState: z.infer<typeof messagesReceiveSchema>, subject?: string, targetQContent?: string }) {
+import { client } from '@/lib/db/hono';
+import axios from 'axios';
+function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<typeof messagesReceiveSchema>, setLessonState: React.Dispatch<React.SetStateAction<z.infer<typeof messagesReceiveSchema>>>, subject?: string, targetQContent?: string }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const {
         msgHistory,
         stage,
-        targetQuestion
+        targetQuestion,
+        lessonId,
+        userId
     } = lessonState;
-
     const [loading, setLoading] = useState(false);
     const dispatch = async (action: "reply" | "understood") => {
         setLoading(true);
@@ -29,6 +32,38 @@ function Chat({ lessonState, subject, }: { lessonState: z.infer<typeof messagesR
                 return null;
             } else {
                 //send the message
+                //post request to /api/messages/response with body of type messagesReceiveSchema
+                // const res = await client.api.messages.response.$post({
+                //     json: {
+                //         action: 'reply',
+                //         lessonId,
+                //         msgHistory: msgHistory,
+                //         stage: stage,
+                //         subject: subject,
+                //         targetQuestion: targetQuestion,
+                //         userId
+                //     }
+                // })
+                console.log("SENDING MESSAGE")
+                if (!lessonId || !userId) {
+                    toast.error("An error occurred, please try again later")
+                    console.error("Missing lessonId or userId in lessonState")
+                    return null;
+                }
+                const res = await axios({
+                    method: 'POST',
+                    url: '/api/messages/response',
+                    data: {
+                        action: 'reply',
+                        lessonId,
+                        msgHistory,
+                        stage,
+                        subject,
+                        targetQuestion,
+                        userId
+                    }
+                })
+
                 setLoading(false);
             }
         } else if (action == "understood") {

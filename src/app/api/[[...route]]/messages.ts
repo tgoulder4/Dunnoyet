@@ -29,19 +29,24 @@ const app = new Hono()
             return c.status(500)
         }
         //define the payload to be sent back
+        console.log("PARSE PASSED");
         let payload: z.infer<typeof messagesPayloadSchema> = {
             newMessages: [],
             stage: 'purgatory',
             lastSaved: new Date(),
         }
         const isRight = await checkIsUserRight(msgHistory);
+        console.log("isRight: ", isRight)
         //if right save KP to db and pinecone, stage is now main
         //free roam:
         if (stage === 'purgatory') {
             //check their reply is right,
+
             if (isRight) {
                 payload.stage = 'main';
+                console.log("Payload stage is now main")
                 const eliReply = await getTeachingResponse(msgHistory, [], targetQuestion, subject)
+                console.log("Teaching response receieved: ", eliReply)
                 if (!eliReply) {
                     console.error("Failed to get teaching response")
                     return c.status(500)
@@ -111,24 +116,27 @@ const app = new Hono()
                 payload.experiencePrior = updatedUser.experience - experiencePerKnowledgePoint * savedKPs.count;
                 return payload;
             })
-            //if last saved is greater than 5 mins & stage!==purg, save messagehistory to db
-            if (payload.stage !== 'purgatory' && lastSaved && new Date().getTime() - lastSaved.getTime() > 300000) {
-                //save all messages to db
-                const savedMessages = await prisma.message.createMany({
-                    data: msgHistory.map(msg => ({
-                        role: msg.role,
-                        content: msg.content,
-                        eliResponseType: msg.eliResponseType,
-                        lessonId,
-                        KPId: msg.KPId
-                    }))
-                })
-                console.log("Saved messages: ", savedMessages)
-            }
 
-            return c.json({
-                payload
-            } as { payload: z.infer<typeof messagesPayloadSchema> })
         }
+        console.log("Preparing payload: ", payload)
+        //if last saved is greater than 5 mins & stage!==purg, save messagehistory to db
+        if (payload.stage !== 'purgatory' && lastSaved && new Date().getTime() - lastSaved.getTime() > 300000) {
+            //save all messages to db
+            console.log("Skipping save")
+            // console.log("Time to save messages to db as not saved in 5 mins")
+            // const savedMessages = await prisma.message.createMany({
+            //     data: msgHistory.map(msg => ({
+            //         role: msg.role,
+            //         content: msg.content,
+            //         eliResponseType: msg.eliResponseType,
+            //         lessonId,
+            //     }))
+            // })
+            // console.log("Saved messages: ", savedMessages)
+        }
+        console.log("Returning payload: ", payload)
+        return c.json({
+            payload
+        } as { payload: z.infer<typeof messagesPayloadSchema> })
     })
 export default app;

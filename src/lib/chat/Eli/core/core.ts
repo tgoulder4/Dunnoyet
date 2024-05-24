@@ -11,20 +11,20 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
         }. directly continue my sentence to add a single easy-to-understand knowledge point every response should be maximum 8 words. Should never contain a full stop as the sentence is never-ending. ${rKPs.length > 0 ? " Use their knowledge in your answer. say which number you used by adding ‘USED N’ where N is the knowledge number." : ""}
             reply with one sentence. If they asked a question and say 'I understand' to your response, continue what you were saying prior. say nothing vague. research every answer you give to ensure it's factual and be kind.
             `
-    console.log("Prompt used: " + prompt, " message history: ", messageHistory)
+    console.log("Prompt used: " + prompt)
     let res = await openai.chat.completions.create({
         messages: [{
             role: 'system',
             content: prompt
         },
-        ...messageHistory.slice(-6).map((m, index) => ({ role: m.role as 'user' | 'system', content: m.content }))],
+        ...messageHistory.slice(-6).map((m, index) => ({ role: m.role == "eli" ? "system" : "user" as "user" | "system", content: m.content }))],
         model: "gpt-3.5-turbo"
     }).then(res => res.choices[0].message.content)
     if (!res) return null;
     //remove ending punctuation
     if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1)
     console.log("Sentence continuation: ", res)
-    //parse the response
+    //parse the response HEREW
     const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
     if (!simplifiedKP) return null;
     const em = await getEmbedding(simplifiedKP);

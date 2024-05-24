@@ -24,7 +24,7 @@ function easeInOut(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
 const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className, ...props }) => {
-    console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
+    // console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
     const sess = useSession().data!.user!;
     const {
         id: userId,
