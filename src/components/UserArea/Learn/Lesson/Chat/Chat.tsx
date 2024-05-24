@@ -19,7 +19,8 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         stage,
         targetQuestion,
         lessonID,
-        userID
+        userID,
+        lastSaved
     } = lessonState;
     const [loading, setLoading] = useState(false);
     const dispatch = async (action: "reply" | "understood") => {
@@ -50,17 +51,28 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     console.error("Missing lessonId or userId in lessonState")
                     return null;
                 }
+                setLessonState({
+                    ...lessonState,
+                    msgHistory: [...msgHistory, {
+                        role: 'user',
+                        content: text,
+                    }]
+                })
                 const res = await axios({
                     method: 'POST',
                     url: '/api/messages/response',
                     data: {
                         action: 'reply',
-                        lessonID,
-                        msgHistory,
+                        lessonId: lessonID,
+                        msgHistory: [...msgHistory, {
+                            role: 'user',
+                            content: text,
+                        }],
                         stage,
                         subject,
                         targetQuestion,
-                        userID
+                        userId: userID,
+                        lastSaved
                     }
                 })
 

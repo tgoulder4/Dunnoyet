@@ -25,7 +25,7 @@ const app = new Hono()
         }
         const { stage, msgHistory, targetQuestion, lastSaved, subject, lessonId, userId, action } = parseResult.data;
         if (!msgHistory || !stage || !lessonId || !userId || !lastSaved) {
-            console.error("Missing info in GET /api/messages. stage: ", stage, " msgHistory: ", msgHistory, " lessonId: ", lessonId, " userId: ", userId)
+            console.error("Missing info in GET /api/messages. stage: ", stage, " lessonId: ", lessonId, " userId: ", userId, " lastSaved: ", lastSaved)
             return c.status(500)
         }
         //define the payload to be sent back
