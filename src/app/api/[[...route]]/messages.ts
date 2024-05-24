@@ -15,8 +15,10 @@ import { messagesSchema } from '@/lib/validation/primitives';
 const prisma = prismaClient;
 export const runtime = 'edge';
 const app = new Hono()
-    .get('/', async (c) => {
-        const parseResult = await messagesReceiveSchema.safeParseAsync(await c.req.json());
+    .post('/response', async (c) => {
+        const body = await c.req.json();
+        console.log("Body: ", body)
+        const parseResult = await messagesReceiveSchema.safeParseAsync(body);
         if (!parseResult.success) {
             console.error("Failed to parse messagesReceiveSchema: ", parseResult.error)
             return c.status(500)

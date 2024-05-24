@@ -57,7 +57,6 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                 const note = await tx.note.create({
                     data: {
                         content: "",
-
                     }
                 })
                 const less = await tx.lesson.create({
