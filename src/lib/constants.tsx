@@ -18,6 +18,7 @@ export const colours = {
     popover: "#ffffff",
     popoverForeground: "#0a0a0b",
     primary: "#438BCE",
+    primaryObnoxious: "#3F4CC3",
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",

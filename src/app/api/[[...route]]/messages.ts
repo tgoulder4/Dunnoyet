@@ -35,11 +35,12 @@ const app = new Hono()
             stage,
             lastSaved: new Date(),
         }
-        const isRight = await checkIsUserRight(msgHistory, targetQuestion, subject);
-        console.log("isRight: ", isRight)
         //if right save KP to db and pinecone, stage is now main
         //free roam:
         if (stage === 'purgatory') {
+            //PASSES
+            const isRight = await checkIsUserRight(msgHistory, targetQuestion, subject);
+            console.log("isRight: ", isRight)
             //check their reply is right,
             if (isRight) {
                 payload.stage = 'main';
@@ -113,6 +114,7 @@ const app = new Hono()
                     }
                 })
                 payload.experiencePrior = updatedUser.experience - experiencePerKnowledgePoint * savedKPs.count;
+                payload.experienceNow = updatedUser.experience;
                 return payload;
             })
 

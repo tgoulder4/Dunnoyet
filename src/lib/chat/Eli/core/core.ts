@@ -28,7 +28,7 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
     const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
     if (!simplifiedKP) return null;
     const em = await getEmbedding(simplifiedKP);
-    const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude([em])
+    const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude([em]);
     const KP: z.infer<typeof KPSchema> = {
         confidence: 1,
         KP: simplifiedKP,

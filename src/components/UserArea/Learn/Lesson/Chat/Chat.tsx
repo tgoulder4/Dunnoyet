@@ -23,6 +23,17 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         lastSaved
     } = lessonState;
     const [loading, setLoading] = useState(false);
+    //group messages by role
+    const groupedMessages = msgHistory.reduce((acc, message) => {
+        if (acc.length == 0) return [[message]];
+        if (acc[acc.length - 1][0].role == message.role) {
+            acc[acc.length - 1].push(message);
+            return acc;
+        }
+        return [...acc, [message]]
+    }, [] as z.infer<typeof messagesSchema>[][]);
+
+    console.log("Grouped messages: ", groupedMessages)
     const dispatch = async (action: "reply" | "understood") => {
         setLoading(true);
         if (action == "reply") {
@@ -33,19 +44,6 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 setLoading(false);
                 return null;
             } else {
-                //send the message
-                //post request to /api/messages/response with body of type messagesReceiveSchema
-                // const res = await client.api.messages.response.$post({
-                //     json: {
-                //         action: 'reply',
-                //         lessonId,
-                //         msgHistory: msgHistory,
-                //         stage: stage,
-                //         subject: subject,
-                //         targetQuestion: targetQuestion,
-                //         userId
-                //     }
-                // })
                 console.log("SENDING MESSAGE")
                 if (!lessonID || !userID) {
                     toast.error("An error occurred, please try again later")
@@ -88,7 +86,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                                         role: 'eli',
                                         content: 'which are intrinsically negative',
                                         KP: {
-                                            KP: "Electrons are intrinsically negative",
+                                            KP: "which are negative",
                                             confidence: 1,
                                             TwoDvK: [2, 12]
                                         },
@@ -120,6 +118,12 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                         msgHistory: [...msgHistory, {
                             role: 'user' as "user" | "eli",
                             content: text,
+                            //example KP for testing. This KP should be added to the user's msg as soon as user isRight
+                            KP: {
+                                KP: text,
+                                confidence: 2,
+                                TwoDvK: [2, 9]
+                            },
                         }, ...parseResult.data.newMessages!]
                     };
                     console.log("Next state: ", nextState)
@@ -130,15 +134,99 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     toast.error("An error occurred, please try again later POSTRF@Chat")
                 }
                 setLoading(false);
+                textAreaRef.current!.value = '';
             }
         } else if (action == "understood") {
-
+            try {
+                // //prod
+                // const res = await axios({
+                //     method: 'POST',
+                //     url: '/api/messages/response',
+                //     data: {
+                //         action: 'understood',
+                //         lessonId: lessonID,
+                //         msgHistory,
+                //         stage,
+                //         subject,
+                //         targetQuestion: targetQuestion?.point,
+                //         userId: userID,
+                //         lastSaved
+                //     }
+                // });
+                //mock
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                const res = {
+                    data: {
+                        // mock: understood during main
+                        // payload: {
+                        //     newMessages: [
+                        //         {
+                        //             role: 'eli',
+                        //             content: 'which are intrinsically negative',
+                        //             KP: {
+                        //                 KP: "which are negative",
+                        //                 confidence: 1,
+                        //                 TwoDvK: [62, 58]
+                        //             },
+                        //             eliResponseType: 'General'
+                        //         },
+                        //     ],
+                        //     stage: 'main',
+                        //     lastSaved: "2024-05-24T01:48:24.571Z"
+                        // }
+                        // mock: end lesson after final understood
+                        payload: {
+                            newMessages: [],
+                            stage: 'end',
+                            lastSaved: "2024-05-24T01:48:24.571Z"
+                        }
+                    }
+                }
+                console.log("Response: ", res)
+                const parseResult = messagesPayloadSchema.safeParse(res.data.payload);
+                if (!parseResult.success) {
+                    console.error("Failed to parse messagesPayloadSchema: " + parseResult.error)
+                    //parse wrong @ chat
+                    toast.error("An error occurred, please try again later PR@Chat")
+                    return null;
+                }
+                console.log("Parse result: ", parseResult.data)
+                //messagesPayloadSchema -> lessonStateSchema
+                //if the newMessage isn't of type whatcomestomind, set the most recent message in msgHistory to confidence 2
+                if (parseResult.data.newMessages?.length && parseResult.data.newMessages![0].eliResponseType == 'General') {
+                    const newMsgHistory = [...msgHistory];
+                    newMsgHistory[msgHistory.length - 1].KP!.confidence = 2;
+                    setLessonState({
+                        ...lessonState,
+                        ...parseResult.data,
+                        stage: parseResult.data.stage,
+                        //if their response is missing, add it before ...msgHistory
+                        msgHistory: [...newMsgHistory, ...parseResult.data.newMessages!]
+                    });
+                    setLoading(false);
+                    return null;
+                }
+                const nextState = {
+                    ...lessonState,
+                    ...parseResult.data,
+                    stage: parseResult.data.stage,
+                    //if their response is missing, add it before ...msgHistory
+                    msgHistory: [...msgHistory, ...parseResult.data.newMessages!]
+                };
+                console.log("Next state: ", nextState)
+                setLessonState(nextState);
+                setLoading(false);
+                return null;
+            } catch (e) {
+                console.error("Error sending understood: ", e);
+                toast.error("An error occurred, please try again later POSTRF1@Chat")
+            }
         }
     }
     useEffect(() => {
         //if it's their turn, focus the textArea
         const latestMsg = msgHistory[msgHistory.length - 1]
-        if (latestMsg && latestMsg.role == 'eli') {
+        if (targetQuestion?.point == "Why do electrons repel each other?" && msgHistory.length == 1) {
             textAreaRef.current?.focus();
             //dev only
             if (textAreaRef.current) textAreaRef.current.value = 'Electrons are fundamental particles'
@@ -157,7 +245,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
     }, [])
     return (
         <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
-            <section className='titleAndReplies flex flex-col h-full'>
+            <section className='titleAndReplies flex flex-col gap-3 h-full'>
 
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
@@ -167,8 +255,10 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 </div>
                 <div className="mainChat max-h-full h-full overflow-y-auto">
                     {
-                        msgHistory.map((message, index) => {
-                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={message.content + index} focused={index == msgHistory.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 0} message={message} />
+                        groupedMessages.map((groupSet, index) => {
+                            //if they're two messages of the same type in a row just push it to messages 
+
+                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={groupSet[0].content + index} focused={index == groupedMessages.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 0} messages={groupSet} />
                         })
                     }
                 </div>

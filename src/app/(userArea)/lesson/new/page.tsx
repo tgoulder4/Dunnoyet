@@ -25,28 +25,28 @@ function usePayload() {
             }
             console.log("Creating GET request to /api/lessons/new")
             try {
-                //prod
-                const response = await axios.get(`/api/lessons/new`, {
-                    params: {
-                        mode: givenQ ? 'New Question' : 'Free Roam',
-                        content: givenQ ? givenQ : givenUkP
-                    }
-                })
-                const lessID = response.data.id;
-                if (!lessID) return { status: 500 };
-                console.log("Response from /api/lessons/new: ", response)
-                const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(lessID)
+                // //prod
+                // const response = await axios.get(`/api/lessons/new`, {
+                //     params: {
+                //         mode: givenQ ? 'New Question' : 'Free Roam',
+                //         content: givenQ ? givenQ : givenUkP
+                //     }
+                // })
+                // const lessID = response.data.id;
+                // if (!lessID) return { status: 500 };
+                // console.log("Response from /api/lessons/new: ", response)
+                // const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(lessID)
 
-                if (!parseResult.success) {
-                    console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
-                    return { status: 500 };
-                }
-                console.log("Successfully receieved & parsed lesson: ", lessID);
-                window.location.href = `/lesson/${lessID}`
+                // if (!parseResult.success) {
+                //     console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
+                //     return { status: 500 };
+                // }
+                // console.log("Successfully receieved & parsed lesson: ", lessID);
+                // window.location.href = `/lesson/${lessID}`
 
-                // //mock
-                // await new Promise((res) => setTimeout(res, 2000));
-                // window.location.href = `/lesson/mock`
+                //mock
+                await new Promise((res) => setTimeout(res, 2000));
+                window.location.href = `/lesson/mock`
             }
             catch (e) {
                 console.error(e)

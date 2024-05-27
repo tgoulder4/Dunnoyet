@@ -15,6 +15,8 @@ import { client } from '@/lib/db/hono'
 import { z } from 'zod'
 import { userHomeInfoSchema } from '@/lib/validation/general/types'
 import axios from 'axios'
+import { useSearchParams } from 'next/navigation'
+import { experiencePerKnowledgePoint } from '@/lib/chat/Eli/helpers/constants'
 var equal = require('deep-equal');
 // export const metadata: Metadata = {
 //     title: "Dunnoyet - Learn",
@@ -25,7 +27,7 @@ function Page({ params }: { params: { params: string } }) {
         modeTitle: "New Question",
         inputPlaceholder: "Ask anything",
         modeDescription: "New Question: Link what you know to target knowledge.",
-        examples: ["What is the spinal cavity?", "What is the charge of electrons?", "What causes things to fall?", "What do plants need to grow?"]
+        examples: ["What is the spinal cavity?", "Why do electrons repel each other?", "What causes things to fall?", "What do plants need to grow?"]
     }, {
         modeTitle: "Free Roam",
         inputPlaceholder: "State something you know",
@@ -37,6 +39,8 @@ function Page({ params }: { params: { params: string } }) {
     const [mode, setMode] = useState(0);
     const [userInfo, setUserInfo] = useState(null as null | z.infer<typeof userHomeInfoSchema>);
     const loading = userInfo == null;
+    const sp = useSearchParams();
+    const showcaseMode = sp.get('showcaseMode');
     const {
         experience,
         knowledgePoints,
@@ -67,24 +71,51 @@ function Page({ params }: { params: { params: string } }) {
         //gather exampleSayings, stats, experience, and knowledgePoints
         async function main() {
             // const res = await client.api.users[':id'].$get({ param: { id: "65dbe7799c9c2a30ecbe6193" } });
-            const sess = await axios.get('/api/auth/session');
-            if (!sess.data.user) {
-                toast.error("You need to be logged in to access this page.")
-                window.location.href = '/auth/login';
-                return;
-            }
-            const userID = sess.data.user.id;
-            const res = await axios.get(`/api/users/${userID}`);
-            console.log("Response from /api/users/:id ", res.data)
-            // const json = await res.json()
-            const json = await res.data;
-            console.log("res.data: ", json)
-            const userInfo = userHomeInfoSchema.safeParse(json);
-            if (!userInfo.success) {
-                toast.error("Something went wrong. Please reload the page and try again.")
-                console.error("Failed to parse user info: ", userInfo.error.message)
+            if (!showcaseMode) {
+
+                const sess = await axios.get('/api/auth/session');
+                if (!sess.data.user) {
+                    toast.error("You need to be logged in to access this page.")
+                    window.location.href = '/auth/login';
+                    return;
+                }
+                const userID = sess.data.user.id;
+                const res = await axios.get(`/api/users/${userID}`);
+                console.log("Response from /api/users/:id ", res.data)
+                // const json = await res.json()
+                const json = await res.data;
+                console.log("res.data: ", json)
+                const userInfo = userHomeInfoSchema.safeParse(json);
+                if (!userInfo.success) {
+                    toast.error("Something went wrong. Please reload the page and try again.")
+                    console.error("Failed to parse user info: ", userInfo.error.message)
+                } else {
+                    setUserInfo(userInfo.data);
+                }
             } else {
-                setUserInfo(userInfo.data);
+                setUserInfo({
+                    id: "mock",
+                    experience: experiencePerKnowledgePoint * 3,
+                    isPremium: false,
+                    knowledgePoints: [{
+                        confidence: 2,
+                        KP: "Mitochondria is the powerhouse of the cell",
+                        TwoDvK: [10, 20],
+                    },
+                    {
+                        confidence: 2,
+                        KP: "Photons are particles of light",
+                        TwoDvK: [80.73157922699662, 0.399578771299815]
+                    },
+                    {
+                        confidence: 2,
+                        KP: "Momentum is conserved in a closed system",
+                        TwoDvK: [120.73157922699662, 48.399578771299815]
+                    }
+                    ],
+                    name: "Guest"
+                })
+
             }
         }
         main()
@@ -125,8 +156,9 @@ function Page({ params }: { params: { params: string } }) {
                                             const textArea = textAreaRef.current;
                                             if (textArea) textArea.value = example;
                                             if (textArea) textArea.focus();
-
-                                        }} className={`${ruda.className} hover:text-white text-[1.2rem] h-auto text-black w-full px-8 py-4 bg-muted rounded-xl font-bold`}>
+                                        }}
+                                            pings={example.includes("spinal")}
+                                            className={`${ruda.className} hover:text-white text-[1.2rem] h-auto text-black w-full px-8 py-4 bg-muted rounded-xl font-bold`}>
                                             {example}
                                         </Button>
                                 )

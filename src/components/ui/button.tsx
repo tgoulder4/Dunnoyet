@@ -56,6 +56,7 @@ export interface ButtonProps
   disableLoading?: boolean;
   padding?: string;
   tooltip?: string | React.ReactNode;
+  pings?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -70,6 +71,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       alt,
       asChild = false,
+      pings,
       ...props
     },
     ref
@@ -101,6 +103,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ) : (
             props.children
           )}
+          {pings ? <div className='w-3/5 h-3/5 absolute z-[-1] rounded-[5px] animate-ping ping bg-black'></div> : <></>}
         </Comp>
 
       );

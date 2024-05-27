@@ -4,7 +4,7 @@ import LessonSection from './LessonSection';
 import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
-import { lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
+import { colours, lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
 import { lessonStatePayloadSchema, lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
@@ -14,7 +14,7 @@ import { messagesSchema } from '@/lib/validation/primitives';
 import Notes from './Notes/Notes';
 import { toast } from 'sonner';
 import { findDistanceUntilLessonEnd } from './Chat/Helpers';
-
+import EndLesson from './End/EndLesson';
 function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema> }) {
     // const user = useSession().data?.user!
     // session is always non-null inside this page, all the way down the React tree.
@@ -56,7 +56,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                                 {currentLessonState.msgHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index + 2 > currentLessonState.msgHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == currentLessonState.msgHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {
@@ -78,11 +78,12 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                     }
                 </LessonSection>
             </div>
-            <LessonSection className='flex-[5] learningChatArea h-full' style={{ padding: 0, borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} />}
+
+            <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
+                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson subject='a' />}
             </LessonSection>
-            <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0 }} className='flex-[2] notesArea h-full'>
-                {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && <Notes />}
+            <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
+                {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}
             </LessonSection>
         </div>
     )
