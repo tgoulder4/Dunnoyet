@@ -2,6 +2,7 @@ import React from 'react'
 import ProgressBar from "@ramonak/react-progress-bar";
 import { getLevel } from './Levels';
 import { changeColour, colours } from '@/lib/constants';
+import EndLessonTimer from './EndLessonTimer';
 function EndLesson({ subject, experiencePrior, experienceNow }: { subject: string, experiencePrior: number, experienceNow: number }) {
     //round experiencePrior down to the nearest 100 then add 100
     const experienceNext = Math.floor(experiencePrior / 100) * 100 + 100;
@@ -9,7 +10,7 @@ function EndLesson({ subject, experiencePrior, experienceNow }: { subject: strin
     const levelNow = getLevel(experienceNow);
 
     return (
-        <div className='flex flex-col justify-between'>
+        <div className='flex flex-col h-2/3 justify-between text-white'>
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-3">
                     <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -20,17 +21,19 @@ function EndLesson({ subject, experiencePrior, experienceNow }: { subject: strin
                     </svg>
                     <h1 className='font-bold text-3xl text-white'>Lesson Complete - {subject}</h1>
                 </div>
-                <div className="">
-                    <div className="xpmeter">
-                        <div className="flex flex-row gap-3">
-                            <h2>Level {levelNow}</h2>
-                            <ProgressBar width='12vw' transitionDuration='2s' transitionTimingFunction='ease-in-out' completed={(experienceNext - experienceNow) * 100 / experienceNext} baseBgColor={changeColour(colours.primaryObnoxious).darken(10).toString()} bgColor='white' />
-                            <h2>Level {levelNext}</h2>
-                        </div>
-                        <h2>You learnt 4 new concepts</h2>
+
+                <div className="flex flex-col gap-4">
+                    <h2 className=''>You learnt 4 new concepts</h2>
+                    <div className="flex flex-row gap-3">
+                        <h2 className=''>Level {levelNow}</h2>
+                        <ProgressBar width='22vw' transitionDuration='2s' transitionTimingFunction='ease-in-out' completed={(experienceNext - experienceNow) * 100 / experienceNext} baseBgColor={changeColour(colours.primaryObnoxious).darken(10).toString()} bgColor='white' />
+                        <h2 className=''>Level {levelNext}</h2>
                     </div>
                 </div>
             </div>
+            <h2 className='opacity-60 font-normal'>Taking you back home in
+                <EndLessonTimer />
+            </h2>
         </div>
     )
 }
