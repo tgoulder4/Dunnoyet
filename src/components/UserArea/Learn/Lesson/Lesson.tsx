@@ -36,6 +36,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         toast.error("An error occurred: MSILP@Lesson")
         return <></>
     }
+    //if stage=end, don't show 'about x left' or 'finish'. if save failed then toast error.
     if (!lastSaved || !newMessages || !lessonID || !userID) {
         //missing info in lesson payload
         toast.error("Something went wrong: MIILP@Lesson")
@@ -44,7 +45,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
-                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-all learningPath flex flex-col gap-3 flex-[3]'>
+                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-transform learningPath flex flex-col gap-3 flex-[3]'>
                     {/* for each of the messages sent by eli */}
                     {
                         stage == 'loading' ?
@@ -63,8 +64,8 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
 
                                     targetQuestion ?
                                         <>
-                                            <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />
-                                            <LearningPathItem confidence={0} lastItem={true} text={"Finish 🏁"} />
+                                            {stage !== "end" && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
+                                            <LearningPathItem confidence={stage == "end" ? 2 : 0} lastItem={true} text={"Finish 🏁"} />
                                         </> : <></>
                                 }
                             </>
@@ -80,7 +81,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
             </div>
 
             <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson subject='a' />}
+                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson experienceNow={100} experiencePrior={50} subject='a' />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
                 {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}

@@ -193,7 +193,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 console.log("Parse result: ", parseResult.data)
                 //messagesPayloadSchema -> lessonStateSchema
                 //if the newMessage isn't of type whatcomestomind, set the most recent message in msgHistory to confidence 2
-                if (parseResult.data.newMessages?.length && parseResult.data.newMessages![0].eliResponseType == 'General') {
+                if (msgHistory[msgHistory.length - 1].eliResponseType == 'General') {
                     const newMsgHistory = [...msgHistory];
                     newMsgHistory[msgHistory.length - 1].KP!.confidence = 2;
                     setLessonState({
