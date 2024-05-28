@@ -58,47 +58,47 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     }]
                 })
                 try {
-                    // //prod
-                    // const res = await axios({
-                    //     method: 'POST',
-                    //     url: '/api/messages/response',
-                    //     data: {
-                    //         action: 'reply',
-                    //         lessonId: lessonID,
-                    //         msgHistory: [...msgHistory, {
-                    //             role: 'user',
-                    //             content: text,
-                    //         }],
-                    //         stage,
-                    //         subject,
-                    //         targetQuestion: targetQuestion?.point,
-                    //         userId: userID,
-                    //         lastSaved
-                    //     }
-                    // });
-                    //mock res
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-                    const res = {
+                    //prod
+                    const res = await axios({
+                        method: 'POST',
+                        url: '/api/messages/response',
                         data: {
-                            payload: {
-                                newMessages: [
-                                    {
-                                        role: 'eli',
-                                        content: 'which are intrinsically negative',
-                                        KP: {
-                                            KP: "which are negative",
-                                            confidence: 1,
-                                            TwoDvK: [2, 12]
-                                        },
-                                        eliResponseType: 'General',
-                                        distanceAwayFromFinishingLesson: 1
-                                    },
-                                ],
-                                stage: 'main',
-                                lastSaved: "2024-05-24T01:48:24.571Z"
-                            }
+                            action: 'reply',
+                            lessonId: lessonID,
+                            msgHistory: [...msgHistory, {
+                                role: 'user',
+                                content: text,
+                            }],
+                            stage,
+                            subject,
+                            targetQuestion: targetQuestion?.point,
+                            userId: userID,
+                            lastSaved
                         }
-                    }
+                    });
+                    // //mock res
+                    // await new Promise((resolve) => setTimeout(resolve, 1000));
+                    // const res = {
+                    //     data: {
+                    //         payload: {
+                    //             newMessages: [
+                    //                 {
+                    //                     role: 'eli',
+                    //                     content: 'which are intrinsically negative',
+                    //                     KP: {
+                    //                         KP: "which are negative",
+                    //                         confidence: 1,
+                    //                         TwoDvK: [2, 12]
+                    //                     },
+                    //                     eliResponseType: 'General',
+                    //                     distanceAwayFromFinishingLesson: 1
+                    //                 },
+                    //             ],
+                    //             stage: 'main',
+                    //             lastSaved: "2024-05-24T01:48:24.571Z"
+                    //         }
+                    //     }
+                    // }
 
                     console.log("Response: ", res)
                     const parseResult = messagesPayloadSchema.safeParse(res.data.payload);
@@ -138,54 +138,54 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
             }
         } else if (action == "understood") {
             try {
-                // //prod
-                // const res = await axios({
-                //     method: 'POST',
-                //     url: '/api/messages/response',
-                //     data: {
-                //         action: 'understood',
-                //         lessonId: lessonID,
-                //         msgHistory,
-                //         stage,
-                //         subject,
-                //         targetQuestion: targetQuestion?.point,
-                //         userId: userID,
-                //         lastSaved
-                //     }
-                // });
-
-                //mock
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-
-                const res = {
+                //prod
+                const res = await axios({
+                    method: 'POST',
+                    url: '/api/messages/response',
                     data: {
-                        // mock: understood during main
-                        // payload: {
-                        //     newMessages: [
-                        //         {
-                        //             role: 'eli',
-                        //             content: 'which are intrinsically negative',
-                        //             KP: {
-                        //                 KP: "which are negative",
-                        //                 confidence: 1,
-                        //                 TwoDvK: [62, 58]
-                        //             },
-                        //             eliResponseType: 'General'
-                        //         },
-                        //     ],
-                        //     stage: 'main',
-                        //     lastSaved: "2024-05-24T01:48:24.571Z"
-                        // }
-                        // mock: end lesson after final understood
-                        payload: {
-                            newMessages: [],
-                            stage: 'end',
-                            experiencePrior: 50,
-                            experienceNow: 100,
-                            lastSaved
-                        }
+                        action: 'understood',
+                        lessonId: lessonID,
+                        msgHistory,
+                        stage,
+                        subject,
+                        targetQuestion: targetQuestion?.point,
+                        userId: userID,
+                        lastSaved
                     }
-                }
+                });
+
+                // //mock
+                // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                // const res = {
+                //     data: {
+                //         // mock: understood during main
+                //         // payload: {
+                //         //     newMessages: [
+                //         //         {
+                //         //             role: 'eli',
+                //         //             content: 'which are intrinsically negative',
+                //         //             KP: {
+                //         //                 KP: "which are negative",
+                //         //                 confidence: 1,
+                //         //                 TwoDvK: [62, 58]
+                //         //             },
+                //         //             eliResponseType: 'General'
+                //         //         },
+                //         //     ],
+                //         //     stage: 'main',
+                //         //     lastSaved: "2024-05-24T01:48:24.571Z"
+                //         // }
+                //         // mock: end lesson after final understood
+                //         payload: {
+                //             newMessages: [],
+                //             stage: 'end',
+                //             experiencePrior: 50,
+                //             experienceNow: 100,
+                //             lastSaved
+                //         }
+                //     }
+                // }
                 console.log("Response: ", res)
                 const parseResult = messagesPayloadSchema.safeParse(res.data.payload);
                 if (!parseResult.success) {
@@ -250,7 +250,6 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
     return (
         <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
             <section className='titleAndReplies flex flex-col gap-3 h-full'>
-
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
                         <h1 className='w-full font-extrabold'>{subject ? subject : targetQuestion?.point ?? "Error"}</h1>

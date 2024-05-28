@@ -12,50 +12,52 @@ import { z } from 'zod';
 // import { hc } from 'hono/client';
 // const client = hc<AppTypes['lessonRoute']>('');
 var equal = require('deep-equal');
-function usePayload() {
+function page() {
     const usp = useSearchParams();
+    //double renders in react strictmode exhausting api calls. this is a workaround
+    const initialized = useRef(false);
     useEffect(() => {
         async function main() {
-            const givenQ = usp.get('q');
-            const givenUkP = usp.get('uKP');
-            if (!givenQ && !givenUkP) {
-                console.error("No question or ukp given")
-                return { status: 500 };
-            }
-            console.log("Creating GET request to /api/lessons/new")
-            try {
-                // //prod
-                // const response = await axios.get(`/api/lessons/new`, {
-                //     params: {
-                //         mode: givenQ ? 'New Question' : 'Free Roam',
-                //         content: givenQ ? givenQ : givenUkP
+            if (!initialized.current) {
+                initialized.current = true;
+                const givenQ = usp.get('q');
+                const givenUkP = usp.get('uKP');
+                if (!givenQ && !givenUkP) {
+                    console.error("No question or ukp given")
+                    return { status: 500 };
+                }
+                console.log("Creating GET request to /api/lessons/new")
+                // try {
+                //     //prod. tofix: calls twice
+                //     const response = await axios.get(`/api/lessons/new`, {
+                //         params: {
+                //             mode: givenQ ? 'New Question' : 'Free Roam',
+                //             content: givenQ ? givenQ : givenUkP
+                //         }
+                //     })
+                //     const lessID = response.data.id;
+                //     if (!lessID) return { status: 500 };
+                //     console.log("Response from /api/lessons/new: ", response)
+                //     const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(lessID)
+
+                //     if (!parseResult.success) {
+                //         console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
+                //         return { status: 500 };
                 //     }
-                // })
-                // const lessID = response.data.id;
-                // if (!lessID) return { status: 500 };
-                // console.log("Response from /api/lessons/new: ", response)
-                // const parseResult = z.string().regex(/[0-9A-z]+/).safeParse(lessID)
+                //     console.log("Successfully receieved & parsed lesson: ", lessID);
+                //     window.location.href = `/lesson/${lessID}`
 
-                // if (!parseResult.success) {
-                //     console.log("Failed to parse response from /api/lessons/new: ", parseResult.error.message)
-                //     return { status: 500 };
+                //     // //mock
+                //     // await new Promise((res) => setTimeout(res, 2000));
+                //     // window.location.href = `/lesson/mock`
                 // }
-                // console.log("Successfully receieved & parsed lesson: ", lessID);
-                // window.location.href = `/lesson/${lessID}`
-
-                //mock
-                await new Promise((res) => setTimeout(res, 2000));
-                window.location.href = `/lesson/mock`
-            }
-            catch (e) {
-                console.error(e)
+                // catch (e) {
+                //     console.error(e)
+                // }
             }
         }
         main()
     }, [])
-}
-function page() {
-    const payload = useRef(usePayload());
     return (<Lesson payload={{ stage: "loading", lastSaved: new Date }} />)
 }
 

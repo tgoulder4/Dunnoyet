@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import ProgressBar from "@ramonak/react-progress-bar";
 import { getLevel } from './Levels';
 import { changeColour, colours, spacing } from '@/lib/constants';
 import EndLessonTimer from './EndLessonTimer';
-import axios from 'axios';
 import { z } from 'zod';
-import { lessonStateSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStateSchema } from '@/lib/validation/transfer/transferSchemas';
 import { toast } from 'sonner';
+import { findTotalKnowledgePointsInLesson } from '../Chat/Helpers';
+import { experiencePerKnowledgePoint } from '@/lib/chat/Eli/helpers/constants';
 function EndLesson({ currentLessonState }: { currentLessonState: z.infer<typeof lessonStateSchema>, }) {
     const {
         lessonID,
@@ -39,11 +40,11 @@ function EndLesson({ currentLessonState }: { currentLessonState: z.infer<typeof 
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <h2 className=''>You learnt 4 new concepts</h2>
+                    <h2>You learnt {findTotalKnowledgePointsInLesson(currentLessonState.msgHistory)} new concepts (+{findTotalKnowledgePointsInLesson(currentLessonState.msgHistory) * experiencePerKnowledgePoint} XP)</h2>
                     <div className="flex flex-row gap-3">
-                        <h2 className=''>Level {priorLevel?.levelNo}</h2>
+                        <h2>Level {priorLevel?.levelNo}</h2>
                         <ProgressBar width='28vw' isLabelVisible={false} animateOnRender={true} transitionDuration='2s' transitionTimingFunction='ease-in-out' completed={(nextLevel.xpRequired - experienceNow) * 100 / nextLevel.xpRequired} baseBgColor={changeColour(colours.primaryObnoxious).darken(10).toString()} bgColor='white' />
-                        <h2 className=''>Level {nextLevel?.levelNo}</h2>
+                        <h2>Level {nextLevel?.levelNo}</h2>
                     </div>
                 </div>
             </div>

@@ -26,6 +26,7 @@
     "@ramonak/react-progress-bar": "^5.2.0",
     "@react-pdf-viewer/core": "^3.12.0",
     "@react-spring/web": "^9.7.3",
+    "@rlimit/http": "^0.0.5",
     "@types/fabric": "^5.3.6",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",

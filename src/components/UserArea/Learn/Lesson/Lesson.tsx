@@ -22,7 +22,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         ...payload,
         msgHistory: payload.newMessages, //contains the KPs
     } as z.infer<typeof lessonStateSchema>);
-    console.log("Current lesson state: ", currentLessonState)
+    console.log("Lesson.tsx called with state: ", currentLessonState)
     const {
         stage,
         lastSaved,
@@ -42,7 +42,9 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         toast.error("Something went wrong: MIILP@Lesson")
     }
     const subject = useRef<string | undefined>(payload.subject);
-    const lastItemIndex = targetQuestion?.point ? currentLessonState.msgHistory.length - 1 + 2 : currentLessonState.msgHistory.length - 1;
+    console.log("targetQuestion: ", targetQuestion, " currentlessonState.msgHistory: ", currentLessonState.msgHistory);
+    let lastItemIndex: number = 0;
+    if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 + 2 : currentLessonState.msgHistory.length - 1;
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>

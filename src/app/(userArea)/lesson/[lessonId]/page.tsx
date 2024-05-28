@@ -11,66 +11,67 @@ import React from 'react'
 import { z } from 'zod';
 
 async function LessonPage({ params, searchParams }: { params: { lessonId: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
-    // const lessonId = params.lessonId;
-    // const lesson = await getLesson(lessonId);
-    // console.log("GetLesson response: ", lesson)
-    // if (!lesson) {
-    //     // return NextResponse.redirect(process.env.NEXT_PUBLIC_APP_URL! + "/api/error") 
-    //     return <>Error</>
-    // };
-    // const {
-    //     stage,
-    //     targetQ,
-    //     beganAt,
-    //     subject,
-    //     messages,
-    //     userId
-    // } = lesson;
-    // const payload: z.infer<typeof lessonStatePayloadSchema> = {
-    //     lastSaved: beganAt,
-    //     stage,
-    //     subject: subject || undefined,
-    //     targetQuestion: targetQ || undefined,
-    //     newMessages: messages.length ? messages :
-    //         //if its newQ tehn ask what they know
-    //         [{
-    //             role: "eli",
-    //             content: tellMeWhatYouKnow(),
-    //             eliResponseType: "WhatComesToMind",
+    //prod
+    const lessonId = params.lessonId;
+    const lesson = await getLesson(lessonId);
+    console.log("GetLesson response: ", lesson)
+    if (!lesson) {
+        // return NextResponse.redirect(process.env.NEXT_PUBLIC_APP_URL! + "/api/error") 
+        return <>Error</>
+    };
+    const {
+        stage,
+        targetQ,
+        beganAt,
+        subject,
+        messages,
+        userId
+    } = lesson;
+    const payload: z.infer<typeof lessonStatePayloadSchema> = {
+        lastSaved: beganAt,
+        stage,
+        subject: subject || undefined,
+        targetQuestion: targetQ || undefined,
+        newMessages: messages.length ? messages :
+            //if its newQ tehn ask what they know
+            [{
+                role: "eli",
+                content: tellMeWhatYouKnow(),
+                eliResponseType: "WhatComesToMind",
 
-    //         }],
-    //     lessonID: lessonId,
-    //     userID: userId
-    // }
+            }],
+        lessonID: lessonId,
+        userID: userId
+    }
 
-    // console.log("LessonPage payload: ", payload)
+    console.log("LessonPage payload: ", payload)
     return (
         <Lesson payload={
-            // payload
-            //for new question testing
-            {
-                lastSaved: new Date(),
-                stage: 'purgatory',
-                subject: undefined,
-                targetQuestion: {
-                    point: 'Why do electrons repel each other?',
-                    TwoDvK: []
-                },
-                lessonID: 'mock',
-                userID: 'mock',
-                newMessages: [
-                    {
-                        role: 'eli',
-                        content: 'Tell me a fact you understand within this topic!',
-                        eliResponseType: 'WhatComesToMind',
-                        distanceAwayFromFinishingLesson: 10,
-                    },
-                    // {
-                    //     role: 'user',
-                    //     content: 'Some user reply',
-                    // },
-                ],
-            }
+            payload
+            // //for new question testing
+            // {
+            //     lastSaved: new Date(),
+            //     stage: 'purgatory',
+            //     subject: undefined,
+            //     targetQuestion: {
+            //         point: 'Why do electrons repel each other?',
+            //         TwoDvK: []
+            //     },
+            //     lessonID: 'mock',
+            //     userID: 'mock',
+            //     newMessages: [
+            //         {
+            //             role: 'eli',
+            //             content: 'Tell me a fact you understand within this topic!',
+            //             eliResponseType: 'WhatComesToMind',
+            //             distanceAwayFromFinishingLesson: 10,
+            //         },
+            //         // {
+            //         //     role: 'user',
+            //         //     content: 'Some user reply',
+            //         // },
+            //     ],
+            // }
             // //for free roam testing
             // {
             //     subject: 'Spinal Cord',
