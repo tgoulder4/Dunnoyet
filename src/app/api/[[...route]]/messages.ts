@@ -11,6 +11,7 @@ import { connect } from 'http2';
 import { create } from 'domain';
 import { oopsThatsNotQuiteRight } from '@/lib/chat/Eli/helpers/sayings';
 import { messagesSchema } from '@/lib/validation/primitives';
+import { findDistanceUntilLessonEnd } from '@/components/UserArea/Learn/Lesson/Chat/Helpers';
 
 const prisma = prismaClient;
 export const runtime = 'edge';
@@ -33,7 +34,7 @@ const app = new Hono()
         let payload: z.infer<typeof messagesPayloadSchema> = {
             newMessages: [],
             stage,
-            lastSaved: new Date(),
+            lastSaved,
         }
         //if right save KP to db and pinecone, stage is now main
         //free roam:
@@ -84,40 +85,40 @@ const app = new Hono()
                 ...eliReply,
                 eliResponseType: eliReply.content.includes("?") ? "WhatComesToMind" : "General"
             });
-        }
-        else if (stage === 'end') {
-            //save kps to user kp list
-            await prisma.$transaction(async (tx) => {
-                const savedKPs = await tx.knowledgePoint.createMany({
-                    data: msgHistory.map(msg => ({
-                        confidence: 2,
-                        KP: msg.content,
-                        lessonId,
-                        userId,
-                        source: "offered"
-                    }))
-                })
-                if (!savedKPs) {
-                    console.error("Failed to save KPs to user")
-                    return c.status(500)
-                }
-                //update user experience
-
-                const updatedUser = await tx.user.update({
-                    where: {
-                        id: userId
-                    },
-                    data: {
-                        experience: {
-                            increment: experiencePerKnowledgePoint * savedKPs.count
-                        }
+            if (findDistanceUntilLessonEnd(msgHistory) === 1) {
+                payload.stage = 'end';
+                //save kps to user kp list
+                await prisma.$transaction(async (tx) => {
+                    const savedKPs = await tx.knowledgePoint.createMany({
+                        data: msgHistory.map(msg => ({
+                            confidence: 2,
+                            KP: msg.content,
+                            lessonId,
+                            userId,
+                            source: "offered"
+                        }))
+                    })
+                    if (!savedKPs) {
+                        console.error("Failed to save KPs to user")
+                        return c.status(500)
                     }
-                })
-                payload.experiencePrior = updatedUser.experience - experiencePerKnowledgePoint * savedKPs.count;
-                payload.experienceNow = updatedUser.experience;
-                return payload;
-            })
+                    //update user experience
 
+                    const updatedUser = await tx.user.update({
+                        where: {
+                            id: userId
+                        },
+                        data: {
+                            experience: {
+                                increment: experiencePerKnowledgePoint * savedKPs.count
+                            }
+                        }
+                    })
+                    payload.experiencePrior = updatedUser.experience - experiencePerKnowledgePoint * savedKPs.count;
+                    payload.experienceNow = updatedUser.experience;
+                    return payload;
+                })
+            }
         }
         console.log("Preparing payload: ", payload)
         //if last saved is greater than 5 mins & stage!==purg, save messagehistory to db
@@ -133,6 +134,7 @@ const app = new Hono()
             //         lessonId,
             //     }))
             // })
+            // payload.lastSaved = new Date();
             // console.log("Saved messages: ", savedMessages)
         }
         console.log("Returning payload: ", payload)

@@ -138,43 +138,22 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
             }
         } else if (action == "understood") {
             try {
-                //if the distanceAwayFromFinishingLesson of the last eli message is 1, end the lesson
                 // //prod
-                if (msgHistory[msgHistory.length - 1].distanceAwayFromFinishingLesson && msgHistory[msgHistory.length - 1].distanceAwayFromFinishingLesson == 1) {
-                    // //do this in endlesson.tsx
-                    //                     const res = await axios({
-                    //     method: 'POST',
-                    //     url: '/api/messages/response',
-                    //     data: {
-                    //         action: 'understood',
-                    //         lessonId: lessonID,
-                    //         msgHistory,
-                    //         stage:'end',
-                    //         targetQuestion: targetQuestion?.point,
-                    //         userId: userID,
-                    //         lastSaved
-                    //     }
-                    // });
-                    setLessonState({
-                        ...lessonState,
-                        stage: 'end',
-                    });
-                } else {
-                    const res = await axios({
-                        method: 'POST',
-                        url: '/api/messages/response',
-                        data: {
-                            action: 'understood',
-                            lessonId: lessonID,
-                            msgHistory,
-                            stage,
-                            subject,
-                            targetQuestion: targetQuestion?.point,
-                            userId: userID,
-                            lastSaved
-                        }
-                    });
-                }
+                // const res = await axios({
+                //     method: 'POST',
+                //     url: '/api/messages/response',
+                //     data: {
+                //         action: 'understood',
+                //         lessonId: lessonID,
+                //         msgHistory,
+                //         stage,
+                //         subject,
+                //         targetQuestion: targetQuestion?.point,
+                //         userId: userID,
+                //         lastSaved
+                //     }
+                // });
+
                 //mock
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -282,7 +261,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     {
                         groupedMessages.map((groupSet, index) => {
                             //if they're two messages of the same type in a row just push it to messages 
-                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={groupSet[0].content + index} focused={index == groupedMessages.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 0} messages={groupSet} />
+                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={groupSet[0].content + index} focused={index == groupedMessages.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 1} messages={groupSet} />
                         })
                     }
                 </div>

@@ -47,68 +47,68 @@ async function LessonPage({ params, searchParams }: { params: { lessonId: string
     return (
         <Lesson payload={
             // payload
-            // //for new question testing
-            // {
-            //     lastSaved: new Date(),
-            //     stage: 'purgatory',
-            //     subject: undefined,
-            //     targetQuestion: {
-            //         point: 'Why do electrons repel each other?',
-            //         TwoDvK: []
-            //     },
-            //     lessonID: 'mock',
-            //     userID: 'mock',
-            //     newMessages: [
-            //         {
-            //             role: 'eli',
-            //             content: 'Tell me a fact you understand within this topic!',
-            //             eliResponseType: 'WhatComesToMind',
-            //             distanceAwayFromFinishingLesson: 10,
-            //         },
-            //         // {
-            //         //     role: 'user',
-            //         //     content: 'Some user reply',
-            //         // },
-            //     ],
-            // }
-            //for free roam testing
+            //for new question testing
             {
-                subject: 'Spinal Cord',
                 lastSaved: new Date(),
+                stage: 'purgatory',
+                subject: undefined,
+                targetQuestion: {
+                    point: 'Why do electrons repel each other?',
+                    TwoDvK: []
+                },
                 lessonID: 'mock',
                 userID: 'mock',
-                //was right
-                //     stage: 'main',
-                //     newMessages: [{
-                //         role: 'user', content: 'The spinal cavity holds the spinal cord',
-                //         KP: {
-                //             confidence: 2,
-                //             KP: 'The spinal cavity holds the spinal cord',
-                //             TwoDvK: [80.73157922699662, 0.399578771299815]
-                //         }
-                //     },
-                //     {
-                //         role: 'eli',
-                //         content: 'which is protected by the vertebrae bones',
-                //         eliResponseType: "General",
-                //         KP: {
-                //             confidence: 1,
-                //             KP: 'The vertebrae bones protect the spinal cord in the spine.',
-                //             TwoDvK: [2.73157922699662, 42.399578771299815]
-                //         }
-                //     }]
-                // }
-                //was wrong
-                stage: 'purgatory',
-                newMessages: [{
-                    role: 'user', content: 'The spinal cavity doesn\'t hold the spinal cord'
-                },
-                {
-                    role: 'eli',
-                    content: 'That wasn\'t quite right. What\'s a different fact you\'ve got?',
-                    eliResponseType: "WhatComesToMind"
-                }]
+                newMessages: [
+                    {
+                        role: 'eli',
+                        content: 'Tell me a fact you understand within this topic!',
+                        eliResponseType: 'WhatComesToMind',
+                        distanceAwayFromFinishingLesson: 10,
+                    },
+                    // {
+                    //     role: 'user',
+                    //     content: 'Some user reply',
+                    // },
+                ],
             }
+            // //for free roam testing
+            // {
+            //     subject: 'Spinal Cord',
+            //     lastSaved: new Date(),
+            //     lessonID: 'mock',
+            //     userID: 'mock',
+            //     //was right
+            //     //     stage: 'main',
+            //     //     newMessages: [{
+            //     //         role: 'user', content: 'The spinal cavity holds the spinal cord',
+            //     //         KP: {
+            //     //             confidence: 2,
+            //     //             KP: 'The spinal cavity holds the spinal cord',
+            //     //             TwoDvK: [80.73157922699662, 0.399578771299815]
+            //     //         }
+            //     //     },
+            //     //     {
+            //     //         role: 'eli',
+            //     //         content: 'which is protected by the vertebrae bones',
+            //     //         eliResponseType: "General",
+            //     //         KP: {
+            //     //             confidence: 1,
+            //     //             KP: 'The vertebrae bones protect the spinal cord in the spine.',
+            //     //             TwoDvK: [2.73157922699662, 42.399578771299815]
+            //     //         }
+            //     //     }]
+            //     // }
+            //     //was wrong
+            //     stage: 'purgatory',
+            //     newMessages: [{
+            //         role: 'user', content: 'The spinal cavity doesn\'t hold the spinal cord'
+            //     },
+            //     {
+            //         role: 'eli',
+            //         content: 'That wasn\'t quite right. What\'s a different fact you\'ve got?',
+            //         eliResponseType: "WhatComesToMind"
+            //     }]
+            // }
 
         } />
     )

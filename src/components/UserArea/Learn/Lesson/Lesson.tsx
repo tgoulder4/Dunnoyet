@@ -18,11 +18,11 @@ import EndLesson from './End/EndLesson';
 function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema> }) {
     // const user = useSession().data?.user!
     // session is always non-null inside this page, all the way down the React tree.
-    console.log("Payload received: ", payload)
     const [currentLessonState, setCurrentLessonState] = useState({
         ...payload,
         msgHistory: payload.newMessages, //contains the KPs
     } as z.infer<typeof lessonStateSchema>);
+    console.log("Current lesson state: ", currentLessonState)
     const {
         stage,
         lastSaved,
@@ -42,6 +42,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         toast.error("Something went wrong: MIILP@Lesson")
     }
     const subject = useRef<string | undefined>(payload.subject);
+    const lastItemIndex = targetQuestion?.point ? currentLessonState.msgHistory.length - 1 + 2 : currentLessonState.msgHistory.length - 1;
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
@@ -57,14 +58,14 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                                 {currentLessonState.msgHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == currentLessonState.msgHistory.length - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {
 
                                     targetQuestion ?
                                         <>
-                                            {stage !== "end" && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
+                                            {stage !== "end" && findDistanceUntilLessonEnd(currentLessonState.msgHistory) !== 1 && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
                                             <LearningPathItem confidence={stage == "end" ? 2 : 0} lastItem={true} text={"Finish 🏁"} />
                                         </> : <></>
                                 }

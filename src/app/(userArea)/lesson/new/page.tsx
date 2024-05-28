@@ -3,7 +3,6 @@ import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { createLesson, getLesson } from '@/app/api/[[...route]]/lessons';
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { lessonStatePayloadSchema } from '@/lib/validation/transfer/transferSchemas';
-import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef } from 'react'
 import axios from 'axios';
