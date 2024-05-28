@@ -9,9 +9,9 @@ function EndLessonTimer() {
         expiryTimestamp:
             new Date().setSeconds(new Date().getSeconds() + 10) as any,
         onExpire: () =>
-            window.location.href = '/home'
+        // window.location.href = '/home'
         // alert("10s elapsed")
-        // { }
+        { }
         ,
         autoStart: true,
 

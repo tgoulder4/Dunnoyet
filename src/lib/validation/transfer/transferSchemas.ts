@@ -27,7 +27,8 @@ export const messagesPayloadSchema = z.object({
     subject: z.string().optional(),
     lastSaved: z.coerce.date().optional(),
     //only used for ending the lesson
-    experiencePrior: z.number().optional()
+    experiencePrior: z.number().optional(),
+    experienceNow: z.number().optional(),
 })
 //lessonStateSchema is an extension of messagesPayloadSchema, with lessonID: string
 export const lessonStatePayloadSchema = messagesPayloadSchema.extend({

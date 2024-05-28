@@ -1,16 +1,73 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ProgressBar from "@ramonak/react-progress-bar";
 import { getLevel } from './Levels';
-import { changeColour, colours } from '@/lib/constants';
+import { changeColour, colours, spacing } from '@/lib/constants';
 import EndLessonTimer from './EndLessonTimer';
-function EndLesson({ subject, experiencePrior, experienceNow }: { subject: string, experiencePrior: number, experienceNow: number }) {
+import axios from 'axios';
+import { z } from 'zod';
+import { lessonStateSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
+import { toast } from 'sonner';
+function EndLesson({ currentLessonState }: { currentLessonState: z.infer<typeof lessonStateSchema>, }) {
+    const {
+        lessonID,
+        msgHistory,
+        userID,
+        subject
+    } = currentLessonState;
     //round experiencePrior down to the nearest 100 then add 100
-    const experienceNeededForNextLevel = Math.ceil(experiencePrior / 100) * 100 + 100;
-    const levelNext = getLevel(experienceNeededForNextLevel);
-    const levelPrior = getLevel(experiencePrior);
-    console.log("Completed amount: " + (experienceNeededForNextLevel - experienceNow) * 100 / experienceNeededForNextLevel, " experienceNeededForNextLevel: ", experienceNeededForNextLevel, " experienceNow: ", experienceNow, " levelNext: ", levelNext, " levelPrior: ", levelPrior)
+    const [xpData, setXpData] = useState({
+        priorLevel: null,
+        nextLevel: null,
+        currentXP: null,
+    } as { priorLevel: { xpRequired: number, levelNo: number } | null, nextLevel: { xpRequired: number, levelNo: number } | null, currentXP: number | null })
+    useEffect(() => {
+        async function main() {
+            // const res = await axios({
+            //     method: 'POST',
+            //     url: '/api/messages/response',
+            //     data: {
+            //         action: 'understood',
+            //         lessonId: lessonID,
+            //         msgHistory,
+            //         stage: 'end',
+            //         userId: userID,
+            //     }
+            // });
+
+            //mock
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const res = {
+                data: {
+                    experienceNow: 100,
+                    experiencePrior: 0,
+                    newMessages: [],
+                    stage: 'end',
+                }
+            }
+            console.log("Response from server: ", res)
+            const parsedResult = messagesPayloadSchema.safeParse(res.data);
+            if (!parsedResult.success) {
+                console.error("Failed to parse response from server @endLesson: ", parsedResult.error)
+                toast.error("An error occurred: FPRFS@EL")
+                return;
+            }
+            const { experienceNow, experiencePrior } = parsedResult.data;
+            if (!experienceNow && experienceNow !== 0 || !experiencePrior && experiencePrior !== 0) {
+                console.error("Missing experience in response from server @endLesson, experienceNow: ", experienceNow, " experiencePrior: ", experiencePrior)
+                toast.error("An error occurred: MEIRFS@EL")
+                return;
+            }
+            console.log("Experience now: ", experienceNow, " Experience prior: ", experiencePrior)
+            // setXpData({
+            //     priorLevel: { levelNo: getLevel(experiencePrior), xpRequired: experiencePrior },
+            //     nextLevel: { levelNo: getLevel(Math.ceil(experiencePrior / 100) * 100 + 100), xpRequired: Math.ceil(experiencePrior / 100) * 100 + 100 },
+            //     currentXP: experienceNow,
+            // })
+        }
+        main();
+    }, []);
     return (
-        <div className='flex flex-col h-1/3 justify-between text-white'>
+        <div className='flex flex-col h-1/3 justify-between text-white' style={{ rowGap: spacing.gaps.largest }}>
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-3">
                     <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -23,12 +80,18 @@ function EndLesson({ subject, experiencePrior, experienceNow }: { subject: strin
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <h2 className=''>You learnt 4 new concepts</h2>
-                    <div className="flex flex-row gap-3">
-                        <h2 className=''>Level {levelPrior}</h2>
-                        <ProgressBar width='22vw' animateOnRender={true} transitionDuration='2s' transitionTimingFunction='ease-in-out' completed={(experienceNeededForNextLevel - experienceNow) * 100 / experienceNeededForNextLevel} baseBgColor={changeColour(colours.primaryObnoxious).darken(10).toString()} bgColor='white' />
-                        <h2 className=''>Level {levelNext}</h2>
-                    </div>
+                    {!xpData.currentXP || !xpData.nextLevel || !xpData.priorLevel ?
+                        <div className="flex flex-col gap-3">
+                            <div className="w-56 h-8 rounded-lg animate animate-pulse bg-black opacity-10 " />
+                            <div className="w-36 h-8 rounded-lg animate animate-pulse bg-black opacity-10 " />
+                            <div className="w-36  h-8 rounded-lg animate animate-pulse bg-black opacity-10" />
+                        </div> : <>
+                            <h2 className=''>You learnt 4 new concepts</h2>
+                            <div className="flex flex-row gap-3">
+                                <h2 className=''>Level {xpData.priorLevel?.levelNo}</h2>
+                                <ProgressBar width='22vw' isLabelVisible={false} animateOnRender={true} transitionDuration='2s' transitionTimingFunction='ease-in-out' completed={(xpData.nextLevel.xpRequired - xpData.currentXP) * 100 / xpData.nextLevel.xpRequired} baseBgColor={changeColour(colours.primaryObnoxious).darken(10).toString()} bgColor='white' />
+                                <h2 className=''>Level {xpData.nextLevel?.levelNo}</h2>
+                            </div></>}
                 </div>
             </div>
             <div className="flex flex-row gap-3">

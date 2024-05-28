@@ -57,7 +57,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                                 {currentLessonState.msgHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == currentLessonState.msgHistory.length} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == currentLessonState.msgHistory.length - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {
@@ -79,9 +79,8 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                     }
                 </LessonSection>
             </div>
-
             <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson experienceNow={100} experiencePrior={50} subject='a' />}
+                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson currentLessonState={currentLessonState} />}
             </LessonSection>
             <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
                 {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}
