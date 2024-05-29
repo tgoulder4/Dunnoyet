@@ -5,9 +5,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
+  return (<>
+    <title>Dunnoyet</title>
     <CustomSessionProvider>
       {children}
     </CustomSessionProvider>
+  </>
   );
 }

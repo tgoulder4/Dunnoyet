@@ -14,6 +14,7 @@ export default function RootLayout({
             <head>
                 <link rel="icon" className='' type="image/svg+xml" href="/assets/favicon/favicon.svg"></link>
                 <link rel="icon" type="image/png" href="/assets/favicon/favicon.png"></link>
+                <title>Dunnoyet</title>
             </head>
             <body>
                 {/* Layout UI */}

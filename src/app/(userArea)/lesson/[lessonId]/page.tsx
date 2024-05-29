@@ -109,8 +109,10 @@ async function LessonPage({ params, searchParams }: { params: { lessonId: string
 
     }
     console.log("LessonPage payload: ", payload)
-    return (
+    return (<>
+        <title>{payload.subject || payload.targetQuestion?.point} - Dunnoyet</title>
         <Lesson payload={payload} />
+    </>
     )
 }
 

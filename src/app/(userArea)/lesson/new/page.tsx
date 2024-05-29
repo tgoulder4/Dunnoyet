@@ -58,7 +58,10 @@ function page() {
         }
         main()
     }, [])
-    return (<Lesson payload={{ stage: "loading", lastSaved: new Date }} />)
+    return (
+        <>
+            <title>Creating Lesson - Dunnoyet</title>
+            <Lesson payload={{ stage: "loading", lastSaved: new Date }} /></>)
 }
 
 export default page

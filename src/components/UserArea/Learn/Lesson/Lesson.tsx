@@ -4,7 +4,7 @@ import LessonSection from './LessonSection';
 import LearningPathItem from './LearningPathItem';
 import LearningPathItemTitle from './LearningPathItemTitle';
 import Brainmap from './BrainMap/Brainmap';
-import { colours, lessonPaddingBottom, lessonXPadding, spacing, uiBorder } from '@/lib/constants';
+import { colours, lessonPaddingBottom, lessonXPadding, navHeight, spacing, uiBorder } from '@/lib/constants';
 import { lessonStatePayloadSchema, lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
 import CreatingLesson from './Loading/CreatingLesson';
 import { useSession } from 'next-auth/react';
@@ -47,8 +47,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;
     return (
         <>
-            <title>{stage !== "loading" ? `${subject ? subject.current : targetQuestion?.point}` : `Creating Lesson`} - Dunnoyet</title>
-            <div className="flex h-full font-bold">
+            <div className={`flex h-[calc(100%_-_(2*4.375rem))] font-bold`}>
                 <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
                     <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-transform learningPath flex flex-col gap-3 flex-[3]'>
                         {/* for each of the messages sent by eli */}

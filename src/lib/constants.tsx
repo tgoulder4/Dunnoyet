@@ -57,6 +57,7 @@ export const sizing = {
     largerFontSize: 2.25,
     variableWholePagePadding: 'clamp(24px,20vw,800px)',
 }
+export const navHeight = '4.375rem' // 4.375rem
 export const uiBorder = (opacity = 0.2) => `1px solid rgba(0, 0, 0, ${opacity})`;
 export const spacing = {
     gaps: {

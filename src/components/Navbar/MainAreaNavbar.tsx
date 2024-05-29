@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { DunnoyetLogo, changeColour, colours, spacing, uiBorder } from '@/lib/constants'
+import { DunnoyetLogo, changeColour, colours, navHeight, spacing, uiBorder } from '@/lib/constants'
 import NewButton from '@/components/ui/NewButton'
 import UserAuthButton from '@/components/Navbar/UserAuthButton'
 import { getURL } from 'next/dist/shared/lib/utils'
@@ -15,7 +15,7 @@ function MainAreaNavbar({ style, show }: { style: 'normal' | 'lesson' | 'authOrA
     // console.log("rendering MainAreaNavbar with style: ", style)
     return (<>
         {
-            style == "authOrAdmin" ? <nav style={{ backgroundColor: colours.accent }} className="flex flex-row justify-start items-center h-[70px]">
+            style == "authOrAdmin" ? <nav style={{ backgroundColor: colours.accent }} className={`flex flex-row justify-start items-center h-[${navHeight}]`}>
                 <div className="leftSide flex items-center h-full" style={{ paddingLeft: spacing.gaps.separateElement, paddingRight: spacing.gaps.separateElement, columnGap: spacing.gaps.groupedElement }}>
                     <NewButton style={{ paddingLeft: 0 }} buttonVariant="ghost" actionOrLink="/"> {DunnoyetLogo({ colour: colours.primary })}</NewButton>
                 </div>
