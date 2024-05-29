@@ -75,11 +75,13 @@ const app = new Hono()
                 role: 'user' as "user" | "eli",
                 content: "I understand!"
             }]
+            console.log("msgHistoryToUseToGetResponse: ", msgHistoryToUseToGetResponse)
             const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion, subject)
             if (!eliReply) {
                 console.error("Failed to get teaching response")
                 return c.status(500)
             };
+            console.log("Teaching response receieved: ", eliReply)
             //doesn't matter if it's understood or reply, you'll be dealing with understood client side
             payload.newMessages!.push({
                 ...eliReply,

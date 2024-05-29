@@ -2,6 +2,7 @@ import React from 'react'
 import LearningPathItemTitle from './LearningPathItemTitle'
 
 function LearningPathItem({ confidence, text, lastItem }: { confidence: number, text: string, lastItem?: boolean }) {
+
     return (<>
         <div className={`${lastItem ? "flex-0" : "flex-1"} animate-in slide-in-from-bottom-4 flex flex-col gap-3 h-auto`}>
             <LearningPathItemTitle confidence={confidence} text={text} />

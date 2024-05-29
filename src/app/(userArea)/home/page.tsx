@@ -157,7 +157,7 @@ function Page({ params }: { params: { params: string } }) {
                                             if (textArea) textArea.value = example;
                                             if (textArea) textArea.focus();
                                         }}
-                                            pings={example.includes("spinal")}
+                                            // pings={example.includes("spinal")}
                                             className={`${ruda.className} hover:text-white text-[1.2rem] h-auto text-black w-full px-8 py-4 bg-muted rounded-xl font-bold`}>
                                             {example}
                                         </Button>

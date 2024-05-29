@@ -4,7 +4,7 @@ import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
 import { z } from 'zod';
 import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
-import { simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
+import { simplifyToKnowledgePointInSolitude, simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
 import { checkIsUserRight } from '@/lib/chat/Eli/helpers/correctness';
 import { oopsThatsNotQuiteRight, tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
 import { messagesSchema } from '@/lib/validation/primitives';
@@ -17,7 +17,21 @@ export const getLesson = async (id: string, noAuthCheck?: boolean) => {
     const lessonFound = await prisma.lesson.findFirst({
         where: { id: id },
         select: {
-            messages: true,
+            messages: {
+                select: {
+                    content: true,
+                    role: true,
+                    eliResponseType: true,
+                    KP: {
+                        select: {
+                            confidence: true,
+                            KP: true,
+                            source: true,
+                            TwoDvK: true,
+                        }
+                    }
+                }
+            },
             targetQ: true,
             stage: true,
             beganAt: true,
@@ -60,6 +74,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                 return null;
             }
             const reply: z.infer<typeof messagesSchema> = res;
+            console.log("teachingResponse: ", reply)
             const lesson = await prisma.$transaction(async (tx) => {
                 console.log("Transaction started")
                 const targetQ = await tx.targetQ.create({
@@ -77,7 +92,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                         userId: userID,
                         targetQId: targetQ.id,
                         noteId: note.id,
-
+                        stage: "main",
                     }
                 });
                 const met = await tx.metadata.create({
@@ -86,17 +101,22 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                         references: [],
                     }
                 });
-                //save eli response msg only
+                if (!reply.KP) {
+                    console.error("No KP in reply")
+                    return;
+                }
                 const msg = await tx.message.create({
                     data: {
                         content: reply.content,
+                        eliResponseType: reply.eliResponseType,
                         role: "eli",
                         KP: {
                             create: {
                                 confidence: 1,
-                                KP: reply.content,
+                                KP: reply.KP.KP,
                                 source: "offered" as "offered" | "reinforced",
                                 userId: userID,
+                                TwoDvK: reply.KP.TwoDvK
                             }
                         },
                         Lesson: {
@@ -164,7 +184,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
             const less = await tx.lesson.create({
                 data: {
                     userId: userID,
-                    stage: isRight ? "main" : "purgatory",
+                    stage: data.mode == "New Question" || isRight ? "main" : "purgatory",
                     subject: subject,
                     noteId: note.id,
                 },

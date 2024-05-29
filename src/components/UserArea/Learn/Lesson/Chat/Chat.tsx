@@ -33,7 +33,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         return [...acc, [message]]
     }, [] as z.infer<typeof messagesSchema>[][]);
 
-    console.log("Grouped messages: ", groupedMessages)
+    // console.log("Grouped messages: ", groupedMessages)
     const dispatch = async (action: "reply" | "understood") => {
         setLoading(true);
         if (action == "reply") {
@@ -260,7 +260,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     {
                         groupedMessages.map((groupSet, index) => {
                             //if they're two messages of the same type in a row just push it to messages 
-                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={groupSet[0].content + index} focused={index == groupedMessages.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) === 1} messages={groupSet} />
+                            return <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={groupSet[0].content + index} focused={index == groupedMessages.length - 1} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={groupSet} />
                         })
                     }
                 </div>

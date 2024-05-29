@@ -44,7 +44,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     const subject = useRef<string | undefined>(payload.subject);
     console.log("targetQuestion: ", targetQuestion, " currentlessonState.msgHistory: ", currentLessonState.msgHistory);
     let lastItemIndex: number = 0;
-    if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 + 2 : currentLessonState.msgHistory.length - 1;
+    if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;
     return (
         <div className="flex h-full font-bold">
             <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
@@ -60,7 +60,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                                 {currentLessonState.msgHistory.map((msg, index) => {
                                     //if there's a kp, show it. last one is current
                                     if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
                                     }
                                 })}
                                 {
