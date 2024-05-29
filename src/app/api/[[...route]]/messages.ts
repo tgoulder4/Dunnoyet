@@ -63,7 +63,7 @@ const app = new Hono()
                 //don't save
                 payload.newMessages?.push({
                     role: 'eli',
-                    eliResponseType: 'General',
+                    eliResponseType: 'WhatComesToMind',
                     content: oopsThatsNotQuiteRight(),
                 })
             }

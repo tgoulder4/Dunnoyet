@@ -22,7 +22,18 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
     }).then(res => res.choices[0].message.content)
     if (!res) return null;
     //remove ending punctuation
-    if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1)
+    if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1);
+    //if there's a number at the end of the sentence, extract it
+    let number = res.match(/(\d+)$/)?.[0];
+    if (number) {
+        console.log("Distance found: ", number)
+        res = res.slice(0, -number.length);
+    }
+    //if the text includes 'END' then make number = 1
+    if (res.includes("END")) {
+        number = "1";
+        res = res.replace("END", "");
+    }
     console.log("Sentence continuation: ", res)
     //parse the response HEREW
     const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
@@ -39,6 +50,7 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
         role: 'eli',
         content: res,
         KP,
-        eliResponseType: "General"
+        eliResponseType: "General",
+        distanceAwayFromFinishingLesson: number ? parseInt(number) : null
     } as z.infer<typeof messagesSchema>
 }

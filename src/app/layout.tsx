@@ -11,7 +11,7 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 {/* Layout UI */}
-                <main>{children}</main>
+                <main className='h-[100vh]'>{children}</main>
             </body>
         </html>
     )

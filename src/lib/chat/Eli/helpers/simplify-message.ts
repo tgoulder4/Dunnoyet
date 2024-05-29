@@ -30,7 +30,7 @@ export const simplifyToSubject = async (statement: string): Promise<string | nul
         const res = await openai.chat.completions.create({
             messages: [{
                 role: 'system',
-                content: 'We are teaching a student together. Given the student said ' + statement + ', Simplify the subject of their reply to maximum 3 words which make sense on their own.'
+                content: 'We are teaching a student together. Given the student said ' + statement + ', Simplify the general subject/topic of their reply to maximum 3 words which make sense on their own.'
             },],
             model: "gpt-3.5-turbo"
         })

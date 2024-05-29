@@ -8,7 +8,7 @@ export function findDistanceUntilLessonEnd(messages: z.infer<typeof messagesSche
             return dist;
         }
     }
-    return -1;
+    return 2;
 }
 export function findTotalKnowledgePointsInLesson(messages: z.infer<typeof messagesSchema>[]): number {
     let total = 0;

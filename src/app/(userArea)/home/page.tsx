@@ -42,7 +42,6 @@ function Page({ params }: { params: { params: string } }) {
     const sp = useSearchParams();
     const showcaseMode = sp.get('showcaseMode');
     const {
-        experience,
         knowledgePoints,
         isPremium,
         name,
@@ -151,8 +150,8 @@ function Page({ params }: { params: { params: string } }) {
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {modeDetails[mode].examples.map((example, index) => {
                                 return (
-                                    loading ? <div className="xl:h-16 h-24 w-full bg-gray-200 animate animate-pulse rounded-xl" /> :
-                                        <Button key={example} onClick={() => {
+                                    loading ? <div key={example + index} className="xl:h-16 h-24 w-full bg-gray-200 animate animate-pulse rounded-xl" /> :
+                                        <Button key={example + index} onClick={() => {
                                             const textArea = textAreaRef.current;
                                             if (textArea) textArea.value = example;
                                             if (textArea) textArea.focus();
@@ -182,7 +181,7 @@ function Page({ params }: { params: { params: string } }) {
                                     }]} />
                             }
                             <div className="flex flex-row gap-4">
-                                <Stat key="XP" loading={loading} statTitle="Experience" value={experience + ' XP'} />
+                                <Stat key="XP" loading={loading} statTitle="Experience" value={(knowledgePoints ? knowledgePoints.length * experiencePerKnowledgePoint : 0) + ' XP'} />
                                 <Stat key="TotalConcepts" loading={loading} statTitle="Total concept(s) learnt" value={knowledgePoints?.length || 0} />
                             </div>
                         </div>

@@ -17,7 +17,7 @@ function EndLesson({ currentLessonState }: { currentLessonState: z.infer<typeof 
         experiencePrior,
         experienceNow
     } = currentLessonState;
-    if (!experiencePrior || !experienceNow) {
+    if (!experiencePrior && experiencePrior !== 0 || !experienceNow && experienceNow !== 0) {
         //missing info in endlesson payload
         toast.error("Something went wrong: Missing info in endlesson payload");
         console.error("Missing info in endlesson payload: ", currentLessonState)
