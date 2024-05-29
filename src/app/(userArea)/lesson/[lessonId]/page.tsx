@@ -9,7 +9,6 @@ import { useSearchParams } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import React from 'react'
 import { z } from 'zod';
-
 async function LessonPage({ params, searchParams }: { params: { lessonId: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
     let payload: z.infer<typeof lessonStatePayloadSchema>;
     if (process.env.NODE_ENV === "production") {

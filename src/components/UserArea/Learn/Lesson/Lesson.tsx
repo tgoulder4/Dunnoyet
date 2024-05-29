@@ -46,49 +46,52 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     let lastItemIndex: number = 0;
     if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;
     return (
-        <div className="flex h-full font-bold">
-            <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
-                <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-transform learningPath flex flex-col gap-3 flex-[3]'>
-                    {/* for each of the messages sent by eli */}
-                    {
-                        stage == 'loading' ?
-                            <>
-                                <LearningPathItem confidence={1} text="Placeholder" />
-                                <LearningPathItem confidence={1} text="Placeholder" />
-                                <LearningPathItem confidence={1} text="Placeholder" />
-                            </> : stage !== "purgatory" && <>
-                                {currentLessonState.msgHistory.map((msg, index) => {
-                                    //if there's a kp, show it. last one is current
-                                    if (msg.KP) {
-                                        return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
-                                    }
-                                })}
-                                {
+        <>
+            <title>{stage !== "loading" ? `${subject ? subject.current : targetQuestion?.point}` : `Creating Lesson`} - Dunnoyet</title>
+            <div className="flex h-full font-bold">
+                <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
+                    <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-transform learningPath flex flex-col gap-3 flex-[3]'>
+                        {/* for each of the messages sent by eli */}
+                        {
+                            stage == 'loading' ?
+                                <>
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                </> : stage !== "purgatory" && <>
+                                    {currentLessonState.msgHistory.map((msg, index) => {
+                                        //if there's a kp, show it. last one is current
+                                        if (msg.KP) {
+                                            return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        }
+                                    })}
+                                    {
 
-                                    targetQuestion ?
-                                        <>
-                                            {stage !== "end" && findDistanceUntilLessonEnd(currentLessonState.msgHistory) !== 1 && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
-                                            <LearningPathItem confidence={stage == "end" ? 2 : 0} lastItem={true} text={"Finish 🏁"} />
-                                        </> : <></>
-                                }
-                            </>
-                    }
+                                        targetQuestion ?
+                                            <>
+                                                {stage !== "end" && findDistanceUntilLessonEnd(currentLessonState.msgHistory) !== 1 && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
+                                                <LearningPathItem confidence={stage == "end" ? 2 : 0} lastItem={true} text={"Finish 🏁"} />
+                                            </> : <></>
+                                    }
+                                </>
+                        }
+                    </LessonSection>
+                    <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[3]'>
+                        {stage == 'loading' ?
+                            <Brainmap placeholderMode={true} />
+                            : stage !== "purgatory" &&
+                            <Brainmap KPsToFocus={currentLessonState.msgHistory ? currentLessonState.msgHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : []} />
+                        }
+                    </LessonSection>
+                </div>
+                <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
+                    {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson currentLessonState={currentLessonState} />}
                 </LessonSection>
-                <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[3]'>
-                    {stage == 'loading' ?
-                        <Brainmap placeholderMode={true} />
-                        : stage !== "purgatory" &&
-                        <Brainmap KPsToFocus={currentLessonState.msgHistory ? currentLessonState.msgHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : []} />
-                    }
+                <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
+                    {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}
                 </LessonSection>
             </div>
-            <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
-                {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson currentLessonState={currentLessonState} />}
-            </LessonSection>
-            <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
-                {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}
-            </LessonSection>
-        </div>
+        </>
     )
 }
 

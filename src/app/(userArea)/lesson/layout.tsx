@@ -27,11 +27,11 @@ function LessonLayout({
     // if (status === 'loading') return <></>
 
     return (
-        <div className='h-full' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
+        <>
             <MainAreaNavbar style='normal' show={{ userSide: { newQuestion: false }, leftSide: { lessonTimer: false } }} />
             {/* the only children would be in the center grid cell */}
             {children}
-        </div>
+        </>
     )
 }
 
