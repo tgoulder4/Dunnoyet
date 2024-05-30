@@ -231,12 +231,18 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
             }
         }
     }
+    const messagesEndRef = useRef(null as HTMLDivElement | null)
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
     useEffect(() => {
         //if it's their turn, focus the textArea
         const latestMsg = msgHistory[msgHistory.length - 1]
         if (targetQuestion?.point == "Why do electrons repel each other?" && msgHistory.length == 1) {
             textAreaRef.current?.focus();
         }
+        scrollToBottom()
     }, [msgHistory])
     useEffect(() => {
         //if it's their turn, focus the textArea
@@ -258,7 +264,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                         <LessonTimer />
                     </div>
                 </div>
-                <div className="mainChat overflow-y-auto h-full">
+                <div className="mainChat overflow-y-auto h-full" style={{ paddingBottom: spacing.padding.largest }}>
                     {
                         groupedMessages.map((groupSet, index) => {
                             //if they're two messages of the same type in a row just push it to messages 
@@ -266,16 +272,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                         })
 
                     }
-                    {/* mock msgs */}
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
-                    <MessagePrimitive dispatch={dispatch} loadingNextMsg={loading} key={1} focused={false} lastMessageInLesson={findDistanceUntilLessonEnd(msgHistory) == 1} messages={[{ role: 'eli', content: 'which are intrinsically negative', KP: { KP: "which are negative", confidence: 1, TwoDvK: [2, 12] }, eliResponseType: 'General', distanceAwayFromFinishingLesson: 1 },]} />
+                    <div ref={messagesEndRef} />
                 </div>
             </section>
             <div className="replyArea px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">

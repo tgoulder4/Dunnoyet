@@ -32,10 +32,10 @@ export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: z
     const xValues = focusPoints.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = focusPoints.map(point => point.TwoDvK[1]);
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
-    const minY = Math.min(...yValues);
-    const maxY = Math.max(...yValues);
+    const minX = Math.min(...xValues) || 0;
+    const maxX = Math.max(...xValues) || 10;
+    const minY = Math.min(...yValues) || 0;
+    const maxY = Math.max(...yValues) || 10;
     let xRange = maxX - minX; if (xRange < 1) xRange = 15; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 15; // Prevent division by zero (or close to zero)
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
@@ -67,9 +67,13 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
     const knowledgePointRadius = 1;
     if (knowledgePointsExceptFromChain) {
         knowledgePointsExceptFromChain.forEach((point, i) => {
+            if (!point.TwoDvK.length) {
+                console.log("A point was missing TwoDvK: ", point, " setting to [0,0]")
+                point.TwoDvK = [0, 0]
+            };
             ctx.beginPath();
-            ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0] + centerX, knowledgePointsExceptFromChain[i].TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = changeColour(colours.primary).lighten(10).toString();
+            ctx.arc(point.TwoDvK[0] + centerX, point.TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = point.confidence !== -1 ? changeColour(colours.primary).lighten(10).toString() : "";
             ctx.fill();
             ctx.closePath();
         });
@@ -88,10 +92,10 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     // console.log("xValues: ", xValues)
     const yValues = points.map(point => point.TwoDvK[1]);
     // console.log("Points being focused on: ", points)
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
-    const minY = Math.min(...yValues);
-    const maxY = Math.max(...yValues);
+    const minX = Math.min(...xValues) || 0;
+    const maxX = Math.max(...xValues) || 10;
+    const minY = Math.min(...yValues) || 0;
+    const maxY = Math.max(...yValues) || 10;
     let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
@@ -127,6 +131,7 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
                 ctx.globalAlpha = 1; // No pulsating effect, fully opaque
             }
             ctx.beginPath();
+            if (!point.TwoDvK.length) point.TwoDvK = [0, 0];
             ctx.moveTo(centerX + point.TwoDvK[0], point.TwoDvK[1] + centerY); // Start at current point
             ctx.lineWidth = 0.5;
             ctx.lineTo(centerX + nextPoint.TwoDvK[0], nextPoint.TwoDvK[1] + centerY); // Draw line to next point

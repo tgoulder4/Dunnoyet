@@ -177,11 +177,15 @@ function Page({ params }: { params: { params: string } }) {
                                         <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center bg-gray-100' >
                                             <Loader2 className='animate animate-spin' size={48} color='rgb(229 231 235 / var(--tw-bg-opacity))'></Loader2>
                                         </div> :
-                                        <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={knowledgePoints || [{
-                                            confidence: 0,
-                                            KP: 'Loading...',
-                                            TwoDvK: [0, 0],
-                                        }]} />
+                                        <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={
+                                            knowledgePoints?.length ? knowledgePoints :
+                                                [
+                                                    {
+                                                        confidence: -1,
+                                                        KP: 'Loading...',
+                                                        TwoDvK: [],
+                                                    },
+                                                ]} />
                                 }
                                 <div className="flex flex-row gap-4">
                                     <Stat key="XP" loading={loading} statTitle="Experience" value={(knowledgePoints ? knowledgePoints.length * experiencePerKnowledgePoint : 0) + ' XP'} />

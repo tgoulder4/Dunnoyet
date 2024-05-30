@@ -47,7 +47,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
     if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;
     return (
         <>
-            <div className={`flex h-[calc(100%_-_(2*4.375rem))] font-bold`}>
+            <div className={`flex h-[calc(100%_-_(4.375rem))] font-bold`}>
                 <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
                     <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='transition-transform learningPath flex flex-col gap-3 flex-[3]'>
                         {/* for each of the messages sent by eli */}

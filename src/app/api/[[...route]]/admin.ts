@@ -11,11 +11,11 @@ const app = new Hono()
         const userID = sess.user?.id;
         if (!userID) return c.status(401)
         try {
-            await prisma.knowledgePoint.deleteMany();
-            await prisma.message.deleteMany();
-            await prisma.lesson.deleteMany({});
             await prisma.metadata.deleteMany();
+            await prisma.message.deleteMany();
+            await prisma.knowledgePoint.deleteMany();
             await prisma.targetQ.deleteMany();
+            await prisma.lesson.deleteMany({});
             console.log("Dropped all tables")
             return c.status(200);
         }

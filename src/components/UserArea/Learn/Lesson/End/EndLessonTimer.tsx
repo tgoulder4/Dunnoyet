@@ -8,15 +8,10 @@ function EndLessonTimer() {
     } = useTimer({
         expiryTimestamp:
             new Date().setSeconds(new Date().getSeconds() + 10) as any,
-        onExpire: () =>
-        // window.location.href = '/home'
-        // alert("10s elapsed")
-        { }
-        ,
+        onExpire: () => process.env.NODE_ENV === 'production' ? window.location.href = '/home' : toast.error("10s elapsed"),
         autoStart: true,
 
     })
-    // onExpire: () => window.location.href = '/home'
     return (
         <div>{seconds}</div>
     )
