@@ -1,4 +1,5 @@
 'use client'
+import { isProd } from '@/lib/constants';
 import React from 'react'
 import { useTimer } from 'react-timer-hook';
 import { toast } from 'sonner';
@@ -8,7 +9,7 @@ function EndLessonTimer() {
     } = useTimer({
         expiryTimestamp:
             new Date().setSeconds(new Date().getSeconds() + 10) as any,
-        onExpire: () => process.env.NODE_ENV === 'production' ? window.location.href = '/home' : toast.error("10s elapsed"),
+        onExpire: () => false ? window.location.href = '/home' : toast.error("10s elapsed"),
         autoStart: true,
 
     })

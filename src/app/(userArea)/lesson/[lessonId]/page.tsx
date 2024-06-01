@@ -8,16 +8,20 @@ import { lessonStatePayloadSchema, messagesPayloadSchema } from '@/lib/validatio
 import { useSearchParams } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import React from 'react'
+import { toast } from 'sonner';
 import { z } from 'zod';
 async function LessonPage({ params, searchParams }: { params: { lessonId: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
     let payload: z.infer<typeof lessonStatePayloadSchema>;
-    if (process.env.NODE_ENV === "production") {
+    const isProd = process.env.NODEENV === "production";
+    if (process.env.NODEENV === "production") {
         const lessonId = params.lessonId;
         const lesson = await getLesson(lessonId);
         console.log("GetLesson response: ", lesson)
         if (!lesson) {
             // return NextResponse.redirect(process.env.NEXT_PUBLIC_APP_URL! + "/api/error") 
-            return <>Error</>
+            // toast.error("Lesson not found");
+            // window.location.href = process.env.NEXT_PUBLIC_APP_URL! + "/api/error";
+            return null;
         };
         const {
             stage,

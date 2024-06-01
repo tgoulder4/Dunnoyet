@@ -9,6 +9,7 @@ export default function RootLayout({
 }: {
     children: React.ReactNode
 }) {
+    console.log("NODEENV: ", process.env.NODEENV)
     return (
         <html lang="en">
             <head>

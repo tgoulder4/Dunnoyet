@@ -5,7 +5,7 @@ import { messagesSchema } from '@/lib/validation/primitives'
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader2, Send } from 'lucide-react';
-import { colours, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
+import { colours, isProd, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 import { toast } from 'sonner';
 import { lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
@@ -72,7 +72,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                 try {
                     //prod
                     let res;
-                    if (process.env.NODE_ENV == "production") {
+                    if (isProd) {
                         res = await axios({
                             method: 'POST',
                             url: '/api/messages/response',
@@ -143,7 +143,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         } else if (action == "understood") {
             try {
                 let res;
-                if (process.env.NODE_ENV == "production") {
+                if (isProd) {
                     res = await axios({
                         method: 'POST',
                         url: '/api/messages/response',

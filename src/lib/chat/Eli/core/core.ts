@@ -24,7 +24,7 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
     //remove ending punctuation
     if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1);
     //if there's a number at the end of the sentence, extract it
-    let number = res.match(/(\d+)$/)?.[0];
+    let number = res.match(/(\d+)$/)?.[0] || res.match(/\((\d+)\)$/)?.[1];
     if (number) {
         console.log("Distance found: ", number)
         res = res.slice(0, -number.length);

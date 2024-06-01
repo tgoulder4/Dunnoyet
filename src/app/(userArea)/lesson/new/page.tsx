@@ -8,6 +8,7 @@ import React, { useEffect, useRef } from 'react'
 import axios from 'axios';
 import { client } from '@/lib/db/hono';
 import { z } from 'zod';
+import { isProd } from '@/lib/constants';
 // import { AppTypes } from '@/app/api/[[...route]]/route';
 // import { hc } from 'hono/client';
 // const client = hc<AppTypes['lessonRoute']>('');
@@ -28,7 +29,7 @@ function page() {
                 }
                 console.log("Creating GET request to /api/lessons/new")
                 try {
-                    if (process.env.NODE_ENV === 'production') {
+                    if (isProd) {
                         const response = await axios.get(`/api/lessons/new`, {
                             params: {
                                 mode: givenQ ? 'New Question' : 'Free Roam',
@@ -53,6 +54,7 @@ function page() {
                 }
                 catch (e) {
                     console.error(e)
+                    window.location.href = "/api/error&err=500"
                 }
             }
         }

@@ -97,7 +97,8 @@ const app = new Hono()
                             KP: msg.content,
                             lessonId,
                             userId,
-                            source: "offered"
+                            source: "offered",
+                            TwoDvK: msg.KP?.TwoDvK
                         }))
                     })
                     if (!savedKPs) {

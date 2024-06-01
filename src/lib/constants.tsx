@@ -7,6 +7,7 @@ export const responsiveFont = (maxSizeInRem: number) => {
     return 'clamp(' + (0.75 * maxSizeInRem).toFixed(2) + "rem,3vw," + maxSizeInRem + 'rem)'
 
 }
+export const isProd = true;
 export const colours = {
     background: "#f3f2f7",
     white: "#ebebeb",

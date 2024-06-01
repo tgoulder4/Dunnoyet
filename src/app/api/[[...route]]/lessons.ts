@@ -16,6 +16,7 @@ const prisma = prismaClient;
 export const runtime = 'edge';
 export const getLesson = async (id: string, noAuthCheck?: boolean) => {
     console.log("getLesson called with id: ", id)
+    if (id.length < 24) return null; //incorrect id byte size
     const lessonFound = await prisma.lesson.findFirst({
         where: { id: id },
         select: {
@@ -42,6 +43,7 @@ export const getLesson = async (id: string, noAuthCheck?: boolean) => {
             userId: true,
         }
     })
+    if (!lessonFound) return null;
     console.log("Lesson found: ", lessonFound)
     if (!noAuthCheck) {
         const user = await getLoggedInUser();
@@ -94,7 +96,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
                         userId: userID,
                         targetQId: targetQ.id,
                         noteId: note.id,
-                        stage: "main",
+                        stage: "purgatory",
                     }
                 });
                 const met = await tx.metadata.create({
