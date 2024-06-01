@@ -70,23 +70,6 @@ const app = new Hono()
             //if wrong, ask them to try again
         }
         else if (stage === 'main') {
-            //could be free roam/newq
-            const msgHistoryToUseToGetResponse = action == "reply" ? msgHistory : [...msgHistory, {
-                role: 'user' as "user" | "eli",
-                content: "I understand!"
-            }]
-            console.log("msgHistoryToUseToGetResponse: ", msgHistoryToUseToGetResponse)
-            const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion, subject)
-            if (!eliReply) {
-                console.error("Failed to get teaching response")
-                return c.status(500)
-            };
-            console.log("Teaching response receieved: ", eliReply)
-            //doesn't matter if it's understood or reply, you'll be dealing with understood client side
-            payload.newMessages!.push({
-                ...eliReply,
-                eliResponseType: eliReply.content.includes("?") ? "WhatComesToMind" : "General"
-            });
             if (findDistanceUntilLessonEnd(msgHistory) === 1) {
                 payload.stage = 'end';
                 //save kps to user kp list
@@ -121,6 +104,24 @@ const app = new Hono()
                     payload.experienceNow = updatedUser.experience;
                     return payload;
                 })
+            } else {
+                //could be free roam/newq
+                const msgHistoryToUseToGetResponse = action == "reply" ? msgHistory : [...msgHistory, {
+                    role: 'user' as "user" | "eli",
+                    content: "I understand!"
+                }]
+                console.log("msgHistoryToUseToGetResponse: ", msgHistoryToUseToGetResponse)
+                const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion, subject)
+                if (!eliReply) {
+                    console.error("Failed to get teaching response")
+                    return c.status(500)
+                };
+                console.log("Teaching response receieved: ", eliReply)
+                //doesn't matter if it's understood or reply, you'll be dealing with understood client side
+                payload.newMessages!.push({
+                    ...eliReply,
+                    eliResponseType: eliReply.content.includes("?") ? "WhatComesToMind" : "General"
+                });
             }
         }
         console.log("Preparing payload: ", payload)
