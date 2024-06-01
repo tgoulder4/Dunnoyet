@@ -1,6 +1,6 @@
 export function tellMeWhatYouKnow() {
     const sayings = [
-        "What's the closest thing in this topic that makes complete sense you?",
+        "What's the closest thing in this topic that makes complete sense to you?",
         "What's the closest thing you understand around this topic?",
         "What are you confident about so far in this topic?",
         "Can you describe what you've grasped so far in this topic?",
