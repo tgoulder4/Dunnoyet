@@ -1,32 +1,25 @@
+import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
 import prisma from '@/lib/db/prisma';
+import { messagesSchema } from '@/lib/validation/primitives';
 import { Hono } from 'hono';
-const msgHistory = [
+import { z } from 'zod';
+const msgHistory: z.infer<typeof messagesSchema>[] = [
     {
-        "role": "user",
-        "content": "The spinal cavity doesn't hold the spinal cord"
+        role: "user",
+        content: "What do you know already?",
     },
     {
-        "role": "eli",
-        "content": "That wasn't quite right. What's a different fact you've got?",
-        "eliResponseType": "WhatComesToMind"
+        role: "user",
+        content: "I think it's because they have the same charge.",
     },
-    {
-        "role": "user",
-        "content": "The spinal cavity does hold the spinal cord"
-    }
+
 ]
 const app = new Hono()
     .get('/', async (c) => {
         //fn to test
-        const savedMessages = await prisma.message.createMany({
-            data: msgHistory.map(msg => ({
-                role: msg.role as "user" | "eli",
-                content: msg.content,
-                eliResponseType: msg.eliResponseType as "General" | "WhatComesToMind" | "System" | null,
-                lessonId: "664d4836077166bfa43819f6",
-            }))
-        })
-        return c.json(savedMessages)
+        const resp = getTeachingResponse(msgHistory, [], "Why do electrons repel each other?")
+        if (!resp) return c.status(500)
+        return c.json(resp)
     })
 
 export default app;

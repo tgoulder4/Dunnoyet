@@ -102,6 +102,7 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
     let overallScale = Math.min(ctx.canvas.width * 0.8 / xRange, ctx.canvas.height * 0.8 / yRange);
     // minimum needs to be relative to dotsize
     if (overallScale > dotSize * 10) overallScale = dotSize * 10;
+    if (overallScale < dotSize * 0.1) overallScale = dotSize * 0.1;
     // console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
