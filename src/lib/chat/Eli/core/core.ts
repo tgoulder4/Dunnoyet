@@ -23,37 +23,37 @@ export async function getTeachingResponse(messageHistory: z.infer<typeof message
     console.log("res: ", res)
     if (!res) return null;
     //remove ending punctuation
-    //if there's a number at the end of the sentence, extract it
-    return res;
-    //UNDO THIS TO RESTORE FUNCTIONALITY
-    // let number = res.match(/(\d+)$/)?.[0] || res.match(/\((\d+)\)$/)?.[1];
-    // if (number) {
-    //     console.log("Distance found: ", number)
-    //     res = res.slice(0, -number.length);
-    // }
-    // //if the text includes 'END' then make number = 1
-    // if (res.includes("END")) {
-    //     number = "1";
-    //     res = res.replace("END", "");
-    // }
-    // if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1);
-    // console.log("Sentence continuation: ", res)
-    // //parse the response HEREW
-    // const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
-    // if (!simplifiedKP) return null;
-    // const em = await getEmbedding(simplifiedKP);
-    // const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude([em]);
-    // const KP: z.infer<typeof KPSchema> = {
-    //     confidence: 1,
-    //     KP: simplifiedKP,
-    //     TwoDvK
-    // }
-    // console.log("Returning teachingResponse", { role: 'eli', content: res, KP })
-    // return {
-    //     role: 'eli',
-    //     content: res,
-    //     KP,
-    //     eliResponseType: "General",
-    //     distanceAwayFromFinishingLesson: number ? parseInt(number) : null
-    // } as z.infer<typeof messagesSchema>
+    // //if there's a number at the end of the sentence, extract it
+    // return res;
+    // UNDO THIS TO RESTORE FUNCTIONALITY
+    let number = res.match(/(\d+)$/)?.[0] || res.match(/\((\d+)\)$/)?.[1];
+    if (number) {
+        console.log("Distance found: ", number)
+        res = res.slice(0, -number.length);
+    }
+    //if the text includes 'END' then make number = 1
+    if (res.includes("END")) {
+        number = "1";
+        res = res.replace("END", "");
+    }
+    if (res.endsWith(".") || res.endsWith(",")) res = res.slice(0, -1);
+    console.log("Sentence continuation: ", res)
+    //parse the response HEREW
+    const simplifiedKP = await simplifyToKnowledgePointInSolitude([...messageHistory, { role: 'eli', content: res } as any])
+    if (!simplifiedKP) return null;
+    const em = await getEmbedding(simplifiedKP);
+    const TwoDvK = await getTwoDCoOrdinatesOfKPInSolitude([em]);
+    const KP: z.infer<typeof KPSchema> = {
+        confidence: 1,
+        KP: simplifiedKP,
+        TwoDvK
+    }
+    console.log("Returning teachingResponse", { role: 'eli', content: res, KP })
+    return {
+        role: 'eli',
+        content: res,
+        KP,
+        eliResponseType: "General",
+        distanceAwayFromFinishingLesson: number ? parseInt(number) : null
+    } as z.infer<typeof messagesSchema>
 }

@@ -13,7 +13,7 @@ import { z } from 'zod';
 async function LessonPage({ params, searchParams }: { params: { lessonId: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
     let payload: z.infer<typeof lessonStatePayloadSchema>;
     const isProd = process.env.NODEENV === "production";
-    if (process.env.NODEENV === "production") {
+    if (true) {
         const lessonId = params.lessonId;
         const lesson = await getLesson(lessonId);
         console.log("GetLesson response: ", lesson)

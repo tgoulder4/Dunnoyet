@@ -14,6 +14,7 @@ import { getTwoDCoOrdinatesOfKPInSolitude } from '@/components/UserArea/Learn/Le
 import { randomBytes } from 'crypto';
 const prisma = prismaClient;
 export const runtime = 'edge';
+const isProd = process.env.NODEENV === "production";
 export const getLesson = async (id: string, noAuthCheck?: boolean) => {
     console.log("getLesson called with id: ", id)
     if (id.length < 24) return null; //incorrect id byte size

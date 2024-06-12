@@ -257,7 +257,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
     }, [])
     return (
         <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
-            <section className='titleAndReplies flex flex-col gap-3 h-full'>
+            <section className='titleAndReplies flex flex-col h-full'>
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
                         <h1 className='w-full font-extrabold'>{subject ? subject : targetQuestion?.point ?? "Error"}</h1>
@@ -275,7 +275,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     <div ref={messagesEndRef} />
                 </div>
             </section>
-            <div className="replyArea px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">
+            <div className="replyArea mt-3 px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">
                 <div className="relative w-full">
                     <Textarea onKeyDown={(e) => {
                         if (e.key === 'Enter') {

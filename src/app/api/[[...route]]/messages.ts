@@ -15,6 +15,7 @@ import { findDistanceUntilLessonEnd } from '@/components/UserArea/Learn/Lesson/C
 
 const prisma = prismaClient;
 export const runtime = 'edge';
+const isProd = process.env.NODEENV === "production";
 const app = new Hono()
     .post('/response', async (c) => {
         const body = await c.req.json();
@@ -38,6 +39,24 @@ const app = new Hono()
         }
         //if right save KP to db and pinecone, stage is now main
         //free roam:
+        if (!isProd) return c.json({
+            payload: {
+                newMessages: [
+                    {
+                        role: 'eli',
+                        eliResponseType: 'General',
+                        content: "Rawr!",
+                        KP: {
+                            confidence: 1,
+                            KP: "Rawr!",
+                            TwoDvK: []
+                        }
+                    }
+                ],
+                stage: 'main',
+                lastSaved: new Date()
+            }
+        })
         if (stage === 'purgatory') {
             //PASSES
             const isRight = await checkIsUserRight(msgHistory, targetQuestion, subject);
