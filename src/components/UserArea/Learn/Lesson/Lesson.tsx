@@ -83,7 +83,7 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
                         }
                     </LessonSection>
                 </div>
-                <LessonSection className='flex-[5] learningChatArea h-full' style={{ backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", padding: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
+                <LessonSection className='LESSECTION flex-[5] learningChatArea h-full' style={{ paddingBottom: lessonPaddingBottom, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", paddingTop: stage !== "end" ? 0 : '2rem', paddingLeft: stage !== "end" ? 0 : '2rem', paddingRight: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
                     {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson currentLessonState={currentLessonState} />}
                 </LessonSection>
                 <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>

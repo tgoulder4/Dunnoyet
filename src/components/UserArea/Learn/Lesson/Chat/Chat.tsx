@@ -242,6 +242,10 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         if (targetQuestion?.point == "Why do electrons repel each other?" && msgHistory.length == 1) {
             textAreaRef.current?.focus();
         }
+
+        if (msgHistory[msgHistory.length - 1].role == 'eli') {
+            textAreaRef.current?.focus();
+        }
         scrollToBottom()
     }, [msgHistory])
     useEffect(() => {
@@ -256,7 +260,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         main()
     }, [])
     return (
-        <div className='flex flex-col gap-3 font-bold justify-between h-full' style={{ paddingBottom: lessonPaddingBottom }}>
+        <div className='flex flex-col font-bold justify-between h-full' style={{ paddingBottom: msgHistory.length >= 7 ? lessonPaddingBottom : 0 }}>
             <section className='titleAndReplies flex flex-col h-full'>
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
@@ -275,7 +279,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                     <div ref={messagesEndRef} />
                 </div>
             </section>
-            <div className="replyArea mt-3 px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">
+            <div className="replyArea px-8 animate-in slide-in-from-bottom-4 w-full flex flex-row gap-2">
                 <div className="relative w-full">
                     <Textarea onKeyDown={(e) => {
                         if (e.key === 'Enter') {
