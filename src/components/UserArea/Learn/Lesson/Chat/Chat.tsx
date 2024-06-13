@@ -1,18 +1,16 @@
-import React, { FormEvent, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import MessagePrimitive from './MessagePrimitive'
 import { z } from 'zod'
 import { messagesSchema } from '@/lib/validation/primitives'
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader2, Send } from 'lucide-react';
-import { colours, isProd, lessonPaddingBottom, sizing, spacing } from '@/lib/constants';
+import { colours, isProd, lessonPaddingBottom, spacing } from '@/lib/constants';
 import { LessonTimer } from './Timer';
 import { toast } from 'sonner';
-import { lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import { lessonStateSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import { findDistanceUntilLessonEnd } from './Helpers'
-import { client } from '@/lib/db/hono';
 import axios from 'axios';
-import { randomBytes } from 'crypto';
 function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<typeof lessonStateSchema>, setLessonState: React.Dispatch<React.SetStateAction<z.infer<typeof lessonStateSchema>>>, subject?: string, targetQContent?: string }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const {
@@ -24,6 +22,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         lastSaved
     } = lessonState;
     const [loading, setLoading] = useState(false);
+    const scrollRef = useRef(null as HTMLDivElement | null);
     //group messages by role
     const groupedMessages = msgHistory.reduce((acc, message) => {
         if (acc.length == 0) return [[message]];
@@ -247,6 +246,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
             textAreaRef.current?.focus();
         }
         scrollToBottom()
+        console.log("scrollRef height", scrollRef?.current?.scrollHeight)
     }, [msgHistory])
     useEffect(() => {
         //if it's their turn, focus the textArea
@@ -260,7 +260,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
         main()
     }, [])
     return (
-        <div className='flex flex-col font-bold justify-between h-full' style={{ paddingBottom: msgHistory.length >= 7 ? lessonPaddingBottom : 0 }}>
+        <div className='INNER flex flex-col font-bold justify-between h-full' style={{ paddingBottom: scrollRef?.current?.scrollHeight ? scrollRef.current.scrollHeight >= 690 ? lessonPaddingBottom : 0 : 0 }}>
             <section className='titleAndReplies flex flex-col h-full'>
                 <div className="outlineArea flex justify-start items-center pt-2 h-16 w-full px-12 bg-[#F4F4F4]">
                     <div className="flex gap-2">
@@ -268,7 +268,7 @@ function Chat({ lessonState, setLessonState, subject, }: { lessonState: z.infer<
                         <LessonTimer />
                     </div>
                 </div>
-                <div className="mainChat overflow-y-auto h-full" style={{ paddingBottom: spacing.padding.largest }}>
+                <div className="mainChat overflow-y-auto h-full" ref={scrollRef} style={{ paddingBottom: spacing.padding.largest }}>
                     {
                         groupedMessages.map((groupSet, index) => {
                             //if they're two messages of the same type in a row just push it to messages 
