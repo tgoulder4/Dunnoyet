@@ -1,6 +1,10 @@
 import { merriweather } from "@/app/fonts";
 import { TinyColor } from "@ctrl/tinycolor";
 export const changeColour = (colour: string) => {
+    //if an instance of tinycolour exists,
+    //then return the colour passed in as an instance of tinycolour
+    
+
     return new TinyColor(colour)
 }
 export const responsiveFont = (maxSizeInRem: number) => {
