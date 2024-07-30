@@ -1,12 +1,17 @@
 import { merriweather } from "@/app/fonts";
 import { TinyColor } from "@ctrl/tinycolor";
 export const changeColour = (colour: string) => {
+    //if an instance of tinycolour exists,
+    //then return the colour passed in as an instance of tinycolour
+    
+
     return new TinyColor(colour)
 }
 export const responsiveFont = (maxSizeInRem: number) => {
     return 'clamp(' + (0.75 * maxSizeInRem).toFixed(2) + "rem,3vw," + maxSizeInRem + 'rem)'
 
 }
+export const isProd = true;
 export const colours = {
     background: "#f3f2f7",
     white: "#ebebeb",
@@ -18,6 +23,7 @@ export const colours = {
     popover: "#ffffff",
     popoverForeground: "#0a0a0b",
     primary: "#438BCE",
+    primaryObnoxious: "#3F4CC3",
     primaryForeground: "#fdf4f7",
     secondary: "#C7D6E6",
     secondaryForeground: "#1a1a29",
@@ -56,6 +62,7 @@ export const sizing = {
     largerFontSize: 2.25,
     variableWholePagePadding: 'clamp(24px,20vw,800px)',
 }
+export const navHeight = '4.375rem' // 4.375rem
 export const uiBorder = (opacity = 0.2) => `1px solid rgba(0, 0, 0, ${opacity})`;
 export const spacing = {
     gaps: {
@@ -72,8 +79,9 @@ export const spacing = {
         largest: 56
     },
 }
+export const lessonPaddingBottom = 2 * spacing.gaps.separateElement;
 export const maxLandingWidth = "1320px";
-
+export const lessonXPadding: string = 'clamp(24px,4vw,400px)';
 export const DunnoyetLogo = ({ colour, withText }: { colour: string, withText?: boolean }) => {
     return (
         <div className="flex flex-row items-center" style={{ columnGap: spacing.gaps.groupedElement }}>

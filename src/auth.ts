@@ -4,9 +4,9 @@ import { authConfig } from './auth.config';
 import NextAuth from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import { prismaClient } from './lib/db/prisma';
-
+import getServerSession from 'next-auth';
 const prisma = prismaClient;
 export async function getUser(username: string): Promise<IUser | null> {
     console.log("getUser (server) called with username: ", username)
@@ -24,7 +24,6 @@ export async function getUser(username: string): Promise<IUser | null> {
     }
     return null;
 }
-
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
     basePath: '/auth',

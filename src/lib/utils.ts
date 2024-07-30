@@ -18,3 +18,6 @@ export async function isOnline(): Promise<boolean> {
     return false;
   }
 }
+export const links = {
+  newLesson: '/home'
+}

@@ -1,20 +1,21 @@
 import React, { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
-import { IKP } from '@/lib/validation/enforceTypes'
 import { getEmbedding } from '@/lib/chat/openai'
-import { getAllReinforcedKnowledgePoints, getRelatedKnowledgePoints } from '@/lib/chat/Eli/eli'
+import { getRelatedKnowledgePoints } from '@/lib/chat/Eli/old'
 import { useSession } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import { getRequiredFrameRate } from './utils/optimisations'
 import { calculateOffsetAndScaleToFocusGivenChain, drawKnowledgePointsInChain, frameRate, pulsateDirection, pulsateOpacity, setFrameRate, updatePulsateOpacity } from './utils/core'
 import { getColourFromConfidence } from './utils/helpers'
 import { drawOtherPoints, drawBackgroundDots, } from './utils/core'
+import { z } from 'zod'
+import { KPSchema } from '@/lib/validation/primitives'
 
 // Props interface declaration for type safety
-interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
-    knowledgePointsToFocus?: IKP[];
-    otherPoints: IKP[];
+interface NeuralNetworkProps extends React.HTMLAttributes<HTMLDivElement> {
+    knowledgePointsToFocus?: z.infer<typeof KPSchema>[];
+    otherPoints?: z.infer<typeof KPSchema>[];
     className?: string;
 }
 
@@ -22,11 +23,13 @@ interface NeuralNetworkProps extends React.HTMLAttributes<HTMLCanvasElement> {
 function easeInOut(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
-const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className }) => {
+const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className, ...props }) => {
+    // console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
     const sess = useSession().data!.user!;
     const {
         id: userId,
     } = sess;
+    if (!knowledgePointsToFocus && !otherPoints) return <h1>Brainmap initialised incorrectly</h1>
     const focusPoints = knowledgePointsToFocus ? knowledgePointsToFocus : otherPoints;
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
@@ -36,12 +39,14 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     const requestAnimationRef = useRef<any>(null);
 
     // Function to draw the canvas
-    const draw = (ctx: CanvasRenderingContext2D, offsetX = 0, offsetY = 0, scale: number) => {
+    const draw = (ctx: CanvasRenderingContext2D, scale: number) => {
         // Store the current transformation matrix
         ctx.save();
         // Use the identity matrix while clearing the canvas
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+
         // Calculate center to scale as the middle of the currently rendere
         const centerX = ctx.canvas.width / 2;
         const centerY = ctx.canvas.height / 2;
@@ -55,10 +60,11 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         //NEW: move back from the center
         ctx.translate(-centerX + (offset.current.x), -centerY + (offset.current.y));
 
-        drawOtherPoints(ctx, otherPoints, centerX, centerY);
-        if (!focusPoints) return;
-        drawBackgroundDots(ctx, focusPoints, centerX, centerY);
-        drawKnowledgePointsInChain(ctx, knowledgePointsToFocus ? knowledgePointsToFocus : [], centerX, centerY);
+
+        // if (!focusPoints) return;
+        if (otherPoints) drawOtherPoints(ctx, otherPoints, centerX, centerY);
+        drawBackgroundDots(ctx, focusPoints!, centerX, centerY);
+        if (knowledgePointsToFocus) drawKnowledgePointsInChain(ctx, knowledgePointsToFocus, centerX, centerY);
 
     };    // Effect hook to adjust initial zoom and position based on knowledgePoints length
     // Animation loop function
@@ -77,7 +83,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             deltaTime = performance.now() - timeAtCallOfAnimate;
         }
         updatePulsateOpacity(); // Update the opacity for pulsating effect
-        draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current)
+        draw(ctx, scaleMultiplier.current)
         return () => cancelAnimationFrame(requestAnimationRef.current);
     }
 
@@ -100,10 +106,10 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
                 offset.current.y = startOffsetY + (targetOffsetY - startOffsetY) * easeProgress;
                 scaleMultiplier.current = startScale + (targetScale - startScale) * easeProgress;
                 // console.log("[animateToPos] ScaleMultiCurrent set to ", scaleMultiplier.current, " targetScale: ", targetScale, " startScale: ", startScale, " easeProgress: ", easeProgress)
-                draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+                draw(ctx, scaleMultiplier.current);
                 requestAnimationRef.current = requestAnimationFrame(updatePosition);
             } else {
-                draw(ctx, targetOffsetX, targetOffsetY, targetScale);
+                draw(ctx, targetScale);
             }
         }
 
@@ -112,7 +118,6 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         return () => cancelAnimationFrame(requestAnimationRef.current);
     }
     useEffect(() => {
-        console.log("initial render or re-rendering due to changein KPS")
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Canvas not found');
@@ -143,7 +148,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             offset.current.x += dx;
             offset.current.y += dy;
             // console.log("Draw called in onMouseMove with centerOffset: ", offset.current.x, offset.current.y, " and mouse position: ", e.clientX, e.clientY, " and scaleMultCurrent: ", scaleMultiplier.current)
-            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+            draw(ctx, scaleMultiplier.current);
         };
 
         const onMouseUp = () => {
@@ -165,14 +170,14 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             scaleMultiplier.current = scaleMultiplier.current * (1 + zoomFactor * direction);
             // console.log("[ONWHEEL] ScaleMultiplier set to: ", scaleMultiplier.current, " zoomFactor: ", zoomFactor, " direction: ", direction)
             // console.log("Draw called in onWheel")
-            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+            draw(ctx, scaleMultiplier.current);
         };
         const onResize = () => {
             const dpr = window.devicePixelRatio || 1;
             const rect = canvas.getBoundingClientRect();
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current);
+            draw(ctx, scaleMultiplier.current);
         };
 
         if (focusPoints) {
@@ -187,7 +192,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
         window.addEventListener('mouseup', onMouseUp);
         canvas.addEventListener('wheel', onWheel);
         window.addEventListener('resize', onResize);
-        draw(ctx, offset.current.x, offset.current.y, scaleMultiplier.current); // Initial draw
+        draw(ctx, scaleMultiplier.current); // Initial draw
         // Clean up to prevent memory leaks
         return () => {
             canvas.removeEventListener('mousedown', onMouseDown);
@@ -198,8 +203,8 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     }, [focusPoints]);
 
     return (
-        <div className={`${className} h-full`} >
-            <div className='overflow-hidden w-full h-72 rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
+        <div {...props} className={`${className} h-full`} >
+            <div className='overflow-hidden w-full h-full rounded-[20px] grid place-items-center' style={{ backgroundColor: changeColour(colours.complementary_lightest).lighten(8).toString() }}>
                 {/* dynamic tailwind classes don't render unless we explicitly define them: */}
                 <div className="hidden bg-opacity-50 animate-pulse"></div>
                 <canvas className='w-full h-full overflow-hidden' id="canvas" />

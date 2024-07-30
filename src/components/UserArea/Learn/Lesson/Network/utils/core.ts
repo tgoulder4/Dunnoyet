@@ -1,13 +1,14 @@
 import { changeColour, colours } from '@/lib/constants';
-
-import { IKP } from './../../../../../../lib/validation/enforceTypes';
 import { getColourFromConfidence } from './helpers';
+import { z } from 'zod';
+import { KPSchema } from '@/lib/validation/primitives';
 export let pulsateOpacity = 1;
 export let pulsateDirection = true; // true for increasing, false for decreasing
 export let frameRate = 60; // Default frame rate
 export function setFrameRate(newFrameRate: number) {
     frameRate = newFrameRate;
 }
+const dotSize = 1.2;
 // Function to update the opacity by 1 step for pulsating effect
 export const updatePulsateOpacity = () => {
     const speed = 1 / frameRate;
@@ -26,42 +27,53 @@ export const updatePulsateOpacity = () => {
     }
 };
 export const step = 10;
-export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: IKP[], centerX: number, centerY: number) {
+export function drawBackgroundDots(ctx: CanvasRenderingContext2D, focusPoints: z.infer<typeof KPSchema>[], centerX: number, centerY: number) {
     //find the range we need to make the dots
     const xValues = focusPoints.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = focusPoints.map(point => point.TwoDvK[1]);
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
-    const minY = Math.min(...yValues);
-    const maxY = Math.max(...yValues);
-    let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
-    let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
+    const minX = Math.min(...xValues) || 0;
+    const maxX = Math.max(...xValues) || 10;
+    const minY = Math.min(...yValues) || 0;
+    const maxY = Math.max(...yValues) || 10;
+    let xRange = maxX - minX; if (xRange < 1) xRange = 15; // Prevent division by zero (or close to zero)
+    let yRange = maxY - minY; if (yRange < 1) yRange = 15; // Prevent division by zero (or close to zero)
     let width = 15 * xRange; if (width > ctx.canvas.width) width = ctx.canvas.width;
     let height = 15 * yRange; if (height > ctx.canvas.height) height = ctx.canvas.height;
-    const dotSize = 1;
+    if (focusPoints.length === 0) {
+        width = ctx.canvas.width;
+        height = ctx.canvas.height;
+    }
+    const dotSize = 0.8;
     //DRAW THE BACKGROUND: draw loads of small dots of colour complementary
     for (let x = -width / 2; x < width / 2; x += step) {
         for (let y = -height / 2; y < height / 2; y += step) {
             ctx.beginPath();
             ctx.arc(x + centerX, y + centerY, dotSize, 0, 2 * Math.PI);
-            ctx.fillStyle = colours.lessonNodes.background;
+            ctx.fillStyle = changeColour(colours.lessonNodes.background).lighten(90).setAlpha(
+                //the further away the dot from the center, the more transparent it is
+                (1 - ((Math.abs(x) + Math.abs(y)) / (width / 2 + height / 2)))
+            ).toString();
             ctx.fill();
             ctx.font = "2px Arial";
-            ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
+            // ctx.fillText("x:" + x + " y:" + y, x + centerX, y + centerY);
             //make font size way smaller
             ctx.closePath();
         }
     }
 }
-export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: IKP[] | null, centerX: number, centerY: number) {
+export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsExceptFromChain: z.infer<typeof KPSchema>[] | null, centerX: number, centerY: number) {
     //DRAW ALL OTHER KNOWLEDGE POINTS EXCEPT FROM CHAIN
     const knowledgePointRadius = 1;
     if (knowledgePointsExceptFromChain) {
         knowledgePointsExceptFromChain.forEach((point, i) => {
+            if (!point.TwoDvK.length) {
+                console.log("A point was missing TwoDvK: ", point, " setting to [0,0]")
+                point.TwoDvK = [0, 0]
+            };
             ctx.beginPath();
-            ctx.arc(knowledgePointsExceptFromChain[i].TwoDvK[0] + centerX, knowledgePointsExceptFromChain[i].TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = changeColour(colours.primary).lighten(20).toString();
+            ctx.arc(point.TwoDvK[0] + centerX, point.TwoDvK[1] + centerY, knowledgePointRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = point.confidence !== -1 ? changeColour(colours.primary).lighten(10).toString() : "";
             ctx.fill();
             ctx.closePath();
         });
@@ -74,19 +86,23 @@ export function drawOtherPoints(ctx: CanvasRenderingContext2D, knowledgePointsEx
  * @param points Scales to focus on these points
  * @returns 
  */
-export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: IKP[]) => {
+
+export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingContext2D, points: z.infer<typeof KPSchema>[]) => {
     const xValues = points.map(point => point.TwoDvK[0]);
     // console.log("xValues: ", xValues)
     const yValues = points.map(point => point.TwoDvK[1]);
     // console.log("Points being focused on: ", points)
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
-    const minY = Math.min(...yValues);
-    const maxY = Math.max(...yValues);
+    const minX = Math.min(...xValues) || 0;
+    const maxX = Math.max(...xValues) || 10;
+    const minY = Math.min(...yValues) || 0;
+    const maxY = Math.max(...yValues) || 10;
     let xRange = maxX - minX; if (xRange < 1) xRange = 1; // Prevent division by zero (or close to zero)
     let yRange = maxY - minY; if (yRange < 1) yRange = 1; // Prevent division by zero (or close to zero)
     // console.log("minX: ", minX, " maxX: ", maxX, " minY: ", minY, " maxY: ", maxY, " xRange: ", xRange, " yRange: ", yRange)
-    const overallScale = Math.max(ctx.canvas.width * 0.08 / xRange, ctx.canvas.height * 0.08 / yRange);
+    let overallScale = Math.min(ctx.canvas.width * 0.8 / xRange, ctx.canvas.height * 0.8 / yRange);
+    // minimum needs to be relative to dotsize
+    if (overallScale > dotSize * 10) overallScale = dotSize * 10;
+    if (overallScale < dotSize * 0.1) overallScale = dotSize * 0.1;
     // console.log("overallScale: ", overallScale, " ctx.canvas.width: ", ctx.canvas.width, " ctx.canvas.height: ", ctx.canvas.height, " xRange: ", xRange, " yRange: ", yRange)
     const centerOffsetX = minX + (xRange / 2);
     const centerOffsetY = minY + (yRange / 2);
@@ -96,9 +112,8 @@ export const calculateOffsetAndScaleToFocusGivenChain = (ctx: CanvasRenderingCon
 export function addEventListeners(window: Window & typeof globalThis, canvas: HTMLCanvasElement) {
 
 }
-export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: IKP[], centerX: number, centerY: number) {
+export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowledgePoints: z.infer<typeof KPSchema>[], centerX: number, centerY: number) {
     //DRAW THE KNOWLDGE POINTS FROM CHAIN
-    const dotSize = 1.2;
     const potentialPulsingLinks: number[] = []; //links of indexes
     if (knowledgePoints.length > 0) {
         for (let i = 0; i < knowledgePoints.length - 1; i++) { // Stop at the second to last element
@@ -117,9 +132,11 @@ export function drawKnowledgePointsInChain(ctx: CanvasRenderingContext2D, knowle
                 ctx.globalAlpha = 1; // No pulsating effect, fully opaque
             }
             ctx.beginPath();
+            if (!point.TwoDvK.length) point.TwoDvK = [0, 0];
             ctx.moveTo(centerX + point.TwoDvK[0], point.TwoDvK[1] + centerY); // Start at current point
+            ctx.lineWidth = 0.5;
             ctx.lineTo(centerX + nextPoint.TwoDvK[0], nextPoint.TwoDvK[1] + centerY); // Draw line to next point
-            ctx.strokeStyle = (nextPoint.confidence <= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : getColourFromConfidence(2); // Use the helper function to get the color
+            ctx.strokeStyle = (nextPoint.confidence >= point.confidence) ? getColourFromConfidence(nextPoint.confidence) : changeColour("#8F8F8F").lighten(35).toString(); // Use the helper function to get the color
             ctx.stroke();
             ctx.globalAlpha = 1; // Reset global alpha if you've changed it
             //at this point, the context is drawing the node. We can change the opacity of the node here, and then reset it after drawing the node

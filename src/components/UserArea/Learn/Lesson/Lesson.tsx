@@ -1,138 +1,97 @@
 'use client'
-import { ILessonState, IMessage, IMessagesEndpointResponsePayload, IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
-import React, { useState } from 'react'
-import { merriweather } from '@/app/fonts'
-import ChatWithEli from '@/components/UserArea/Learn/Chat/ChatWithEli'
-import { responsiveFont, sizing, spacing } from '@/lib/constants'
-
-import { getNextMessage } from '@/lib/chat/Eli/eli'
-import NeuralNetwork from './Network/NeuralNetwork'
-import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
-import getResponse from '@/lib/chat/Eli/mockResponses'
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-
-
-export default function LessonPage({ initialLessonState }: { initialLessonState: ILessonState }) {
-    const [lessonState, setLessonState] = useState<ILessonState>(initialLessonState);
-    console.log("LessonState: ", lessonState)
-    const currentSubject = lessonState.metadata.subjects[lessonState.metadata.subjects.length - 1];
+import React, { useEffect, useRef, useState } from 'react'
+import LessonSection from './LessonSection';
+import LearningPathItem from './LearningPathItem';
+import LearningPathItemTitle from './LearningPathItemTitle';
+import Brainmap from './BrainMap/Brainmap';
+import { colours, lessonPaddingBottom, lessonXPadding, navHeight, spacing, uiBorder } from '@/lib/constants';
+import { lessonStatePayloadSchema, lessonStateSchema, messagesPayloadSchema, messagesReceiveSchema } from '@/lib/validation/transfer/transferSchemas';
+import CreatingLesson from './Loading/CreatingLesson';
+import { useSession } from 'next-auth/react';
+import { z } from 'zod';
+import Chat from './Chat/Chat';
+import { messagesSchema } from '@/lib/validation/primitives';
+import Notes from './Notes/Notes';
+import { toast } from 'sonner';
+import { findDistanceUntilLessonEnd } from './Chat/Helpers';
+import EndLesson from './End/EndLesson';
+function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema> }) {
+    // const user = useSession().data?.user!
+    // session is always non-null inside this page, all the way down the React tree.
+    const [currentLessonState, setCurrentLessonState] = useState({
+        ...payload,
+        msgHistory: payload.newMessages, //contains the KPs
+    } as z.infer<typeof lessonStateSchema>);
+    console.log("Lesson.tsx called with state: ", currentLessonState)
     const {
-        newMessages, metadata,
-    } = lessonState;
-    const {
-        knowledgePointChain,
-    } = metadata;
-
-
-    //TODO: KNOWLEDGEPOINT TOOLTIPS OF POINTSINSOLITUDE. i need a DAMN BREAK
-    async function updateState(formData?: FormData, explicitState?: IMessagesEndpointResponsePayload, action?: "UNDERSTOOD" | 'ENDLESSON') {
-        if (lessonState.metadata.lessonID == "0") {
-            //begin lesson
-            //PROD:
-            // const newQuestion = formData!.get("userInput") as string;
-            // const _getMessageResponse: Response = await fetch('/api/lessons', {
-            //     method: 'PUT',
-            //     body: JSON.stringify(newQuestion)
-            // });
-            // const getMessageResponse = await _getMessageResponse.json();
-        }
-        try {
-            let ls = lessonState;
-            if (ls.metadata.errorWithTheirInput) {
-                ls.metadata.errorWithTheirInput = "";
-            }
-            console.log("UpdateState called with formData: ", formData)
-            if (!formData && !explicitState && !action) throw new Error("No data was provided to updateState");
-            //if there's an action, use it
-
-            //move mock promises into eli.ts
-            if (action) {
-                const payload: IMessagesEndpointSendPayload = {
-                    messages: [...ls.newMessages], //this has been updated for new and old msgs. They will only say understood if theyre at the last of the new messages.
-                    metadata: {
-                        ...metadata,
-                        action
-                    }
-                }
-                //PROD:
-                // const _getMessageResponse: Response = await fetch('/api/lessons', {
-                //     method: 'PUT',
-                //     body: JSON.stringify(payload)
-                // });
-                // const getMessageResponse = await _getMessageResponse.json();
-                const getMessageResponse: IMessagesEndpointResponsePayload | string = await getResponse('Understood'); //DEV
-
-                if (typeof getMessageResponse === "string") {
-                    setLessonState({
-                        ...ls, metadata: { ...metadata, errorWithTheirInput: getMessageResponse }
-                    }
-                    )
-                } else {
-                    console.log("payloadResponse: ", getMessageResponse)
-                    const { newMessages, metadata } = getMessageResponse;
-                    console.log("Setting lesson state to lessonstate.msgs and newMessages: ", newMessages)
-                    setLessonState({ oldMessages: [...ls.oldMessages, ...ls.newMessages], newMessages, metadata });
-                };
-                return;
-            }
-            const theirReply = formData!.get("userInput") as string;
-            if (!theirReply) {
-                console.error("No user input found in form data");
-                return null;
-            };
-            const theirReplyMsg: IMessage = { content: theirReply, role: "user" };
-            //TODO: show the submitting question so the user knows their question is being processed
-
-            //if there is an explicit state, use it
-            if (explicitState) {
-                console.log("Setting lesson state to explicitState: ", explicitState)
-                setLessonState({
-                    oldMessages: [...ls.oldMessages, ...ls.newMessages, theirReplyMsg], newMessages: [...explicitState.newMessages],
-                    metadata: explicitState.metadata
-                });
-                return;
-            }
-            //update state with their new reply
-            const payload: IMessagesEndpointSendPayload = {
-                messages: [...ls.oldMessages, ...ls.newMessages, { content: theirReply, role: "user" }],
-                metadata
-            }
-            console.log("Sending payload to backend: ", payload)
-            // const getMessageResponse: IMessagesEndpointResponsePayload | string = await getNextMessage(payload);
-
-            /** PROD
-             * _getMessageResponse returns {error:string} | {error:z.ZodIssue[]} | {resp: string | IMessagesEndpointResponsePayload}
-             */
-            // const _getMessageResponse: Response = await fetch('/api/lessons', {
-            //     method: 'PUT',
-            //     body: JSON.stringify(payload)
-            // });
-            // const getMessageResponse = await _getMessageResponse.json();
-            const getMessageResponse: any = await getResponse('Understood'); //DEV
-            if (getMessageResponse.error) {
-                console.error(getMessageResponse.error)
-                return;
-            } else if (typeof getMessageResponse.resp === "string") {
-                return getMessageResponse.resp;
-            } else {
-                console.log("nextState: ", getMessageResponse)
-                const { newMessages, metadata } = getMessageResponse;
-                setLessonState({ oldMessages: [...ls.oldMessages, ...ls.newMessages, theirReplyMsg], newMessages, metadata });
-            }
-        } catch (e) { console.error(e) }
-
+        stage,
+        lastSaved,
+        newMessages,
+        targetQuestion,
+        lessonID,
+        userID
+    } = currentLessonState;
+    if (!stage) {
+        //missing stage in lesson payload
+        toast.error("An error occurred: MSILP@Lesson")
+        return <></>
     }
-    // console.log("knowledgePointChain (passing to neural network): ", knowledgePointChain)
-    // console.log("rendering LessonPage with oldmessages: ", oldMessages, " and metadata: ", metadata, " and currentSubject: ", currentSubject, " and knowledgePoints: ")
-    // console.dir(knowledgePointChain, { depth: null })
-    return (<>
-        <MainAreaNavbar style='lesson' />
-        <div className='h-full flex flex-col bg-white' style={{ rowGap: spacing.gaps.groupedElement, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, paddingTop: spacing.padding.largest, paddingBottom: spacing.padding.largest }}>
-            <h1 style={{ fontFamily: merriweather.style.fontFamily, fontSize: responsiveFont(sizing.largerFontSize) }}>{currentSubject || "New Question"}</h1>
-            <NeuralNetwork knowledgePoints={knowledgePointChain} />
-        </div>
-        <ChatWithEli isOpen={true} type={lessonState.oldMessages.length > 0 ? 'Lesson' : 'NewQ'} lessonState={lessonState} updateState={updateState} />
-    </>
+    //if stage=end, don't show 'about x left' or 'finish'. if save failed then toast error.
+    if (!lastSaved || !newMessages || !lessonID || !userID) {
+        //missing info in lesson payload
+        toast.error("Something went wrong: MIILP@Lesson")
+    }
+    const subject = useRef<string | undefined>(payload.subject);
+    console.log("targetQuestion: ", targetQuestion, " currentlessonState.msgHistory: ", currentLessonState.msgHistory);
+    let lastItemIndex: number = 0;
+    if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;
+    return (
+        <>
+            <div className={`flex h-[calc(100%_-_(4.375rem))] font-bold`}>
+                <div className="flex flex-[3] flex-col" style={{ borderRight: uiBorder(0.1) }}>
+                    <LessonSection style={{ paddingBottom: lessonPaddingBottom, paddingLeft: lessonXPadding, borderBottom: uiBorder(0.1) }} className='max-h-[40%] overflow-y-auto transition-transform learningPath flex flex-col gap-3 flex-[3]'>
+                        {/* for each of the messages sent by eli */}
+                        {
+                            stage == 'loading' ?
+                                <>
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                    <LearningPathItem confidence={1} text="Placeholder" />
+                                </> : stage !== "purgatory" && <>
+                                    {currentLessonState.msgHistory.map((msg, index) => {
+                                        //if there's a kp, show it. last one is current
+                                        if (msg.KP) {
+                                            return <LearningPathItem key={msg.KP.KP + index} lastItem={index == lastItemIndex - 1} confidence={msg.KP.confidence!} text={msg.KP.KP!} />
+                                        }
+                                    })}
+                                    {
+
+                                        targetQuestion ?
+                                            <>
+                                                {stage !== "end" && findDistanceUntilLessonEnd(currentLessonState.msgHistory) !== 1 && <LearningPathItem confidence={0} text={"About " + findDistanceUntilLessonEnd(currentLessonState.msgHistory) + " more"} />}
+                                                <LearningPathItem confidence={stage == "end" ? 2 : 0} lastItem={true} text={"Finish 🏁"} />
+                                            </> : <></>
+                                    }
+                                </>
+                        }
+                    </LessonSection>
+                    <LessonSection style={{ paddingLeft: lessonXPadding, paddingBottom: lessonPaddingBottom }} className='brainMap flex-[3]'>
+                        {stage == 'loading' ?
+                            <Brainmap placeholderMode={true} />
+                            : stage !== "purgatory" &&
+                            <Brainmap KPsToFocus={currentLessonState.msgHistory ? currentLessonState.msgHistory.filter(msg => msg.KP != undefined).map(msg => msg.KP!) : []} />
+                        }
+                    </LessonSection>
+                </div>
+                <LessonSection className='LESSECTION flex-[5] learningChatArea h-full' style={{ paddingBottom: lessonPaddingBottom, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent", paddingTop: stage !== "end" ? 0 : '2rem', paddingLeft: stage !== "end" ? 0 : '2rem', paddingRight: stage !== "end" ? 0 : '2rem', borderRight: uiBorder(0.1) }}>
+                    {stage == 'loading' ? <CreatingLesson /> : stage !== "end" ? <Chat lessonState={currentLessonState} setLessonState={setCurrentLessonState} subject={subject.current} targetQContent={targetQuestion?.point} /> : <EndLesson currentLessonState={currentLessonState} />}
+                </LessonSection>
+                <LessonSection style={{ paddingRight: lessonXPadding, paddingBottom: 0, backgroundColor: stage == "end" ? colours.primaryObnoxious : "transparent" }} className='flex-[2] notesArea h-full'>
+                    {stage == 'loading' ? <Notes placeholderMode={true} /> : stage !== "purgatory" && stage !== "end" && <Notes />}
+                </LessonSection>
+            </div>
+        </>
     )
 }
+
+export default Lesson

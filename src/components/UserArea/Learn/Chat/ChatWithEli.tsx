@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { set } from 'zod'
 import getResponse from '@/lib/chat/Eli/mockResponses'
-import { saveKnowledgePointsToDBAndPineCone } from '@/lib/chat/Eli/eli'
+import { saveKnowledgePointsToDBAndPineCone } from '@/lib/chat/Eli/old'
 
 type chatProps = {
     isOpen: boolean,

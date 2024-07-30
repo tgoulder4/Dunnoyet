@@ -1,4 +1,4 @@
-import { colours } from '@/lib/constants'
+import { changeColour, colours } from '@/lib/constants'
 import React from 'react'
 
 function LearningPathItemTitle({ confidence, text }: { confidence: number, text: string }) {
@@ -11,8 +11,8 @@ function LearningPathItemTitle({ confidence, text }: { confidence: number, text:
     else {
         switch (confidence) {
             case 0:
-                mainColour = colours.lessonNodes.background
-                textColour = colours.light.backgroundLight;
+                mainColour = changeColour(colours.lessonNodes.confidence1).setAlpha(0.3).toString()
+                textColour = changeColour(colours.lessonNodes.confidence1).setAlpha(0.5).toString()
                 break
             case 1:
                 mainColour = colours.lessonNodes.confidence1
@@ -25,9 +25,9 @@ function LearningPathItemTitle({ confidence, text }: { confidence: number, text:
         }
     }
     return (
-        <div className='flex flex-row gap-3'>
-            <div style={{ backgroundColor: mainColour }} className={`${placeholderMode ? 'animate animate-pulse' : ''} w-8 h-8 shrink-0 rounded-full`} />
-            {placeholderMode ? <div style={{ backgroundColor: mainColour }} className='w-full h-8 animate animate-pulse rounded-full' /> : <h2 style={{ color: textColour }}>{text}</h2>}
+        <div className='flex flex-row gap-3 items-center'>
+            <div style={{ backgroundColor: mainColour }} className={`${placeholderMode ? 'animate animate-pulse' : ''} w-5 h-5 shrink-0 rounded-full`} />
+            {placeholderMode ? <div style={{ backgroundColor: mainColour }} className='w-full h-8 animate animate-pulse rounded-lg' /> : <h2 style={{ color: textColour }}>{text}</h2>}
         </div>
     )
 }

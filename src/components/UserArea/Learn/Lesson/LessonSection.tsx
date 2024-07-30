@@ -5,7 +5,7 @@ interface lessonSectionProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 const LessonSection: React.FC<lessonSectionProps> = ({ children, className, ...props }) => {
     return (
-        <section {...props} className={`${className} p-8`}>{children}</section>
+        <section {...props} className={`${className} p-8 transition-colors `}>{children}</section>
     )
 }
 

@@ -1,7 +1,6 @@
 'use server'
 import { AuthError } from "next-auth";
 import { signIn } from "./auth"
-import { ILesson, ITip, IUser } from "@/lib/validation/enforceTypes";
 import { prismaClient } from "./lib/db/prisma";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -15,7 +14,7 @@ export async function getUser(userID?: string,
         lessons?: boolean,
         knowledgePointsUnderstood?: boolean
     }
-): Promise<IUser | null> {
+) {
     try {
         console.log("getUser (frontend,w/o password) called with userID: ", userID, " and choose: ", choose)
         const user = await prisma.user.findUnique({
@@ -99,16 +98,26 @@ export async function createUser(prevState: string | undefined, formData: FormDa
             return `A user with this ${duplicateUser} already exists.`
         }
         const hashedPassword = await bcrypt.hash(parsedCredentials.data.password, 10);
-        await prisma.user.create({
+        const userCreated = await prisma.user.create({
             data: {
                 username: credentials.username as string,
                 email: credentials.email as string,
                 password: hashedPassword as string,
                 name: '',
-                tutorName: '',
+                knowledgePoints: {
+                    create: {
+                        confidence: 0,
+                        KP: "I can learn 5x faster with Dunnoyet",
+                        source: 'reinforced',
+                        TwoDvK: [0, 0]
+                    }
+                }
             },
+            include: {
+                knowledgePoints: true
+            }
         });
-        console.log("User created successfully, ")
+        console.log("User created successfully, ", userCreated)
         return 'A link to verify your email has been sent to your email address!';
     }
     catch (error) {
@@ -120,10 +129,10 @@ export async function createUser(prevState: string | undefined, formData: FormDa
         }
     }
 }
-export async function getTips(): Promise<ITip[] | null> {
+export async function getTips() {
     console.log("getTips called")
     try {
-        const tips: ITip[] | null = await prisma.tip.findMany();
+        const tips = await prisma.tip.findMany();
         console.log("tips which getTips returned: ", tips)
         return tips;
     }

@@ -26,7 +26,7 @@ function MainTitleArea() {
                             left: "clamp(17rem, 4.5vw, 3.8rem)",
                             position: "absolute",
                         }} viewBox="0 0 151 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 8C37.2867 8 67.5672 7.63789 97.8403 7.42857C113.212 7.32228 128.647 7 144 7" stroke="#5C6DFF" stroke-width="14" stroke-linecap="round" />
+                            <path d="M7 8C37.2867 8 67.5672 7.63789 97.8403 7.42857C113.212 7.32228 128.647 7 144 7" stroke="#5C6DFF" strokeWidth="14" strokeLinecap="round" />
                         </svg>
 
                     </h1>

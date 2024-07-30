@@ -1,11 +1,12 @@
 import React from 'react'
 import LearningPathItemTitle from './LearningPathItemTitle'
 
-function LearningPathItem({ confidence, text }: { confidence: number, text: string }) {
+function LearningPathItem({ confidence, text, lastItem }: { confidence: number, text: string, lastItem?: boolean }) {
+
     return (<>
-        <div className='flex-1 flex flex-col gap-3 h-full'>
+        <div className={`${lastItem ? "flex-0" : "flex-1"} animate-in slide-in-from-bottom-4 flex flex-col gap-3 h-auto`}>
             <LearningPathItemTitle confidence={confidence} text={text} />
-            <div className="h-full ml-[0.83rem] w-[1px] border-dashed border-spacing-2 border-separate border-2 border-gray-200 animate animate-pulse"></div>
+            {!lastItem && <div className="h-full ml-[0.57rem] w-[1px] border-dashed border-spacing-2 border-separate border-2 border-gray-200 animate animate-pulse"></div>}
         </div>
     </>
     )

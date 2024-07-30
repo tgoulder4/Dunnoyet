@@ -14,6 +14,7 @@ function LessonTimer() {
         reset,
     } = useStopwatch({ autoStart: true });
 
+
     return (
         <div>{hours.toString().length == 1 ? '0' : ''}{hours}:{minutes.toString().length == 1 ? '0' : ''}{minutes}:{seconds.toString().length == 1 ? '0' : ''}{seconds}</div>
     );

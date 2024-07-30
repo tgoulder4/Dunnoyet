@@ -6,9 +6,10 @@ import { getIsQuestion, getSplitResponses, howRightIsTheUser, simplifyToKnowledg
 import { getEmbedding } from "../openai";
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne
 import { knowledgeIndex } from "../pinecone";
-import prisma from "../../../lib/db/prisma";
+import prisma from "../../db/prisma";
 import { authConfig } from '@/auth.config';
 import { getTwoDCoOrdinatesOfEmbeddings } from '@/components/UserArea/Learn/Lesson/network';
+import { getReinforcedKnowledgePoints } from '@/app/api/[[...route]]/KPs';
 //handles rerouting of knowledge chains
 async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: string, knowledgePointChain: Array<IKnowledge[] | IKnowledge>, messages: IMessage[], incrementKpChainI: (setTovalue?: number) => void, kpChainI: number, firstPotentialKnowledgePoint?: boolean): Promise<{ wasRight: boolean, knowledgePointAdded?: IKnowledge } | string> {
     let K: IKnowledge | undefined = undefined;
@@ -55,21 +56,6 @@ async function getHowRightTheUserIsAndIfRightAddToKnowledgeChain(lessonID: strin
     return {
         wasRight: false,
     };
-}
-export async function getAllReinforcedKnowledgePoints(userID: string): Promise<IKnowledge[] | null> {
-    //get every reinforced knowledge point from mongo
-    try {
-        const allReinforcedKPs = await prisma.knowledgePoint.findMany({
-            where: {
-                source: 'reinforced',
-                userId: userID
-            }
-        })
-        return allReinforcedKPs;
-    } catch (e) {
-        console.log(e)
-        return null;
-    }
 }
 export async function getRelatedKnowledgePoints(userId: string, KpInSolitude: string): Promise<IKnowledge[] | null> {
     try {
