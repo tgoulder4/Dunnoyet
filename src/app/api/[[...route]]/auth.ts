@@ -3,9 +3,11 @@ import { authConfig } from '@/auth.config';
 import NextAuth from 'next-auth';
 import { auth } from '@/auth';
 import getServerSession from 'next-auth';
+import { NextResponse } from 'next/server';
 export const runtime = 'edge';
 
-const app = new Hono().basePath('/api/auth')
+const app = new Hono()
+// .basePath('/api/auth')
 export async function getLoggedInUser() {
     const sess = await getServerSession(authConfig).auth();
     if (!sess || !sess.user) return null;
@@ -15,7 +17,7 @@ export async function getLoggedInUser() {
 }
 app.get('/session', async (c) => {
     const session = await auth();
-    return c.json(session)
+    return NextResponse.json(session)
 })
 app.get('/[...nextauth]', (c) => {
     const handler = NextAuth(authConfig);
