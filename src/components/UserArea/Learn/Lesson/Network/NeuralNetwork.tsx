@@ -24,10 +24,8 @@ function easeInOut(t: number) {
 }
 const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, otherPoints, className, ...props }) => {
     // console.log("NN called with KPs: ", knowledgePointsToFocus, " and otherPoints: ", otherPoints)
-    const sess = useSession().data!.user!;
-    const {
-        id: userId,
-    } = sess;
+    // const sess = useSession().data!.user!;
+    const userId = '65dbe7799c9c2a30ecbe6193'
     const focusPoints = knowledgePointsToFocus ? knowledgePointsToFocus : otherPoints;
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });

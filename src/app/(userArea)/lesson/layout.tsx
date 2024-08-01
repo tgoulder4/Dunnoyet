@@ -3,8 +3,6 @@ import { merriweather, ruda } from '@/app/fonts'
 import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import { colours, sizing, spacing, uiBorder } from '@/lib/constants'
 import React from 'react'
-import getServerSession from 'next-auth';
-import { authConfig } from '@/auth.config'
 import { useSession } from 'next-auth/react'
 function LessonLayout({
     params, children

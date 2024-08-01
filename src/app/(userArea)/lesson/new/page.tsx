@@ -1,5 +1,5 @@
 'use client'
-import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
+// import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { createLesson, getLesson } from '@/app/api/[[...route]]/lessons';
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { lessonStatePayloadSchema } from '@/lib/validation/transfer/transferSchemas';

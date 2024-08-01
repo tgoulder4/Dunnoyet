@@ -1,5 +1,5 @@
 'use server'
-import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
+// import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { getLesson } from '@/app/api/[[...route]]/lessons'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';

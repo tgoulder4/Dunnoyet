@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SummaryItem from './SummaryItem'
-import { getUser } from '@/actions'
+// import { getUser } from '@/actions'
 import { useSession } from 'next-auth/react'
 import { randomBytes } from 'crypto';
 var equal = require('deep-equal');

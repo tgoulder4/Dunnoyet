@@ -1,5 +1,4 @@
 'use server'
-import getServerSession from 'next-auth';
 import OpenAI from "openai";
 import { getEmbedding } from "../openai";
 //if doesn't work TRY  https://socket.dev/npm/package/@keckelt/tsne

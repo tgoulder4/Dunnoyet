@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import NextAuth from 'next-auth/react'
 import getServerSession, { Session } from 'next-auth';
-import { authConfig } from '@/auth.config';
+// import { authConfig } from '@/auth.config';
 import { spacing } from '@/lib/constants';
 import LessonItem from './LessonItem';
 import { useSession } from 'next-auth/react';

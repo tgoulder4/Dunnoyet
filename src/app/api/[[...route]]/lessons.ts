@@ -1,5 +1,5 @@
 
-import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
+// import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
 import { createLessonSchema } from './../../../lib/validation/transfer/transferSchemas';
 import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
@@ -46,11 +46,6 @@ export const getLesson = async (id: string, noAuthCheck?: boolean) => {
     })
     if (!lessonFound) return null;
     console.log("Lesson found: ", lessonFound)
-    if (!noAuthCheck) {
-        const user = await getLoggedInUser();
-        if (!user || !user.id) return null;
-        if (!noAuthCheck && lessonFound && lessonFound.userId !== user.id) return null;
-    }
     //due to caveats in prisma and mongodb, if there's a subject then there ISN'T a targetQ. This is a workaround
     if (lessonFound && lessonFound.subject) {
         lessonFound.targetQ = null
@@ -267,9 +262,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
 const app = new Hono()
     .get('/new', async (c) => {
         console.log("GET /api/lessons/new called")
-        const user = await getLoggedInUser();
-        if (!user || !user.id) return c.status(401);
-        console.log("User logged in: ", user)
+
         console.log("Request received: ", c.req.url)
         const mode = c.req.query("mode");
         if (mode !== "New Question" && mode !== "Free Roam") {
@@ -281,7 +274,7 @@ const app = new Hono()
             console.log("No mode or content")
             return c.status(400)
         };
-        const lesson = await createLesson(user.id, { mode, content });
+        const lesson = await createLesson('65dbe7799c9c2a30ecbe6193', { mode, content });
         if (!lesson) return c.status(500);
         console.log("Returning lesson: ", lesson)
         return c.json(lesson)

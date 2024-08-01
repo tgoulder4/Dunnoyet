@@ -1,5 +1,5 @@
 import "../globals.css";
-import CustomSessionProvider from "@/components/auth/context/customSessionProvider";
+// import CustomSessionProvider from "@/components/auth/context/customSessionProvider";
 export default function RootLayout({
   children,
 }: {
@@ -7,9 +7,9 @@ export default function RootLayout({
 }) {
   return (<>
     <title>Dunnoyet</title>
-    <CustomSessionProvider>
-      {children}
-    </CustomSessionProvider>
+
+    {children}
+
   </>
   );
 }

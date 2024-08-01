@@ -81,13 +81,13 @@ function Page({ params }: { params: { params: string } }) {
         async function main() {
             try {
                 if (!showcaseMode) {
-                    const sess = await axios.get('/api/auth/session');
-                    if (!sess.data.user) {
-                        toast.error("You need to be logged in to access this page.")
-                        window.location.href = '/auth/login';
-                        return;
-                    }
-                    const userID = sess.data.user.id;
+                    // const sess = await axios.get('/api/auth/session');
+                    // if (!sess.data.user) {
+                    //     toast.error("You need to be logged in to access this page.")
+                    //     window.location.href = '/auth/login';
+                    //     return;
+                    // }
+                    const userID = '65dbe7799c9c2a30ecbe6193'
                     const res = await axios.get(`/api/users/${userID}`);
                     console.log("Response from /api/users/:id ", res.data)
                     // const json = await res.json()
