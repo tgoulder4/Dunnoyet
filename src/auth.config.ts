@@ -22,6 +22,7 @@ export const authConfig: NextAuthConfig = {
         error: "/auth/error",
 
     },
+    trustHost: true,
     session: {
         strategy: "jwt",
     },
