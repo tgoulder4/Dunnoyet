@@ -15,10 +15,12 @@ export async function getLoggedInUser() {
     if (!user.id) return null;
     return sess.user;
 }
+
 // app.get('/session', async (c) => {
 //     const session = await auth();
 //     return NextResponse.json(session)
 // })
+
 app.get('/[...nextauth]', (c) => {
     const handler = NextAuth(authConfig);
     return c.json(handler)
