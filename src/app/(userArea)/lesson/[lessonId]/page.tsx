@@ -14,7 +14,7 @@ async function LessonPage({ params, searchParams }: { params: { lessonId: string
     let payload: z.infer<typeof lessonStatePayloadSchema>;
     const isProd = process.env.NODEENV === "production";
     if (true) {
-        const lessonId = params.lessonId;
+        const lessonId = params.lessonId || '66ab8be93c35936739b8fc99';
         const lesson = await getLesson(lessonId);
         console.log("GetLesson response: ", lesson)
         if (!lesson) {
