@@ -1,6 +1,5 @@
 'use server'
 // import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
-import { getLesson } from '@/app/api/[[...route]]/lessons'
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
 import { lessonSchema } from '@/lib/validation/general/types';
@@ -10,6 +9,7 @@ import { NextResponse } from 'next/server';
 import React from 'react'
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { getLesson } from './actions';
 async function LessonPage({ params, searchParams }: { params: { lessonId: string }, searchParams?: { [key: string]: string | string[] | undefined } }) {
     let payload: z.infer<typeof lessonStatePayloadSchema>;
     const isProd = process.env.NODEENV === "production";

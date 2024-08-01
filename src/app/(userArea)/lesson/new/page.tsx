@@ -1,6 +1,6 @@
 'use client'
 // import { getLoggedInUser } from '@/app/api/[[...route]]/auth';
-import { createLesson, getLesson } from '@/app/api/[[...route]]/lessons';
+
 import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { lessonStatePayloadSchema } from '@/lib/validation/transfer/transferSchemas';
 import { useSearchParams } from 'next/navigation';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import { client } from '@/lib/db/hono';
 import { z } from 'zod';
 import { isProd } from '@/lib/constants';
+import { createLesson } from '../[lessonId]/actions';
 // import { AppTypes } from '@/app/api/[[...route]]/route';
 // import { hc } from 'hono/client';
 // const client = hc<AppTypes['lessonRoute']>('');
