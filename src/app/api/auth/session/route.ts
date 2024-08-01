@@ -6,5 +6,5 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
     const session = await auth();
     // console.log(session);
-    return NextResponse.json(session);
+    return Response.json(session);
 }
