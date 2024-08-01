@@ -1,15 +1,12 @@
 'use client'
 import { getEmbeddingForKnowledgeBase } from '@/app/(userArea)/home/pineconeActions'
-import { ILessonState, IMessage, IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import React, { ReactNode, createRef, use, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation'
 import { useSession } from 'next-auth/react'
-import { ILesson } from '@/lib/validation/enforceTypes'
 import NewButton from '@/components/ui/NewButton'
 import { changeColour, colours, sizing, spacing } from '@/lib/constants'
 import { merriweather } from '@/app/fonts'
 import { Input } from '@/components/ui/input'
-import { IMessagesEndpointSendPayload } from '@/lib/validation/enforceTypes'
 import UserMessage from './UserMessage'
 import Message from './Message'
 import { redirect } from 'next/navigation'
@@ -24,8 +21,8 @@ type chatProps = {
     setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>,
     lessonID?: string,
     initialSubject?: string,
-    updateState?: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload) => Promise<void | null>,
-    lessonState?: ILessonState,
+    updateState?: (formData: FormData | undefined, explicitState?: any) => Promise<void | null>,
+    lessonState?: any,
     type: 'Tutorial' | 'Lesson' | 'NewQ'
 }
 function ChatWithEli({

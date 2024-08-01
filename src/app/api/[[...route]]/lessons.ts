@@ -73,7 +73,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         console.log("Random saying: ", randomSaying)
         try {
             // console.log("api/lesson.ts: Calling getTeachingResponse")
-            // const res = await getTeachingResponse([{ role: 'user', content }], []);
+            // const res = await getTeachingResponse([{ role: 'user', content }]);
             // if (!res) {
             //     console.error("No response from Eli")
             //     return null;
@@ -159,7 +159,7 @@ export const createLesson = async (userID: string, data: z.infer<typeof createLe
         if (isRight) {
             console.log("User was right.")
             //change their msg to confidence 2
-            const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any], []);
+            const teachingRes = await getTeachingResponse([{ role: "user", content: content } as any]);
             console.log("Teaching response: ", teachingRes)
             if (!teachingRes) return null;
             try {

@@ -65,7 +65,7 @@ const app = new Hono()
             if (isRight) {
                 payload.stage = 'main';
                 console.log("Payload stage is now main")
-                const eliReply = await getTeachingResponse(msgHistory, [], targetQuestion, subject)
+                const eliReply = await getTeachingResponse(msgHistory, targetQuestion, subject)
                 console.log("Teaching response receieved: ", eliReply)
                 if (!eliReply) {
                     console.error("Failed to get teaching response")
@@ -130,7 +130,7 @@ const app = new Hono()
                     content: "I understand!"
                 }]
                 console.log("msgHistoryToUseToGetResponse: ", msgHistoryToUseToGetResponse)
-                const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, [], targetQuestion, subject)
+                const eliReply = await getTeachingResponse(msgHistoryToUseToGetResponse, targetQuestion, subject)
                 if (!eliReply) {
                     console.error("Failed to get teaching response")
                     return c.status(500)

@@ -22,7 +22,7 @@ function SignInForm() {
     const { pending } = useFormStatus();
     useEffect(() => {
         usernameRef.current?.focus()
-    }, [])
+    })
     return (
         <form
             action={dispatch}

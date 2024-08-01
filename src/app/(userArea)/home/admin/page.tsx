@@ -18,7 +18,7 @@ function AdminPage() {
             }
         }
         main()
-    }, [])
+    })
     return (<>
         <MainAreaNavbar style='authOrAdmin' />
         {

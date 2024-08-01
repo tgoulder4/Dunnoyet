@@ -135,7 +135,7 @@ function Page({ params }: { params: { params: string } }) {
             initialised.current = true;
             main()
         }
-    }, [])
+    })
     return (
         <>
             <title>Home - Dunnoyet</title>

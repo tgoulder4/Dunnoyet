@@ -48,7 +48,7 @@ export const MacbookScroll = ({
         if (window && window.innerWidth < 768) {
             setIsMobile(true);
         }
-    }, []);
+    });
 
     const scaleX = useTransform(
         scrollYProgress,

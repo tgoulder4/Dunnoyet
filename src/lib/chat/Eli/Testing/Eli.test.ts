@@ -7,6 +7,6 @@ test('getTeachingResponse', async () => {
         role: 'user' as 'user' | 'eli',
         content: 'Photons are particles of light'
     }
-    const a = await getTeachingResponse([statementMsg], [])
+    const a = await getTeachingResponse([statementMsg])
     expect(true).toBe(true)
 })

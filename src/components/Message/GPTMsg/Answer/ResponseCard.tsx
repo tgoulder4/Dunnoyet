@@ -62,13 +62,12 @@ function ResponseCard({
       .replace(/^[^\w]+|[^\w]+$/g, "");
     addMessage({
       type: "Question",
-      content: `'${cleanedContent}' - ${
-        elaborationQuery
+      content: `'${cleanedContent}' - ${elaborationQuery
           ? activeTerm.term.split("").slice(0, -1).join("") +
-            ": " +
-            elaborationQuery
+          ": " +
+          elaborationQuery
           : activeTerm.term
-      }`,
+        }`,
     });
     // setShowControls(false);
   }
@@ -129,12 +128,11 @@ function ResponseCard({
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, []);
+  });
   return (
     <div
-      className={`animate-in ${
-        loading ? `slide-in-from-top-4 w-fit` : `slide-in-from-bottom-4 w-full`
-      } mr-4 bg-white p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-4`}
+      className={`animate-in ${loading ? `slide-in-from-top-4 w-fit` : `slide-in-from-bottom-4 w-full`
+        } mr-4 bg-white p-8 rounded-t-[30px] rounded-br-[30px] flex flex-col justify-between gap-4`}
       {...props}
       onClick={(e) => {
         e.preventDefault();

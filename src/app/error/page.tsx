@@ -20,7 +20,7 @@ function ErrorPage() {
                         <path d="M24.4998 26.5418L22.4582 24.5002L26.5415 20.4168L20.4165 14.2918L24.4998 10.2085" stroke="#2C4858" strokeWidth="5" strokeLinecap="round" stroke-linejoin="round" />
                     </svg>
                     <div className="flex flex-col items-center gap-3">
-                        <h1 className='font-bold'>It's not you, it's us.</h1>
+                        <h1 className='font-bold'>It&apos;s not you, it&apos;s us.</h1>
                         <h2>Something went wrong on our end. Please contact us if this persists.</h2>
                         <h2 className='text-gray-400'>Error ID: {errorId}</h2>
                     </div>

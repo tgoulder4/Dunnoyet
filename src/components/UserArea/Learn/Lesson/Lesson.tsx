@@ -31,17 +31,17 @@ function Lesson({ payload }: { payload: z.infer<typeof lessonStatePayloadSchema>
         lessonID,
         userID
     } = currentLessonState;
-    if (!stage) {
-        //missing stage in lesson payload
-        toast.error("An error occurred: MSILP@Lesson")
-        return <></>
-    }
     //if stage=end, don't show 'about x left' or 'finish'. if save failed then toast error.
     if (!lastSaved || !newMessages || !lessonID || !userID) {
         //missing info in lesson payload
         toast.error("Something went wrong: MIILP@Lesson")
     }
     const subject = useRef<string | undefined>(payload.subject);
+    if (!stage) {
+        //missing stage in lesson payload
+        toast.error("An error occurred: MSILP@Lesson")
+        return <></>
+    }
     console.log("targetQuestion: ", targetQuestion, " currentlessonState.msgHistory: ", currentLessonState.msgHistory);
     let lastItemIndex: number = 0;
     if (stage !== 'loading') targetQuestion?.point ? currentLessonState.msgHistory.length - 1 : currentLessonState.msgHistory.length - 1;

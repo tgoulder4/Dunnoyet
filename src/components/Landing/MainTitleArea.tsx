@@ -19,8 +19,6 @@ function MainTitleArea() {
                         className={`${ruda.className} relative text-center font-bold leading-[1.4] z-20`}
                     >
                         Now THIS is learning.
-
-
                     </h1>
                 </div>
                 <h2 className={`mb-2 text-center ${ruda.className}`}>

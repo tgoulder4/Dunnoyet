@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useState } from 'react'
-import { IMessage, ILesson, ISplitResponse, ILessonState } from '@/lib/validation/enforceTypes'
 import UserMessage from './UserMessage'
 import EliMessage from './EliMsg'
-import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 var equal = require('deep-equal')
-function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, initialQ }: { lessonState: ILessonState, updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, initialQ: string | undefined }) {
+function Conversation({ lessonState, updateState, setDisableInput, setUpdatingState, lessonReplyInputRef, initialQ }: { lessonState: any, updateState: (formData: FormData | undefined, explicitState?: any | undefined) => (Promise<void | null> | undefined), setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, initialQ: string | undefined }) {
     // const [messages, setMessages] = useState([] as IMessage[] | null)
     const { newMessages, metadata } = lessonState;
     const prevState = useRef(lessonState);     // Check if newMessages was the cause of the re-render to set the contronIndexRef to 0
@@ -13,12 +11,12 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
     const [controlIndex, setControlIndex] = useState(0);
     let controlIndexRef = controlIndex;
     console.log("Conversation rendering, lessonState is: ", lessonState, " controlRef is: ", controlIndex);
-    const [messagesToRender, setMessagesToRender] = useState([] as IMessage[]);
+    const [messagesToRender, setMessagesToRender] = useState([] as any[]);
     const scrollRef = useRef<HTMLDivElement>(null);
     // if (newMessages.length == 0) {
     //     controlIndexRef = -1;
     // }; //end of lesson")
-    const getJsxFromAllMessages = (messages: IMessage[]) => {
+    const getJsxFromAllMessages = (messages: any[]) => {
         console.log("Messages passed to getJsxFromAllMessages: ", messages)
         let index = 0;
         if (messages.length === 0) return []
@@ -89,8 +87,8 @@ function Conversation({ lessonState, updateState, setDisableInput, setUpdatingSt
             console.log("New messages has changed, setting controlIndex to 0")
             controlIndexRef = 0;
         }
-        const theirReplyMsg = { content: theirReply, role: "user" } as IMessage;
-        const updatedMessages = [] as IMessage[];
+        const theirReplyMsg = { content: theirReply, role: "user" } as any;
+        const updatedMessages = [] as any[];
         console.log("Control index ref being used is: ", controlIndex); //WHY IS THIS STILL 1
         if (newMessages.length == 0) {
 

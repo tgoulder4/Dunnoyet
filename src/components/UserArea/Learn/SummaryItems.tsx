@@ -40,7 +40,7 @@ function SummaryItems() {
     //         });
     //     }
     //     main()
-    // }, []);
+    // });
     return (
         <>
             {

@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { ITip } from '@/lib/validation/enforceTypes'
 import { getTips } from '@/actions'
 import { changeColour, colours, spacing } from '@/lib/constants';
 var equal = require('deep-equal');
 export default function Tip() {
-    const [tip, setTip] = useState<ITip | null>(null);
+    const [tip, setTip] = useState<any>(null);
     useEffect(() => {
         async function main() {
             console.log("Tip calling getTips...")
             const tips = await getTips();
             console.log("Tips returned from getTips: ", tips)
             if (tips == null) return;
-            if (equal(tips, [])) return;
+            if (equal(tips)) return;
             const randomTipNumber = Math.floor(Math.random() * tips.length) + 1;
             console.log(tips[randomTipNumber])
             setTip(tips[randomTipNumber]);
         }
         main()
-    }, [])
+    })
     // const tips = await getTips();
     // if (tips == null) return null;
-    // if (equal(tips, [])) return null;
+    // if (equal(tips)) return null;
     // const randomTipNumber = Math.floor(Math.random() * tips.length) + 1;
     // const tip = tips[randomTipNumber];
     const bgc = changeColour(tip ? colours.primary : colours.accent).lighten(tip ? 2 : 0);

@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef, memo } from "react";
 import { Loader2 } from "lucide-react";
 function UserQuestionCard({
-  addMessage = () => {},
+  addMessage = () => { },
   content = "",
   _closed = true,
   className,
@@ -33,7 +33,7 @@ function UserQuestionCard({
   useEffect(() => {
     setLoading(false);
     reply();
-  }, []);
+  });
 
   function handleAmendment() {
     setClosed(true);

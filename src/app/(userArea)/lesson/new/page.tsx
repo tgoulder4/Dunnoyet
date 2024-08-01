@@ -13,7 +13,7 @@ import { isProd } from '@/lib/constants';
 // import { hc } from 'hono/client';
 // const client = hc<AppTypes['lessonRoute']>('');
 var equal = require('deep-equal');
-function page() {
+function Page() {
     const usp = useSearchParams();
     //double renders in react strictmode exhausting api calls. this is a workaround
     const initialized = useRef(false);
@@ -59,11 +59,11 @@ function page() {
             }
         }
         main()
-    }, [])
+    })
     return (
         <>
             <title>Creating Lesson - Dunnoyet</title>
             <Lesson payload={{ stage: "loading", lastSaved: new Date }} /></>)
 }
 
-export default page
+export default Page

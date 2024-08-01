@@ -17,7 +17,7 @@ const msgHistory: z.infer<typeof messagesSchema>[] = [
 const app = new Hono()
     .get('/', async (c) => {
         //fn to test
-        const resp = getTeachingResponse(msgHistory, [], "Why do electrons repel each other?")
+        const resp = getTeachingResponse(msgHistory, "Why do electrons repel each other?")
         if (!resp) return c.status(500)
         return c.json(resp)
     })

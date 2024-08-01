@@ -1,5 +1,4 @@
 'use server'
-import { IUser } from '@/lib/validation/enforceTypes';
 import { authConfig } from './auth.config';
 import NextAuth from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
@@ -8,7 +7,7 @@ import bcrypt from "bcrypt";
 import { prismaClient } from './lib/db/prisma';
 import getServerSession from 'next-auth';
 const prisma = prismaClient;
-export async function getUser(username: string): Promise<IUser | null> {
+export async function getUser(username: string): Promise<any | null> {
     console.log("getUser (server) called with username: ", username)
     try {
         const user = await prisma.user.findUnique({
@@ -17,7 +16,7 @@ export async function getUser(username: string): Promise<IUser | null> {
             },
         });
         if (!user) return null;
-        return user as IUser;
+        return user as any;
     }
     catch (error) {
         console.error("Couldn't retrieve the user - auth.ts ", error);

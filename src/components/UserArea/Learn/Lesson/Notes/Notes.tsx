@@ -5,9 +5,7 @@ import React, { useRef } from 'react'
 
 function Notes({ placeholderMode }: { placeholderMode?: boolean }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    async function saveNotes() {
-        await client.api.notes[':lessonID'].$patch({ param: { lessonID: "" } });
-    }
+
     return (
         <div style={{ paddingBottom: lessonPaddingBottom }} className='h-full'>
             {placeholderMode ?

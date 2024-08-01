@@ -18,7 +18,7 @@ const rlimit = new RateLimit({
 });
 
 const app = new Hono().basePath('/api');
-const rateLimitMiddleware = async (c, next) => {
+const rateLimitMiddleware = async (c: any, next: any) => {
     // use x-forwarded-for or x-real-ip if available
     const identifier =
         c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "anon";

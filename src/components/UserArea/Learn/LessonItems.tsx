@@ -4,10 +4,9 @@ import getServerSession, { Session } from 'next-auth';
 import { authConfig } from '@/auth.config';
 import { spacing } from '@/lib/constants';
 import LessonItem from './LessonItem';
-import { ILesson } from '@/lib/validation/enforceTypes';
 import { useSession } from 'next-auth/react';
 
-export default function LessonItems({ tutorialMode, lessons }: { tutorialMode: boolean, lessons: ILesson[] | null }) {
+export default function LessonItems({ tutorialMode, lessons }: { tutorialMode: boolean, lessons: any[] | null }) {
     const sess = useSession();
     const userID = sess.data?.user?.id!!;
 

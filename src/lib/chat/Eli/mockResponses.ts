@@ -1,4 +1,4 @@
-import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes';
+
 
 //test like: newq, 1st msg reply, 2nd you should understood
 
@@ -6,7 +6,7 @@ let understoodCounter = -1;
 export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply') {
     switch (type) {
         case 'NewQ':
-            const payloadResponseForNewQ: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+            const payloadResponseForNewQ: any | string = await new Promise<any | string>((resolve, reject) => {
                 setTimeout(() => {
                     resolve({
                         newMessages: [
@@ -237,13 +237,13 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                             currentKnowledgePointIndex: 1
                         }
 
-                    } as IMessagesEndpointResponsePayload)
+                    } as any)
                 }, 1000);
             })
             return payloadResponseForNewQ;
             break;
         case 'Reply':
-            const payloadResponseForReply: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+            const payloadResponseForReply: any | string = await new Promise<any | string>((resolve, reject) => {
                 setTimeout(() => {
                     resolve({
                         newMessages: [
@@ -519,7 +519,7 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                             currentKnowledgePointIndex: 1
                         }
 
-                    } as IMessagesEndpointResponsePayload)
+                    } as any)
                 }, 1000);
             })
             return payloadResponseForReply;
@@ -528,7 +528,7 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
             understoodCounter++;
             if (understoodCounter == 0) {
 
-                const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+                const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                     setTimeout(() => {
                         resolve({
                             newMessages: [
@@ -797,14 +797,14 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                                 currentKnowledgePointIndex: 1
                             }
 
-                        } as IMessagesEndpointResponsePayload)
+                        } as any)
                     }, 1000);
                 })
                 return payloadResponseForUnderstood;
                 break;
             }
             else if (understoodCounter == 1) {
-                const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+                const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                     setTimeout(() => {
                         resolve({
                             newMessages: [
@@ -1066,14 +1066,14 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                                 currentKnowledgePointIndex: 1
                             }
 
-                        } as IMessagesEndpointResponsePayload)
+                        } as any)
                     }, 1000);
                 })
                 return payloadResponseForUnderstood;
                 break;
             }
             else if (understoodCounter == 2) {
-                const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+                const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                     setTimeout(() => {
                         resolve({
                             newMessages: [
@@ -1297,14 +1297,14 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                                 currentKnowledgePointIndex: 1
                             }
 
-                        } as IMessagesEndpointResponsePayload)
+                        } as any)
                     }, 1000);
                 })
                 return payloadResponseForUnderstood;
                 break;
             }
             else if (understoodCounter == 3) {
-                const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+                const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                     setTimeout(() => {
                         resolve({
                             newMessages: [
@@ -1519,7 +1519,7 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                                 currentKnowledgePointIndex: 1
                             }
 
-                        } as IMessagesEndpointResponsePayload)
+                        } as any)
                     }, 1000);
                 })
                 return payloadResponseForUnderstood;
@@ -1527,7 +1527,7 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
 
             }
             else if (understoodCounter == 4) {
-                const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+                const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                     setTimeout(() => {
                         resolve({
                             newMessages: [
@@ -1724,14 +1724,14 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                                 currentKnowledgePointIndex: 1
                             }
 
-                        } as IMessagesEndpointResponsePayload)
+                        } as any)
                     }, 1000);
                 })
                 return payloadResponseForUnderstood;
                 break;
 
             }
-            const payloadResponseForUnderstood: IMessagesEndpointResponsePayload | string = await new Promise<IMessagesEndpointResponsePayload | string>((resolve, reject) => {
+            const payloadResponseForUnderstood: any | string = await new Promise<any | string>((resolve, reject) => {
                 setTimeout(() => {
                     resolve({
                         newMessages: [
@@ -1955,7 +1955,7 @@ export default async function getResponse(type: 'NewQ' | 'Understood' | 'Reply')
                             currentKnowledgePointIndex: 1
                         }
 
-                    } as IMessagesEndpointResponsePayload)
+                    } as any)
                 }, 1000);
             })
             return payloadResponseForUnderstood;

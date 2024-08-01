@@ -1,5 +1,5 @@
-import { IFile, IThread, IUser } from "./validation/enforceTypes";
-export const threads: IThread[] = [
+
+export const threads = [
     {
         id: "0",
         sourceID: ["0"],
@@ -83,7 +83,7 @@ export const threads: IThread[] = [
         ],
     },
 ];
-export const users: IUser[] = [
+export const users = [
     {
         id: "0",
         name: "Test",
@@ -110,7 +110,7 @@ export const users: IUser[] = [
         ],
     },
 ];
-export const files: IFile[] = [
+export const files = [
     {
         id: "0",
         sourceID: "0",

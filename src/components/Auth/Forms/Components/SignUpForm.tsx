@@ -24,7 +24,7 @@ function SignUpForm() {
     //check if password and confirm password match before dispatching
     useEffect(() => {
         usernameRef.current?.focus()
-    }, [])
+    })
     const handleInfoChange = () => {
         console.log('"' + passwordRef.current?.value + '" ' + '"' + confirmPasswordRef.current?.value + '"')
         if (confirmPasswordRef.current?.value == "") {

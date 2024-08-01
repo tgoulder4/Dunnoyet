@@ -4,7 +4,7 @@ import { z } from "zod"
 import openai, { getEmbedding } from "../../openai"
 import { simplifyToKnowledgePointInSolitude } from "../helpers/simplify-message"
 import { getTwoDCoOrdinatesOfKPInSolitude } from "@/components/UserArea/Learn/Lesson/Network/utils/helpers"
-export async function getTeachingResponse(messageHistory: z.infer<typeof messagesSchema>[], rKPs: string[], targetQuestion?: string, subject?: string) {
+export async function getTeachingResponse(messageHistory: z.infer<typeof messagesSchema>[], targetQuestion?: string, subject?: string) {
     const prompt = `you directly continue my sentence making a point which makes sense on its own, starting with a lower case letter.
     ${subject ? "The subject is " + subject + "." : ""} ${targetQuestion ? 'the target question to answer is: ' + targetQuestion + '. Say the approx. number of messages we are away from answering this with each response, and always try and link back to this to get it answered quicker. your response is a short continuation of one large sentence. Say ‘END’ when it’s fully answered. directly continue your previous response. E.g. I say ‘electrons are negatively charged’, and you say ‘which means they repel each other 5’ (as we’re approx. 5 msgs away from lesson finish).'
             : ` there is never an end to the new information you tell me. when I say i understand, you extend the sentence further. Your reply should be like e.g. "which does x/this leads to Y,". dont re-iterate words in your responses. continue the never-ending sentence from there.`

@@ -3,10 +3,9 @@ import Message from './Message'
 import { changeColour, colours, spacing } from '@/lib/constants'
 import NewButton from '@/components/ui/NewButton'
 import { Loader2 } from 'lucide-react';
-import { IMessagesEndpointResponsePayload } from '@/lib/validation/enforceTypes'
 import { randomBytes } from 'crypto';
 
-function EliMessage({ eliResponseType, splitResponses, text, updateState, setControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current, ctaText, systemMessagePosition }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'System', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: IMessagesEndpointResponsePayload | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean, ctaText?: string, systemMessagePosition?: 'Start' | 'End' }) {
+function EliMessage({ eliResponseType, splitResponses, text, updateState, setControlIndex, setDisableInput, setUpdatingState, lessonReplyInputRef, current, ctaText, systemMessagePosition }: { text?: string, eliResponseType: "General" | "WhatComesToMind" | "ChallengeQ" | 'System', splitResponses?: { text: string, active: boolean }[], updateState: (formData: FormData | undefined, explicitState?: any | undefined, action?: "UNDERSTOOD" | 'ENDLESSON') => (Promise<void | null> | undefined), setControlIndex: React.Dispatch<React.SetStateAction<number>>, setDisableInput: React.Dispatch<React.SetStateAction<boolean>>, setUpdatingState: React.Dispatch<React.SetStateAction<boolean>>, lessonReplyInputRef: React.RefObject<HTMLInputElement>, current: boolean, ctaText?: string, systemMessagePosition?: 'Start' | 'End' }) {
     const [loadingNextMessage, setLoadingNextMessage] = useState(false);
     if (eliResponseType == "System" && !systemMessagePosition) throw new Error("System message must have a systemMessagePosition prop");
     const handleContinueOrIUnderstand = ({ type }: { type: "continue" | "understand" }) => {

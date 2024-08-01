@@ -2,7 +2,6 @@ import React, { MutableRefObject, useEffect, useMemo, useRef, useState } from 'r
 import { colours, changeColour } from '@/lib/constants'
 import { sizing } from '@/lib/constants'
 import { getEmbedding } from '@/lib/chat/openai'
-import { getRelatedKnowledgePoints } from '@/lib/chat/Eli/old'
 import { useSession } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import { getRequiredFrameRate } from './utils/optimisations'
@@ -29,7 +28,6 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
     const {
         id: userId,
     } = sess;
-    if (!knowledgePointsToFocus && !otherPoints) return <h1>Brainmap initialised incorrectly</h1>
     const focusPoints = knowledgePointsToFocus ? knowledgePointsToFocus : otherPoints;
     const drag = useRef({ isDragging: false, startX: 0, startY: 0 });
     const offset = useRef({ x: 0, y: 0 });
@@ -201,6 +199,7 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ knowledgePointsToFocus, o
             canvas.removeEventListener('wheel', onWheel);
         };
     }, [focusPoints]);
+    if (!knowledgePointsToFocus && !otherPoints) return <h1>Brainmap initialised incorrectly</h1>
 
     return (
         <div {...props} className={`${className} h-full`} >
