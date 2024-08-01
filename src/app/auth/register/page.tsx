@@ -1,4 +1,4 @@
-import SignUpOrIn from '@/components/auth/Forms/SignUpOrIn'
+import SignUpOrIn from '@/components/auth/Forms/signUpOrIn'
 import React from 'react'
 import { Metadata } from 'next'
 export const metadata: Metadata = {

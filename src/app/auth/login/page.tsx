@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import SignInForm from '@/components/auth/Forms/Components/SignInForm'
-import SignUpOrIn from '@/components/auth/Forms/SignUpOrIn'
+import SignUpOrIn from '@/components/auth/Forms/signUpOrIn'
 export const metadata: Metadata = {
     title: "dunnoyet - Login",
     description: "Log into your account."

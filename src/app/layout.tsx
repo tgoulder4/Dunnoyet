@@ -1,6 +1,5 @@
 import '@/app/globals.css'
 // import 'dotenv/config'
-import SessionProvider from "@/components/auth/context/CustomSessionProvider"
 import { ruda } from './fonts'
 import { sizing } from '@/lib/constants'
 

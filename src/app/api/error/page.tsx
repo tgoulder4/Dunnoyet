@@ -1,5 +1,5 @@
 import { merriweather } from '@/app/fonts'
-import ReportErrorForm from '@/components/auth/error/ReportErrorForm'
+import ReportErrorForm from '@/components/auth/error/reportErrorForm'
 import { colours, responsiveFont, sizing, spacing } from '@/lib/constants'
 import React from 'react'
 import { Metadata } from 'next'
