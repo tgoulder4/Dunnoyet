@@ -15,7 +15,7 @@ import { client } from '@/lib/db/hono'
 import { z } from 'zod'
 import { userHomeInfoSchema } from '@/lib/validation/general/types'
 import axios from 'axios'
-import { useSearchParams } from 'next/navigation'
+// import { useSearchParams } from 'next/navigation'
 import { experiencePerKnowledgePoint } from '@/lib/chat/Eli/helpers/constants'
 import { Metadata } from 'next'
 var equal = require('deep-equal');

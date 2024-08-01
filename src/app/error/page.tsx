@@ -4,7 +4,7 @@ import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 import { spacing } from '@/lib/constants'
 import React from 'react'
 import { ruda } from '../fonts'
-import { useSearchParams } from 'react-router-dom'
+// import { useSearchParams } from 'react-router-dom'
 
 function ErrorPage() {
     // const [searchParams, setSearchParams] = useSearchParams();

@@ -4,7 +4,7 @@ import Lesson from '@/components/UserArea/Learn/Lesson/Lesson';
 import { tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
 import { lessonSchema } from '@/lib/validation/general/types';
 import { lessonStatePayloadSchema, messagesPayloadSchema } from '@/lib/validation/transfer/transferSchemas';
-import { useSearchParams } from 'next/navigation';
+// import { useSearchParams } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import React from 'react'
 import { toast } from 'sonner';
