@@ -147,16 +147,18 @@ function Page({ params }: { params: { params: string } }) {
             <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
                 <MainAreaNavbar style="normal" show={{ userSide: { newQuestion: false } }} />
                 <Toaster position="top-center" style={{ fontFamily: ruda.style.fontFamily, fontSize: '1.2rem' }} />
-                <main className="flex flex-col bg-white h-[100vh]" >
+                <main className="flex flex-col items-center bg-white h-[100vh]" >
                     {/* switcher */}
-                    <div className="switcher" style={{ paddingTop: spacing.gaps.separateElement, borderBottom: uiBorder(0.2), paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding }}>
-                        <div className="transition-all switcherButtons flex flex-row max-w-lg w-full">
+                    <div className="switcher w-full flex flex-col items-center px-12 md:px-16" style={{ paddingTop: spacing.gaps.separateElement, borderBottom: uiBorder(0.2) }}>
+                        <div className="transition-all switcherButtons flex flex-row max-w-5xl w-full">
                             <SwitcherButton text="New Question" setMode={handleSetMode} mode={mode} />
                             <SwitcherButton text="Free Roam" setMode={handleSetMode} mode={mode} />
                         </div>
                     </div>
-                    <section className='transition-all flex flex-col items-center' style={{ borderBottom: uiBorder(0.2), paddingTop: spacing.gaps.largest, paddingBottom: spacing.gaps.largest, paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.largest - 10 }}>
-                        <div className="flex flex-col items-center gap-3 w-full">
+                    <section
+                        className='transition-all flex flex-col items-center w-full py-14 px-12 md:px-16'
+                        style={{ borderBottom: uiBorder(0.2), rowGap: spacing.gaps.largest - 10 }}>
+                        <div className="flex flex-col items-center gap-3 w-full max-w-5xl">
                             <h1 className='font-black'>{modeDetails[mode].modeDescription}</h1>
                             <form onSubmit={data => { isSubmitting(true); handleSubmit(data) }} className="animate-in slide-in-from-bottom-4 relative w-full flex flex-row gap-2">
                                 <Textarea onKeyDown={(e) => {
@@ -167,9 +169,9 @@ function Page({ params }: { params: { params: string } }) {
                                 <SubmitButton submitting={submitting} />
                             </form>
                         </div>
-                        <div className="flex flex-col gap-3 w-4/5">
+                        <div className="flex flex-col gap-3 w-5/6 lg:w-4/5">
                             <h1 className=' text-center font-bold'>Examples</h1>
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {modeDetails[mode].examples.map((example, index) => {
                                     return (
                                         loading ? <div key={example + index} className="xl:h-16 h-24 w-full bg-gray-200 animate animate-pulse rounded-xl" /> :
@@ -187,8 +189,8 @@ function Page({ params }: { params: { params: string } }) {
                             </div>
                         </div>
                     </section>
-                    <section className='flex flex-col items-center' style={{ borderBottom: uiBorder(0.2), paddingTop: spacing.gaps.separateElement, paddingBottom: '20vh', paddingLeft: sizing.variableWholePagePadding, paddingRight: sizing.variableWholePagePadding, rowGap: spacing.gaps.largest - 10 }}>
-                        <div className="w-full flex flex-col gap-3 items-center">
+                    <section className='flex flex-col items-center w-full px-12' style={{ borderBottom: uiBorder(0.2), paddingTop: spacing.gaps.separateElement, paddingBottom: '20vh', rowGap: spacing.gaps.largest - 10 }}>
+                        <div className="w-full max-w-5xl flex flex-col gap-3 items-center">
                             <h1 className='font-bold'>My Brain</h1>
                             <div className="relative w-full flex flex-col gap-4">
                                 {
@@ -198,7 +200,7 @@ function Page({ params }: { params: { params: string } }) {
                                         </div> :
                                         <NeuralNetwork style={{ height: '18rem' }} className='w-full' otherPoints={KPs} />
                                 }
-                                <div className="flex flex-row gap-4">
+                                <div className="flex flex-col md:flex-row gap-4">
                                     <Stat key="XP" loading={loading} statTitle="Experience" value={(knowledgePoints ? knowledgePoints.length * experiencePerKnowledgePoint : 0) + ' XP'} />
                                     <Stat key="TotalConcepts" loading={loading} statTitle="Total concept(s) learnt" value={knowledgePoints?.length || 0} />
                                 </div>
