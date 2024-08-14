@@ -10,7 +10,7 @@ export default function RootLayout({
 }) {
     console.log("NODEENV: ", process.env.NODEENV)
     return (
-        <html lang="en">
+        <html className='w-[100vw]' lang="en">
             <head>
                 <link rel="icon" className='' type="image/svg+xml" href="/assets/favicon/favicon.svg"></link>
                 <link rel="icon" type="image/png" href="/assets/favicon/favicon.png"></link>
@@ -18,7 +18,7 @@ export default function RootLayout({
             </head>
             <body>
                 {/* Layout UI */}
-                <main className='h-[100vh] flex flex-col' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>{children}</main>
+                <main className='h-[100vh] w-[100vw] flex flex-col overflow-x-hidden' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>{children}</main>
             </body>
         </html>
     )

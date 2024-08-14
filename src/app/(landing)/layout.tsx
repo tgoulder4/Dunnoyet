@@ -32,7 +32,7 @@ export default function RootLayout({
               <div className="badge"></div>
             </div>
           </div>
-          <div id="userSide" className="flex gap-2 h-full items-center">
+          <div id="userSide" className="hidden md:flex gap-2 h-full items-center">
             {/* after learning about authentication, put the login component here */}
             <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">Pricing</NewButton>
             <NewButton noAnimation buttonVariant="ghost" actionOrLink="#">How it works</NewButton>
@@ -42,11 +42,11 @@ export default function RootLayout({
         </div>
       </nav>
       {children}
-      <footer style={{ backgroundColor: colours.accent, }} className="h-48 px-16">
+      {/* <footer style={{ backgroundColor: colours.accent, }} className="h-48 px-16">
         <Button asChild variant="ghost">
           <DunnoyetLogo colour="white" />
         </Button>
-      </footer>
+      </footer> */}
     </div>
   );
 }
