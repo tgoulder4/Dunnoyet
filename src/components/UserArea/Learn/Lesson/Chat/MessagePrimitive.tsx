@@ -10,7 +10,7 @@ function MessagePrimitive({ dispatch, messages, focused, lastMessageInLesson, us
         role, content, eliResponseType
     } = messages[0];
     return (
-        <div className={`animate-in slide-in-from-bottom-4  w-full border-b-[rgba(0,0,0,0.05)] border-b pl-16 pr-24 pt-[0.938rem] pb-[1.25rem] items-start flex flex-row gap-4 ${eliResponseType == "WhatComesToMind" && focused ? "bg-[#461167] text-white" : ""}`}>
+        <div className={`animate-in slide-in-from-bottom-4  w-full border-b-[rgba(0,0,0,0.05)] border-b px-6 md:pl-16 md:pr-24 pt-[0.938rem] pb-[1.25rem] items-start flex flex-row gap-4 ${eliResponseType == "WhatComesToMind" && focused ? "bg-[#461167] text-white" : ""}`}>
             <div className="grid place-items-center w-12 aspect-square rounded-full border border-[rgba(0,0,0,0.1)]">
                 {
                     role == "user" ? <h2>{username ? username[0] : "U"}</h2> : eliResponseType == "General" || eliResponseType == "WhatComesToMind" ?
