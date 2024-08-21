@@ -20,6 +20,8 @@ export function PHProvider({ children }) {
                 }
             })
             return <PostHogProvider client={posthog}> {children} </PostHogProvider>
+        } else {
+            return children;
         }
     } else {
         return children;
