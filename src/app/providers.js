@@ -1,21 +1,27 @@
 'use client'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { useSearchParams } from 'next/navigation'
-
+import { useRouter } from "next/router";
+import { usePathname } from 'next/navigation';
 export function PHProvider({ children }) {
-    const searchParams = useSearchParams()
-    const sessionId = searchParams.get('session_id');
-    console.log('bootstrapping with session_id', sessionId)
-
     if (typeof window !== 'undefined') {
-        posthog.init('phc_OwZ5Eo5Bfah214KJbQUu71XpFlzMRXo0nozeI8sZWNN', {
-            api_host: 'https://eu.i.posthog.com',
-            bootstrap: {
-                sessionID: sessionId
-            }
-        })
-    }
+        const url = window.location.href;
+        console.log('url', url)
+        const match = url.match(/[?&]session_id=([^&]+)/);
 
-    return <PostHogProvider client={posthog}>{children}</PostHogProvider>
+        console.log('match', match)
+        if (match) {
+            const sessionID = match[1];
+            console.log('bootstrapping with sessionID', sessionID)
+            posthog.init('phc_OwZ5Eo5Bfah214KJbQUu71XpFlzMRXo0nozeI8sZWNN', {
+                api_host: 'https://eu.i.posthog.com',
+                bootstrap: {
+                    sessionID
+                }
+            })
+            return <PostHogProvider client={posthog}> {children} </PostHogProvider>
+        }
+    } else {
+        return children;
+    }
 }
