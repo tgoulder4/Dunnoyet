@@ -1,20 +1,6 @@
-
-import { createLessonSchema } from './../../../lib/validation/transfer/transferSchemas';
-import { prismaClient } from '@/lib/db/prisma';
 import { Hono } from 'hono'
-import { z } from 'zod';
-import { getTeachingResponse } from '@/lib/chat/Eli/core/core';
-import { simplifyToKnowledgePointInSolitude, simplifyToSubject } from '@/lib/chat/Eli/helpers/simplify-message';
-import { checkIsUserRight } from '@/lib/chat/Eli/helpers/correctness';
-import { oopsThatsNotQuiteRight, tellMeWhatYouKnow } from '@/lib/chat/Eli/helpers/sayings';
-import { messagesSchema } from '@/lib/validation/primitives';
-import openai, { getEmbedding } from '@/lib/chat/openai';
-import { getTwoDCoOrdinatesOfKPInSolitude } from '@/components/UserArea/Learn/Lesson/Network/utils/helpers';
-import { randomBytes } from 'crypto';
 import { createLesson } from '@/app/(userArea)/lesson/[lessonId]/actions';
-const prisma = prismaClient;
 export const runtime = 'edge';
-const isProd = process.env.NODEENV === "production";
 
 const app = new Hono()
     .get('/new', async (c) => {

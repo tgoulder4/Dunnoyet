@@ -3,12 +3,15 @@ import '@/app/globals.css'
 import { ruda } from './fonts'
 import { sizing } from '@/lib/constants'
 import { PHProvider } from './providers'
+import { Suspense } from 'react'
+import { Loader2 } from 'lucide-react'
+import Lesson from '@/components/UserArea/Learn/Lesson/Lesson'
+import MainAreaNavbar from '@/components/Navbar/MainAreaNavbar'
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    console.log("NODEENV: ", process.env.NODEENV)
     return (
         <html className='w-[100vw]' lang="en">
             <head>
@@ -16,12 +19,21 @@ export default function RootLayout({
                 <link rel="icon" type="image/png" href="/assets/favicon/favicon.png"></link>
                 <title>Dunnoyet</title>
             </head>
-            <PHProvider>
-                <body>
-                    {/* Layout UI */}
-                    <main className='h-[100vh] w-[100vw] flex flex-col overflow-x-hidden' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>{children}</main>
-                </body>
-            </PHProvider>
+            <Suspense fallback={<body>
+                {/* Layout UI */}
+                <main className='h-[100vh] w-[100vw] flex flex-col overflow-x-hidden' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
+                    <MainAreaNavbar style='normal' show={{ userSide: { newQuestion: false }, leftSide: { lessonTimer: false } }} />
+                    <Lesson payload={{ stage: "loading", lastSaved: new Date }} />
+                </main>
+            </body>
+            } >
+                <PHProvider>
+                    <body>
+                        {/* Layout UI */}
+                        <main className='h-[100vh] w-[100vw] flex flex-col overflow-x-hidden' style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>{children}</main>
+                    </body>
+                </PHProvider>
+            </Suspense>
         </html>
     )
 }

@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 }
 const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 export default prisma;
-if (process.env.NODEENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prisma;
 }
 export const prismaClient = prisma;

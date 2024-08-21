@@ -15,7 +15,7 @@ import { findDistanceUntilLessonEnd } from '@/components/UserArea/Learn/Lesson/C
 
 const prisma = prismaClient;
 export const runtime = 'edge';
-const isProd = process.env.NODEENV === "production";
+const isProd = process.env.NODE_ENV === "production";
 const app = new Hono()
     .post('/response', async (c) => {
         const body = await c.req.json();
