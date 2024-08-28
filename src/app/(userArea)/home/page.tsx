@@ -146,7 +146,6 @@ function Page({ params }: { params: { params: string } }) {
             <title>Home - Dunnoyet</title>
             <div className={` flex flex-col`} style={{ fontFamily: ruda.style.fontFamily, fontSize: sizing.globalFontSize }}>
                 <MainAreaNavbar style="normal" show={{ userSide: { newQuestion: false } }} />
-                <Toaster position="top-center" style={{ fontFamily: ruda.style.fontFamily, fontSize: '1.2rem' }} />
                 <main className="flex flex-col items-center bg-white h-[100vh]" >
                     {/* switcher */}
                     <div className="switcher w-full flex flex-col items-center px-12 md:px-16" style={{ paddingTop: spacing.gaps.separateElement, borderBottom: uiBorder(0.2) }}>
